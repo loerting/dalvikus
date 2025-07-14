@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">dalvikus</string>
+    <string name="app_description">Bewitch your apps.</string>
+
+    <string name="tree_search_placeholder">Search tree element...</string>
+    <string name="tree_search_no_results">No results found</string>
+</resources>
