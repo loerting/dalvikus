@@ -28,6 +28,8 @@ kotlin {
             implementation(libs.multiplatformSettings)
             implementation(libs.materialKolor)
 
+            implementation(libs.richeditor)
+            implementation(libs.rsyntaxtextarea)
         }
 
         commonTest.dependencies {

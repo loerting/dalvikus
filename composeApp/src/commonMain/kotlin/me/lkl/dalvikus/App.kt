@@ -1,20 +1,32 @@
 package me.lkl.dalvikus
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.AutoFixHigh
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.app_description
 import dalvikus.composeapp.generated.resources.app_name
+import me.lkl.dalvikus.tabs.TabElement
+import me.lkl.dalvikus.tabs.WelcomeTab
 import me.lkl.dalvikus.theme.AppTheme
-import me.lkl.dalvikus.ui.FileTreeContent
+import me.lkl.dalvikus.theme.LocalThemeIsDark
+import me.lkl.dalvikus.ui.LeftPanelContent
+import me.lkl.dalvikus.ui.RightPanelContent
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
 import org.jetbrains.compose.splitpane.HorizontalSplitPane
@@ -45,31 +57,26 @@ internal fun App() = AppTheme {
 @Composable
 internal fun Content() {
     val splitPaneState = rememberSplitPaneState(0.25f)
+    val tabState = remember {
+        mutableStateOf(listOf<TabElement>(WelcomeTab()))
+    }
 
     HorizontalSplitPane(
         modifier = Modifier.fillMaxSize(),
         splitPaneState = splitPaneState,
     ) {
         first(minSize = 200.dp) {
-            ElevatedCard(
+            OutlinedCard(
                 modifier = Modifier.fillMaxSize().padding(8.dp),
             ) {
-                FileTreeContent()
+                LeftPanelContent(tabState)
             }
         }
         second(minSize = 200.dp) {
-            ElevatedCard(
+            OutlinedCard(
                 modifier = Modifier.fillMaxSize().padding(8.dp),
             ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.AutoFixHigh,
-                        contentDescription = stringResource(Res.string.app_name)
-                    )
-                }
+                RightPanelContent(tabState)
             }
         }
     }
@@ -80,7 +87,15 @@ internal fun Content() {
 fun TopBar() {
     CenterAlignedTopAppBar(
         title = {
-            // text (Res.string.app_name) with magic wand icon left to it
+            val infiniteTransition = rememberInfiniteTransition()
+            val offsetY by infiniteTransition.animateFloat(
+                initialValue = -1f,
+                targetValue = 1f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(1500, easing = CubicBezierEasing(0.4f, 0f, 0.2f, 1f)),
+                    repeatMode = RepeatMode.Reverse
+                )
+            )
             Column(
                 modifier = Modifier.fillMaxHeight(),
                 verticalArrangement = Arrangement.Center,
@@ -89,7 +104,10 @@ fun TopBar() {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Outlined.AutoFixHigh,
-                        contentDescription = stringResource(Res.string.app_name)
+                        contentDescription = stringResource(Res.string.app_name),
+                        modifier = Modifier.graphicsLayer {
+                            translationY = offsetY
+                        }
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
@@ -98,8 +116,17 @@ fun TopBar() {
                 }
                 Text(
                     text = stringResource(Res.string.app_description),
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodySmall.copy(fontStyle = FontStyle.Italic),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        },
+        navigationIcon = {
+            val isDarkState = LocalThemeIsDark.current
+            IconButton(onClick = { isDarkState.value = !isDarkState.value }) {
+                Icon(
+                    imageVector = if (isDarkState.value) Icons.Filled.LightMode else Icons.Filled.DarkMode,
+                    contentDescription = null
                 )
             }
         },
@@ -116,7 +143,11 @@ fun TopBar() {
                     contentDescription = "Share"
                 )
             }
-        }
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        ),
     )
 
 }

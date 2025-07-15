@@ -1,9 +1,7 @@
 package me.lkl.dalvikus.theme
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 
 private val LightColorScheme = lightColorScheme(
@@ -88,7 +86,7 @@ internal val LocalThemeIsDark = compositionLocalOf { mutableStateOf(true) }
 internal fun AppTheme(
     content: @Composable () -> Unit
 ) {
-    val systemIsDark = false //isSystemInDarkTheme()
+    val systemIsDark = isSystemInDarkTheme()
     val isDarkState = remember(systemIsDark) { mutableStateOf(systemIsDark) }
     CompositionLocalProvider(
         LocalThemeIsDark provides isDarkState
@@ -96,6 +94,7 @@ internal fun AppTheme(
         val isDark by isDarkState
         SystemAppearance(!isDark)
         MaterialTheme(
+            typography = Typography().withFontFamily(JetBrainsMono()),
             colorScheme = if (isDark) DarkColorScheme else LightColorScheme,
             content = { Surface(content = content) },
         )

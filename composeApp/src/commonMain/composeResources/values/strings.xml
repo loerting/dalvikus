@@ -3,5 +3,6 @@
     <string name="app_description">Bewitch your apps.</string>
 
     <string name="tree_search_placeholder">Search tree element...</string>
-    <string name="tree_search_no_results">No results found</string>
+    <string name="welcome_tab_name">Welcome!</string>
+    <string name="welcome_tab_description">TODO</string>
 </resources>

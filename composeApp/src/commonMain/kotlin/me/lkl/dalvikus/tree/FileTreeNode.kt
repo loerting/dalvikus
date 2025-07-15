@@ -1,11 +1,9 @@
-package me.lkl.dalvikus.ui.tree.node
+package me.lkl.dalvikus.tree
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.ui.graphics.vector.ImageVector
 import me.lkl.dalvikus.ui.tree.IconForFileExtension
-import me.lkl.dalvikus.ui.tree.TreeElement
 import java.io.File
 
 class FileTreeNode(
@@ -33,13 +31,14 @@ class FileTreeNode(
                     ?.sortedWith(compareBy({ !it.isContainer }, { it.name.lowercase() }))
                     ?: emptyList()
             }
+
             else -> throw IllegalStateException("FileTreeNode can only have children if it is a directory: $name")
         }
     }
 
     private fun toTreeElement(): (File) -> TreeElement = { file ->
         val extension = file.extension.lowercase()
-        val isZipLike = file.isFile && extension in setOf("zip", "jar", "apk", "war", "aar")
+        val isZipLike = file.isFile && extension in zipLikeExtensions
 
         if (isZipLike) {
             ZipFileTreeNode(file)
@@ -47,4 +46,9 @@ class FileTreeNode(
             FileTreeNode(file)
         }
     }
+
+    override val isClickable: Boolean
+        get() = isContainer || file.extension.lowercase() in plaintextFileExtensions
+
+
 }

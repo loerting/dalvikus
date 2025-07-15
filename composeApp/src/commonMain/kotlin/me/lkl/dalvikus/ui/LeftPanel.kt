@@ -1,8 +1,8 @@
 package me.lkl.dalvikus.ui
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -15,16 +15,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
-import dalvikus.composeapp.generated.resources.tree_search_no_results
 import dalvikus.composeapp.generated.resources.tree_search_placeholder
-import me.lkl.dalvikus.ui.tree.node.FileTreeNode
+import me.lkl.dalvikus.tabs.TabElement
+import me.lkl.dalvikus.tree.FileTreeNode
 import me.lkl.dalvikus.ui.tree.TreeView
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun FileTreeContent() {
+internal fun LeftPanelContent(tabState: MutableState<List<TabElement>>) {
     var query by remember { mutableStateOf("") }
 
     Column(
@@ -88,20 +88,20 @@ internal fun FileTreeContent() {
             shadowElevation = 0.dp,
             windowInsets = SearchBarDefaults.windowInsets,
             modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
             content = {}
         )
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SampleTree()
+            SampleTree(tabState)
         }
     }
 }
 
 @Composable
-fun SampleTree() {
-    TreeView(FileTreeNode(File(System.getProperty("user.home"))))
+fun SampleTree(tabState: MutableState<List<TabElement>>) {
+    TreeView(FileTreeNode(File(System.getProperty("user.home"))), tabState)
 }

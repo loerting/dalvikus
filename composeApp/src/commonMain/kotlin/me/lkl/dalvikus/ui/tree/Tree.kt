@@ -10,19 +10,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Article
-import androidx.compose.material.icons.filled.Android
-import androidx.compose.material.icons.filled.Archive
-import androidx.compose.material.icons.filled.Article
-import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.Image
-import androidx.compose.material.icons.filled.Movie
-import androidx.compose.material.icons.filled.MusicNote
-import androidx.compose.material.icons.filled.PictureAsPdf
-import androidx.compose.material.icons.filled.Slideshow
-import androidx.compose.material.icons.filled.TableChart
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -38,10 +27,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.lkl.dalvikus.tabs.TabElement
+import me.lkl.dalvikus.theme.*
+import me.lkl.dalvikus.tree.TreeElement
 
 @Composable
 fun TreeView(
     root: TreeElement,
+    tabState: MutableState<List<TabElement>>,
     modifier: Modifier = Modifier
 ) {
 
@@ -67,15 +60,17 @@ fun TreeView(
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn(
             state = scrollState,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(top = 8.dp, bottom = 8.dp)
         ) {
             val visibleNodes = getVisibleNodes()
             itemsIndexed(
                 items = visibleNodes,
             ) { _, (node, indent) ->
-                TreeRow(node, indent, expandedState, childrenCache, coroutineScope)
+                TreeRow(node, indent, expandedState, childrenCache, coroutineScope, tabState)
             }
         }
+
 
         VerticalScrollbar(
             adapter = rememberScrollbarAdapter(scrollState),
@@ -96,7 +91,8 @@ private fun TreeRow(
     indent: Int,
     expandedState: SnapshotStateMap<TreeElement, Boolean>,
     childrenCache: MutableMap<TreeElement, List<TreeElement>>,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    tabState: MutableState<List<TabElement>>
 ) {
     var loading by remember { mutableStateOf(false) }
 
@@ -104,22 +100,29 @@ private fun TreeRow(
         modifier = Modifier
             .requiredHeight(48.dp)
             .fillMaxWidth()
-            .clickable(enabled = !loading && node.isContainer) {
-                val currentlyExpanded = expandedState[node] ?: false
-                if (!currentlyExpanded) {
-                    if (childrenCache[node] == null) {
-                        loading = true
-                        coroutineScope.launch {
-                            val children = withContext(Dispatchers.IO) { node.getChildren() }
-                            childrenCache[node] = children
+            .clickable(enabled = !loading) {
+                if (node.isContainer) {
+                    val currentlyExpanded = expandedState[node] ?: false
+                    if (!currentlyExpanded) {
+                        if (childrenCache[node] == null) {
+                            loading = true
+                            coroutineScope.launch {
+                                val children = withContext(Dispatchers.IO) { node.getChildren() }
+                                childrenCache[node] = children
+                                expandedState[node] = true
+                                loading = false
+                            }
+                        } else {
                             expandedState[node] = true
-                            loading = false
                         }
                     } else {
-                        expandedState[node] = true
+                        expandedState[node] = false
                     }
                 } else {
-                    expandedState[node] = false
+                    var newTab = node.createTab()
+                    if (newTab !in tabState.value) {
+                        tabState.value += newTab
+                    }
                 }
             }
             .padding(start = (4 + indent * 16).dp),
@@ -138,7 +141,7 @@ private fun TreeRow(
             node.isContainer -> {
                 Icon(
                     imageVector = if (expandedState[node] == true) Icons.Default.ExpandMore else Icons.Default.ChevronRight,
-                    contentDescription = if (expandedState[node] == true) "Collapse" else "Expand",
+                    contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
@@ -153,7 +156,7 @@ private fun TreeRow(
         Icon(
             imageVector = node.icon,
             contentDescription = node.name,
-            tint = MaterialTheme.colorScheme.onSurface
+            tint = node.getColor()
         )
 
         Spacer(modifier = Modifier.width(8.dp))
@@ -163,7 +166,8 @@ private fun TreeRow(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            color = node.getColor()
         )
     }
 }
@@ -178,11 +182,31 @@ fun IconForFileExtension(fileName: String): ImageVector {
         "mp4", "avi", "mov", "mkv", "webm" -> Icons.Default.Movie
         "pdf" -> Icons.Default.PictureAsPdf
         "zip", "rar", "7z", "tar", "gz" -> Icons.Default.Archive
-        "doc", "docx" -> Icons.Default.Article
+        "doc", "docx" -> Icons.AutoMirrored.Filled.Article
         "xls", "xlsx" -> Icons.Default.TableChart
         "ppt", "pptx" -> Icons.Default.Slideshow
         "html", "xml", "json", "yaml", "yml" -> Icons.Default.Code
         "apk", "dex" -> Icons.Default.Android
         else -> Icons.Default.Description
+    }
+}
+
+@Composable
+fun ColorForFileExtension(fileName: String): Color {
+    val extension = fileName.substringAfterLast('.', "").lowercase()
+
+    return when (extension) {
+        "apk", "dex" -> AndroidGreen
+        "zip", "rar", "7z", "tar", "gz" -> ArchiveOrange
+        "html", "xml", "json", "yaml", "yml" -> CodeBlue
+        "txt", "md", "log" -> MaterialTheme.colorScheme.onSurface
+        "jpg", "jpeg", "png", "gif", "bmp", "webp", "svg" -> ImagePurple
+        "mp3", "wav", "flac", "aac", "ogg" -> AudioTeal
+        "mp4", "avi", "mkv", "mov", "webm" -> VideoRed
+        "pdf" -> PdfRed
+        "doc", "docx" -> WordBlue
+        "xls", "xlsx" -> ExcelGreen
+        "ppt", "pptx" -> PowerPointOrange
+        else -> MaterialTheme.colorScheme.onSurface
     }
 }
