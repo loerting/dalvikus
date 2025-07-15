@@ -8,29 +8,26 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import me.lkl.dalvikus.tabs.TabElement
 
 @Composable
-fun TabManager(
-    tabs: List<TabElement>,
-    onCloseTab: (TabElement) -> Unit
+fun TabView(
+    tabManager: TabManager
 ) {
-    var selectedTabIndex by remember { mutableStateOf(0) }
 
     Column {
         ScrollableTabRow(
-            selectedTabIndex = selectedTabIndex,
+            selectedTabIndex = tabManager.selectedTabIndex,
             modifier = Modifier.fillMaxWidth(),
             edgePadding = 0.dp
         ) {
-            tabs.forEachIndexed { index, tab ->
+            tabManager.tabs.forEachIndexed { index, tab ->
                 Tab(
-                    selected = selectedTabIndex == index,
-                    onClick = { selectedTabIndex = index },
+                    selected = tabManager.selectedTabIndex == index,
+                    onClick = { tabManager.selectTab(index) },
                     text = {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -46,11 +43,8 @@ fun TabManager(
                                 modifier = Modifier
                                     .size(16.dp)
                                     .clickable {
-                                        if (tabs.size > 1) {
-                                            onCloseTab(tab)
-                                            if (selectedTabIndex >= tabs.size - 1) {
-                                                selectedTabIndex = maxOf(0, selectedTabIndex - 1)
-                                            }
+                                        if (tabManager.tabs.size > 1) {
+                                            tabManager.closeTab(tab)
                                         }
                                     }
                             )
@@ -60,9 +54,8 @@ fun TabManager(
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-        if (tabs.isNotEmpty()) {
-            TabContentRenderer(tab = tabs[selectedTabIndex])
+        if (tabManager.tabs.isNotEmpty()) {
+            TabContentRenderer(tab = tabManager.currentTab)
         }
     }
 }

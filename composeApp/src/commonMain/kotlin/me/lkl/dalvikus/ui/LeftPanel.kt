@@ -16,15 +16,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.tree_search_placeholder
-import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.FileTreeNode
+import me.lkl.dalvikus.ui.tabs.TabManager
 import me.lkl.dalvikus.ui.tree.TreeView
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun LeftPanelContent(tabState: MutableState<List<TabElement>>) {
+internal fun LeftPanelContent(tabManager: TabManager) {
     var query by remember { mutableStateOf("") }
 
     Column(
@@ -96,12 +96,12 @@ internal fun LeftPanelContent(tabState: MutableState<List<TabElement>>) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SampleTree(tabState)
+            SampleTree(tabManager)
         }
     }
 }
 
 @Composable
-fun SampleTree(tabState: MutableState<List<TabElement>>) {
-    TreeView(FileTreeNode(File(System.getProperty("user.home"))), tabState)
+fun SampleTree(tabManager: TabManager) {
+    TreeView(FileTreeNode(File(System.getProperty("user.home"))), tabManager)
 }

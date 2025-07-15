@@ -3,30 +3,30 @@ package me.lkl.dalvikus
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.AutoFixHigh
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
-import dalvikus.composeapp.generated.resources.Res
-import dalvikus.composeapp.generated.resources.app_description
-import dalvikus.composeapp.generated.resources.app_name
-import me.lkl.dalvikus.tabs.TabElement
+import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.tabs.WelcomeTab
 import me.lkl.dalvikus.theme.AppTheme
 import me.lkl.dalvikus.theme.LocalThemeIsDark
 import me.lkl.dalvikus.ui.LeftPanelContent
 import me.lkl.dalvikus.ui.RightPanelContent
+import me.lkl.dalvikus.ui.tabs.TabManager
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
 import org.jetbrains.compose.splitpane.HorizontalSplitPane
@@ -37,7 +37,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-internal fun App() = AppTheme {
+internal fun App(
+    showExitDialog: MutableState<Boolean>,
+    onExitConfirmed: () -> Unit
+) = AppTheme {
     Scaffold(
         topBar = {
             TopBar()
@@ -51,14 +54,44 @@ internal fun App() = AppTheme {
             Content()
         }
     }
+
+    if (showExitDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showExitDialog.value = false },
+            title = { Text(stringResource(Res.string.dialog_exit_title)) },
+            text = { Text(stringResource(Res.string.dialog_exit_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    onExitConfirmed()
+                }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.ExitToApp,
+                        contentDescription = null
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showExitDialog.value = false
+                }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Close,
+                        contentDescription = null
+                    )
+                }
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalSplitPaneApi::class)
 @Composable
 internal fun Content() {
     val splitPaneState = rememberSplitPaneState(0.25f)
-    val tabState = remember {
-        mutableStateOf(listOf<TabElement>(WelcomeTab()))
+    val tabManager = remember {
+        TabManager(
+            initialTabs = listOf(WelcomeTab())
+        )
     }
 
     HorizontalSplitPane(
@@ -69,14 +102,14 @@ internal fun Content() {
             OutlinedCard(
                 modifier = Modifier.fillMaxSize().padding(8.dp),
             ) {
-                LeftPanelContent(tabState)
+                LeftPanelContent(tabManager)
             }
         }
         second(minSize = 200.dp) {
             OutlinedCard(
                 modifier = Modifier.fillMaxSize().padding(8.dp),
             ) {
-                RightPanelContent(tabState)
+                RightPanelContent(tabManager)
             }
         }
     }
@@ -125,7 +158,7 @@ fun TopBar() {
             val isDarkState = LocalThemeIsDark.current
             IconButton(onClick = { isDarkState.value = !isDarkState.value }) {
                 Icon(
-                    imageVector = if (isDarkState.value) Icons.Filled.LightMode else Icons.Filled.DarkMode,
+                    imageVector = if (isDarkState.value) Icons.Outlined.LightMode else Icons.Outlined.DarkMode,
                     contentDescription = null
                 )
             }

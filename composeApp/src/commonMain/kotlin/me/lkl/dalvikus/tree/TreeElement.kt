@@ -21,6 +21,10 @@ interface TreeElement {
     fun createTab(): TabElement {
         throw NotImplementedError("createTab() is not implemented for this TreeElement")
     }
+
+    fun onCollapse() {
+        // Default implementation does nothing
+    }
 }
 
 val plaintextFileExtensions = setOf(

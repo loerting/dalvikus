@@ -9,8 +9,10 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Article
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.outlined.Article
+import androidx.compose.material.icons.filled.Android
+import androidx.compose.material.icons.filled.Archive
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,14 +29,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.theme.*
 import me.lkl.dalvikus.tree.TreeElement
+import me.lkl.dalvikus.ui.tabs.TabManager
 
 @Composable
 fun TreeView(
     root: TreeElement,
-    tabState: MutableState<List<TabElement>>,
+    tabManager: TabManager,
     modifier: Modifier = Modifier
 ) {
 
@@ -67,7 +69,7 @@ fun TreeView(
             itemsIndexed(
                 items = visibleNodes,
             ) { _, (node, indent) ->
-                TreeRow(node, indent, expandedState, childrenCache, coroutineScope, tabState)
+                TreeRow(node, indent, expandedState, childrenCache, coroutineScope, tabManager)
             }
         }
 
@@ -92,7 +94,7 @@ private fun TreeRow(
     expandedState: SnapshotStateMap<TreeElement, Boolean>,
     childrenCache: MutableMap<TreeElement, List<TreeElement>>,
     coroutineScope: CoroutineScope,
-    tabState: MutableState<List<TabElement>>
+    tabManager: TabManager
 ) {
     var loading by remember { mutableStateOf(false) }
 
@@ -117,12 +119,12 @@ private fun TreeRow(
                         }
                     } else {
                         expandedState[node] = false
+                        node.onCollapse()
+                        childrenCache.remove(node)
                     }
                 } else {
-                    var newTab = node.createTab()
-                    if (newTab !in tabState.value) {
-                        tabState.value += newTab
-                    }
+                    val newTab = node.createTab()
+                    tabManager.addOrSelectTab(newTab)
                 }
             }
             .padding(start = (4 + indent * 16).dp),
@@ -140,7 +142,7 @@ private fun TreeRow(
 
             node.isContainer -> {
                 Icon(
-                    imageVector = if (expandedState[node] == true) Icons.Default.ExpandMore else Icons.Default.ChevronRight,
+                    imageVector = if (expandedState[node] == true) Icons.Outlined.ExpandMore else Icons.Outlined.ChevronRight,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurface
                 )
@@ -176,18 +178,18 @@ fun IconForFileExtension(fileName: String): ImageVector {
     val extension = fileName.substringAfterLast('.', "").lowercase()
 
     return when (extension) {
-        "txt", "md", "log" -> Icons.Default.Description
-        "jpg", "jpeg", "png", "gif", "bmp", "webp" -> Icons.Default.Image
-        "mp3", "wav", "ogg", "flac" -> Icons.Default.MusicNote
-        "mp4", "avi", "mov", "mkv", "webm" -> Icons.Default.Movie
-        "pdf" -> Icons.Default.PictureAsPdf
-        "zip", "rar", "7z", "tar", "gz" -> Icons.Default.Archive
-        "doc", "docx" -> Icons.AutoMirrored.Filled.Article
-        "xls", "xlsx" -> Icons.Default.TableChart
-        "ppt", "pptx" -> Icons.Default.Slideshow
-        "html", "xml", "json", "yaml", "yml" -> Icons.Default.Code
-        "apk", "dex" -> Icons.Default.Android
-        else -> Icons.Default.Description
+        "txt", "md", "log" -> Icons.Outlined.Description
+        "jpg", "jpeg", "png", "gif", "bmp", "webp" -> Icons.Outlined.Image
+        "mp3", "wav", "ogg", "flac" -> Icons.Outlined.MusicNote
+        "mp4", "avi", "mov", "mkv", "webm" -> Icons.Outlined.Movie
+        "pdf" -> Icons.Outlined.PictureAsPdf
+        "zip", "rar", "7z", "tar", "gz" -> Icons.Filled.Archive
+        "doc", "docx" -> Icons.AutoMirrored.Outlined.Article
+        "xls", "xlsx" -> Icons.Outlined.TableChart
+        "ppt", "pptx" -> Icons.Outlined.Slideshow
+        "html", "xml", "json", "yaml", "yml" -> Icons.Outlined.Code
+        "apk", "dex" -> Icons.Filled.Android
+        else -> Icons.Outlined.Description
     }
 }
 

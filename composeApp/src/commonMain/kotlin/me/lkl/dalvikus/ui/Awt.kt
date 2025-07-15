@@ -1,7 +1,9 @@
 package me.lkl.dalvikus.ui
 
 import androidx.compose.ui.graphics.Color
-import java.io.InputStream
+import org.jetbrains.compose.resources.FontResource
+import org.jetbrains.compose.resources.ResourceEnvironment
+import org.jetbrains.compose.resources.getFontResourceBytes
 import java.awt.Font as AwtFont
 
 fun Color.toAwt(): java.awt.Color =
@@ -13,8 +15,8 @@ fun Color.toAwt(): java.awt.Color =
     )
 
 
-fun loadAwtFontFromResource(resourcePath: String, size: Float): AwtFont {
-    val stream: InputStream = object {}.javaClass.getResourceAsStream(resourcePath)
-        ?: throw IllegalArgumentException("Font resource not found: $resourcePath")
-    return AwtFont.createFont(AwtFont.TRUETYPE_FONT, stream).deriveFont(size)
+suspend fun AwtFontFromRes(size: Float, environment: ResourceEnvironment, fontRes: FontResource): AwtFont {
+    var fontBytes = getFontResourceBytes(environment, fontRes)
+    return AwtFont.createFont(AwtFont.TRUETYPE_FONT, fontBytes.inputStream())
+        .deriveFont(size)
 }
