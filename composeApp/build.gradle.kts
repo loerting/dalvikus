@@ -27,6 +27,7 @@ kotlin {
             implementation(libs.kermit)
             implementation(libs.multiplatformSettings)
             implementation(libs.materialKolor)
+            implementation(libs.kotlinxCoroutinesSwing)
 
             implementation(libs.richeditor)
             implementation(libs.rsyntaxtextarea)

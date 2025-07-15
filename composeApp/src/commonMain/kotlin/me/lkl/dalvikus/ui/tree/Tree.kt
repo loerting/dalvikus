@@ -100,7 +100,7 @@ private fun TreeRow(
         modifier = Modifier
             .requiredHeight(48.dp)
             .fillMaxWidth()
-            .clickable(enabled = !loading) {
+            .clickable(enabled = !loading && node.isClickable) {
                 if (node.isContainer) {
                     val currentlyExpanded = expandedState[node] ?: false
                     if (!currentlyExpanded) {

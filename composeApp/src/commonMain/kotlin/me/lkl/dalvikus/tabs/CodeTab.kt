@@ -2,39 +2,39 @@ package me.lkl.dalvikus.tabs
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants
 
-data class CodeTab(
-    val fileContent: String,
+abstract class CodeTab(
     val tabName: String,
-    override val tabId: String = "ct:$tabName",
+    override val tabId: String,
     override val tabIcon: ImageVector
 ) : TabElement {
     @Composable
     override fun tabName(): String = tabName
 
-    fun getSyntaxEditingStyle(tabName: String): String {
+    fun getSyntaxEditingStyle(): String {
         return when (tabName.substringAfterLast('.').lowercase()) {
-            "java" -> "text/java"
-            "js", "javascript" -> "text/javascript"
-            "py", "python" -> "text/python"
-            "cpp", "cc", "cxx" -> "text/cpp"
-            "c" -> "text/c"
-            "cs", "csharp" -> "text/cs"
-            "html", "htm" -> "text/html"
-            "xml" -> "text/xml"
-            "rb", "ruby" -> "text/ruby"
-            "php" -> "text/php"
-            "kt", "kts" -> "text/kotlin"
-            "swift" -> "text/swift"
-            "scala" -> "text/scala"
-            "sql" -> "text/sql"
-            "sh", "bash" -> "text/unix"
-            "css" -> "text/css"
-            "json" -> "text/json"
-            "yaml", "yml" -> "text/yaml"
-            "txt", "text" -> "text/plain"
-            else -> "text/plain"
+            "java" -> SyntaxConstants.SYNTAX_STYLE_JAVA
+            "js", "javascript" -> SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT
+            "py", "python" -> SyntaxConstants.SYNTAX_STYLE_PYTHON
+            "cpp", "cc", "cxx" -> SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS
+            "c" -> SyntaxConstants.SYNTAX_STYLE_C
+            "cs", "csharp" -> SyntaxConstants.SYNTAX_STYLE_CSHARP
+            "html", "htm" -> SyntaxConstants.SYNTAX_STYLE_HTML
+            "xml" -> SyntaxConstants.SYNTAX_STYLE_XML
+            "rb", "ruby" -> SyntaxConstants.SYNTAX_STYLE_RUBY
+            "php" -> SyntaxConstants.SYNTAX_STYLE_PHP
+            "kt", "kts" -> SyntaxConstants.SYNTAX_STYLE_KOTLIN
+            "scala" -> SyntaxConstants.SYNTAX_STYLE_SCALA
+            "sql" -> SyntaxConstants.SYNTAX_STYLE_SQL
+            "sh", "bash" -> SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL
+            "css" -> SyntaxConstants.SYNTAX_STYLE_CSS
+            "json" -> SyntaxConstants.SYNTAX_STYLE_JSON
+            "yaml", "yml" -> SyntaxConstants.SYNTAX_STYLE_YAML
+            "txt", "text" -> SyntaxConstants.SYNTAX_STYLE_NONE
+            else -> SyntaxConstants.SYNTAX_STYLE_NONE
         }
     }
 
+    abstract suspend fun fileContent(): String
 }
