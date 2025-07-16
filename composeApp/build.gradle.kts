@@ -31,6 +31,7 @@ kotlin {
 
             implementation(libs.richeditor)
             implementation(libs.rsyntaxtextarea)
+            implementation(libs.commonsCompress)
         }
 
         commonTest.dependencies {

@@ -9,6 +9,7 @@ materialKolor = "2.1.1"
 richeditor = "1.0.0-rc13"
 rsyntaxtextarea = "3.6.0"
 kotlinxCoroutinesSwing = "1.10.2"
+commonsCompress = "1.27.1"
 
 [libraries]
 
@@ -19,6 +20,7 @@ splitPaneDesktop = { group = "org.jetbrains.compose.components", name = "compone
 richeditor = { module = "com.mohamedrejeb.richeditor:richeditor-compose", version.ref = "richeditor" }
 rsyntaxtextarea = { module = "com.fifesoft:rsyntaxtextarea", version.ref = "rsyntaxtextarea" }
 kotlinxCoroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinxCoroutinesSwing" }
+commonsCompress = { module = "org.apache.commons:commons-compress", version.ref = "commonsCompress" }
 
 [plugins]
 

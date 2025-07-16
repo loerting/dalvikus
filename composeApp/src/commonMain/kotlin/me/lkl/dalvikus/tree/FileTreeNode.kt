@@ -40,10 +40,10 @@ class FileTreeNode(
 
     private fun toTreeElement(): (File) -> TreeElement = { file ->
         val extension = file.extension.lowercase()
-        val isZipLike = file.isFile && extension in zipLikeExtensions
+        val isArchive = file.isFile && extension in archiveExtensions
 
-        if (isZipLike) {
-            ZipFileTreeNode(file)
+        if (isArchive) {
+            ArchiveTreeNode(file)
         } else {
             FileTreeNode(file)
         }

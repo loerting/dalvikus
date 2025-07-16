@@ -9,18 +9,11 @@ import me.lkl.dalvikus.ui.tree.IconForFileExtension
 import java.io.File
 import java.util.zip.ZipFile
 
-class ZipFileTreeNode(
+class ArchiveTreeNode(
     private val file: File,
     private val path: String = "",
-    private var zip: ZipFile? = null,
+    private var archive: LazyArchiveFile = LazyArchiveFile(file),
 ) : TreeElement {
-
-    fun openZipIfNull() {
-        if (zip == null) {
-            if (!isZipRoot()) throw IllegalStateException("ZipFile has to be opened for children: $name")
-            zip = ZipFile(file)
-        }
-    }
 
     override val name: String
         get() = path.substringAfterLast('/').ifEmpty { file.name }
@@ -29,26 +22,27 @@ class ZipFileTreeNode(
         get() = if (!isZipRoot() && isContainer) Icons.Filled.Folder else IconForFileExtension(name)
 
     override val isContainer: Boolean
-        get() = isZipRoot() || zip?.entries()?.asSequence()
-            ?.any { it.name != path && it.name.startsWith("$path/") } == true
+        get() = isZipRoot() || archive.isFolder(path)
 
     override suspend fun getChildren(): List<TreeElement> {
-        openZipIfNull()
         val prefix = if (isZipRoot()) "" else "$path/"
         val seen = mutableSetOf<String>()
         val children = mutableListOf<TreeElement>()
 
-        for (entry in zip!!.entries()) {
-            if (!entry.name.startsWith(prefix) || entry.name == prefix) continue
+        val entriesMap = archive.getEntriesMap()
 
-            val relativePath = entry.name.removePrefix(prefix)
+        for (entryName in entriesMap.keys) {
+            if (!entryName.startsWith(prefix) || entryName == prefix) continue
+
+            val relativePath = entryName.removePrefix(prefix)
             val topLevel = relativePath.substringBefore('/', relativePath)
 
             if (seen.add(topLevel)) {
                 val childPath = if (isZipRoot()) topLevel else "$path/$topLevel"
-                children.add(ZipFileTreeNode(file, childPath, zip!!))
+                children.add(ArchiveTreeNode(file, childPath, archive))
             }
         }
+
         return children.sortedWith(compareBy({ !it.isContainer }, { it.name.lowercase() }))
     }
 
@@ -65,18 +59,14 @@ class ZipFileTreeNode(
             tabName = name
         ) {
             override suspend fun fileContent(): String {
-                openZipIfNull()
-                return zip!!.getInputStream(zip!!.getEntry(path)).bufferedReader().use { it.readText() }
+                return archive.readEntry(path).decodeToString()
             }
         }
     }
 
     override fun onCollapse() {
         if (isZipRoot()) {
-            // it the outermost zip node is collapsed we can close the ZipFile and set it to null
-            // when it is expanded again, it will be reopened
-            zip?.close()
-            zip = null
+            archive.close()
         }
     }
 }

@@ -30,6 +30,3 @@ interface TreeElement {
 val plaintextFileExtensions = setOf(
     "txt", "md", "html", "xml", "json", "yml", "yaml", "properties",
 )
-val zipLikeExtensions = setOf(
-    "zip", "jar", "war", "ear", "apk", "aar", "tar", "gz", "tgz", "bz2", "xz", "7z", "rar"
-)
