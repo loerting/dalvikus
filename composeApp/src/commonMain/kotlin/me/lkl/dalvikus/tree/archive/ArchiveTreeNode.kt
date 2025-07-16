@@ -1,13 +1,14 @@
-package me.lkl.dalvikus.tree
+package me.lkl.dalvikus.tree.archive
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.ui.graphics.vector.ImageVector
 import me.lkl.dalvikus.tabs.CodeTab
 import me.lkl.dalvikus.tabs.TabElement
+import me.lkl.dalvikus.tree.TreeElement
+import me.lkl.dalvikus.tree.plaintextFileExtensions
 import me.lkl.dalvikus.ui.tree.IconForFileExtension
 import java.io.File
-import java.util.zip.ZipFile
 
 class ArchiveTreeNode(
     private val file: File,
@@ -40,6 +41,7 @@ class ArchiveTreeNode(
             if (seen.add(topLevel)) {
                 val childPath = if (isZipRoot()) topLevel else "$path/$topLevel"
                 children.add(ArchiveTreeNode(file, childPath, archive))
+                // TODO support DEX inside archives
             }
         }
 

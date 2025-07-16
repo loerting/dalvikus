@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Article
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Archive
+import androidx.compose.material.icons.filled.FolderZip
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -31,6 +32,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.theme.*
 import me.lkl.dalvikus.tree.TreeElement
+import me.lkl.dalvikus.tree.archive.archiveExtensions
 import me.lkl.dalvikus.ui.tabs.TabManager
 
 @Composable
@@ -183,7 +185,7 @@ fun IconForFileExtension(fileName: String): ImageVector {
         "mp3", "wav", "ogg", "flac" -> Icons.Outlined.MusicNote
         "mp4", "avi", "mov", "mkv", "webm" -> Icons.Outlined.Movie
         "pdf" -> Icons.Outlined.PictureAsPdf
-        "zip", "rar", "7z", "tar", "gz" -> Icons.Filled.Archive
+        in archiveExtensions -> Icons.Filled.FolderZip
         "doc", "docx" -> Icons.AutoMirrored.Outlined.Article
         "xls", "xlsx" -> Icons.Outlined.TableChart
         "ppt", "pptx" -> Icons.Outlined.Slideshow

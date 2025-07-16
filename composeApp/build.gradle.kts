@@ -29,9 +29,12 @@ kotlin {
             implementation(libs.materialKolor)
             implementation(libs.kotlinxCoroutinesSwing)
 
-            implementation(libs.richeditor)
-            implementation(libs.rsyntaxtextarea)
             implementation(libs.commonsCompress)
+            implementation(libs.smali)
+            implementation(libs.smaliDexlib2)
+            implementation(libs.smaliBaksmali)
+            implementation(libs.smaliUtil)
+
         }
 
         commonTest.dependencies {

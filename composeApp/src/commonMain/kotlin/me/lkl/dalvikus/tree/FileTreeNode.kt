@@ -5,6 +5,9 @@ import androidx.compose.material.icons.filled.Folder
 import androidx.compose.ui.graphics.vector.ImageVector
 import me.lkl.dalvikus.tabs.CodeTab
 import me.lkl.dalvikus.tabs.TabElement
+import me.lkl.dalvikus.tree.archive.ArchiveTreeNode
+import me.lkl.dalvikus.tree.archive.archiveExtensions
+import me.lkl.dalvikus.tree.dex.DexFileTreeNode
 import me.lkl.dalvikus.ui.tree.IconForFileExtension
 import java.io.File
 
@@ -40,12 +43,17 @@ class FileTreeNode(
 
     private fun toTreeElement(): (File) -> TreeElement = { file ->
         val extension = file.extension.lowercase()
-        val isArchive = file.isFile && extension in archiveExtensions
 
-        if (isArchive) {
-            ArchiveTreeNode(file)
-        } else {
-            FileTreeNode(file)
+        when {
+            file.isFile && extension in dexFileExtensions -> {
+                DexFileTreeNode(file)
+            }
+            file.isFile && extension in archiveExtensions -> {
+                ArchiveTreeNode(file)
+            }
+            else -> {
+                FileTreeNode(file)
+            }
         }
     }
 

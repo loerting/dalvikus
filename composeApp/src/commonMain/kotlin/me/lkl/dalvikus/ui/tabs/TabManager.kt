@@ -4,6 +4,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import me.lkl.dalvikus.tabs.TabElement
 
 class TabManager(initialTabs: List<TabElement>) {
@@ -34,6 +37,8 @@ class TabManager(initialTabs: List<TabElement>) {
 
     fun addTab(tab: TabElement) {
         _tabs.add(tab)
+        // TODO this line crashes the tabview, as the selectedTabIndex is increased before compose knows about the new tab.
+        // selectedTabIndex = _tabs.lastIndex
     }
 
     fun addOrSelectTab(tab: TabElement) {

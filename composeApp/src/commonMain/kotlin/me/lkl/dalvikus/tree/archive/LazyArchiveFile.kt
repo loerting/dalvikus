@@ -1,4 +1,4 @@
-package me.lkl.dalvikus.tree
+package me.lkl.dalvikus.tree.archive
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -34,8 +34,8 @@ class LazyArchiveFile(private val file: File) : Closeable {
         if (!file.exists() || !file.isFile)
             throw FileNotFoundException("Archive file does not exist or is not a file: ${file.path}")
 
-        val lowerName = file.name.lowercase(Locale.ROOT)
-        if (lowerName in zipLikeExtensions) {
+        val extension = file.name.substringAfterLast(".").lowercase(Locale.ROOT)
+        if (extension in zipLikeExtensions) {
             // Use CommonsZipFile for random access and better APK support
             zipFile = CommonsZipFile.builder().setFile(file).get()
             val entries = LinkedHashMap<String, ArchiveEntry>()
@@ -93,8 +93,8 @@ class LazyArchiveFile(private val file: File) : Closeable {
      * Reads entry content by ArchiveEntry.
      */
     suspend fun readEntry(entry: ArchiveEntry): ByteArray = withContext(Dispatchers.IO) {
-        val lowerName = file.name.lowercase(Locale.ROOT)
-        if (lowerName in zipLikeExtensions && zipFile != null) {
+        val extension = file.name.substringAfterLast(".").lowercase(Locale.ROOT)
+        if (extension in zipLikeExtensions && zipFile != null) {
             // Use CommonsZipFile for reading zip/apk entry content
             zipFile!!.getInputStream(entry as ZipArchiveEntry).use { inputStream ->
                 return@withContext inputStream.readBytes()

@@ -6,10 +6,9 @@ hotReload = "1.0.0-alpha09"
 kermit = "2.0.6"
 multiplatformSettings = "1.3.0"
 materialKolor = "2.1.1"
-richeditor = "1.0.0-rc13"
-rsyntaxtextarea = "3.6.0"
 kotlinxCoroutinesSwing = "1.10.2"
 commonsCompress = "1.27.1"
+smali = "3.0.9"
 
 [libraries]
 
@@ -17,10 +16,12 @@ kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 multiplatformSettings = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatformSettings" }
 materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
 splitPaneDesktop = { group = "org.jetbrains.compose.components", name = "components-splitpane-desktop", version.ref = "compose" }
-richeditor = { module = "com.mohamedrejeb.richeditor:richeditor-compose", version.ref = "richeditor" }
-rsyntaxtextarea = { module = "com.fifesoft:rsyntaxtextarea", version.ref = "rsyntaxtextarea" }
 kotlinxCoroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinxCoroutinesSwing" }
 commonsCompress = { module = "org.apache.commons:commons-compress", version.ref = "commonsCompress" }
+smali = { module = "com.android.tools.smali:smali", version.ref = "smali" }
+smaliDexlib2 = { module = "com.android.tools.smali:smali-dexlib2", version.ref = "smali" }
+smaliBaksmali = { module = "com.android.tools.smali:smali-baksmali", version.ref = "smali" }
+smaliUtil = { module = "com.android.tools.smali:smali-util", version.ref = "smali" }
 
 [plugins]
 

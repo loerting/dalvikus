@@ -30,3 +30,7 @@ interface TreeElement {
 val plaintextFileExtensions = setOf(
     "txt", "md", "html", "xml", "json", "yml", "yaml", "properties",
 )
+
+val dexFileExtensions = setOf(
+    "dex", "odex"
+)
