@@ -9,6 +9,7 @@ import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -17,12 +18,11 @@ import androidx.compose.ui.unit.dp
 fun TabView(
     tabManager: TabManager
 ) {
-
     Column {
         ScrollableTabRow(
             selectedTabIndex = tabManager.selectedTabIndex,
             modifier = Modifier.fillMaxWidth(),
-            edgePadding = 0.dp
+            edgePadding = 0.dp,
         ) {
             tabManager.tabs.forEachIndexed { index, tab ->
                 Tab(

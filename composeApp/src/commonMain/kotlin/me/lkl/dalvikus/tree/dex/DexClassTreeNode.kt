@@ -1,5 +1,13 @@
 package me.lkl.dalvikus.tree.dex
 
+import androidx.compose.foundation.Image
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Adb
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.outlined.Api
+import androidx.compose.material.icons.outlined.DataObject
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.android.tools.smali.baksmali.Adaptors.ClassDefinition
 import com.android.tools.smali.baksmali.BaksmaliOptions
 import com.android.tools.smali.baksmali.formatter.BaksmaliWriter
@@ -18,10 +26,10 @@ class DexClassTreeNode(
     private val file: File
 ) : TreeElement {
     override val name: String
-        get() = classDef.type
+        get() = classDef.type.removeSurrounding("L", ";").substringAfterLast('/')
 
-    override val icon: androidx.compose.ui.graphics.vector.ImageVector
-        get() = IconForFileExtension(name)
+    override val icon: ImageVector
+        get() = Icons.Outlined.DataObject
 
     override val isContainer: Boolean
         get() = false

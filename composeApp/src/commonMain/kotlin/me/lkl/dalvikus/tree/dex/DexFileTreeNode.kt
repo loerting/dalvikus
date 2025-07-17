@@ -29,10 +29,40 @@ private val file: File
 
     override suspend fun getChildren(): List<TreeElement> {
         openDexFileIfNull()
-        return openDexFile!!.classes.map { classDef ->
-            DexClassTreeNode(classDef, file)
-        }.sortedBy { it.name.lowercase() }
+
+        val packageChildrenMap = mutableMapOf<String, MutableList<TreeElement>>()
+        val createdPackageNodes = mutableSetOf<String>()
+
+        for (classDef in openDexFile!!.classes) {
+            val fqcn = classDef.type.removeSurrounding("L", ";").replace('/', '.')
+            val parts = fqcn.split('.')
+            val packageParts = parts.dropLast(1)
+
+            // Ensure package hierarchy exists
+            var currentPath = ""
+            for (part in packageParts) {
+                val nextPath = if (currentPath.isEmpty()) part else "$currentPath.$part"
+                if (nextPath !in createdPackageNodes) {
+                    val node = DexPackageTreeNode(
+                        nameSegment = part,
+                        childrenMap = packageChildrenMap,
+                        fullPath = nextPath
+                    )
+                    packageChildrenMap.getOrPut(currentPath) { mutableListOf() }.add(node)
+                    createdPackageNodes.add(nextPath)
+                }
+                currentPath = nextPath
+            }
+
+            // Add class node to its package
+            val packagePath = packageParts.joinToString(".")
+            val classNode = DexClassTreeNode(classDef, file)
+            packageChildrenMap.getOrPut(packagePath) { mutableListOf() }.add(classNode)
+        }
+
+        return packageChildrenMap[""]?.sortedBy { it.name.lowercase() } ?: emptyList()
     }
+
 
     private fun openDexFileIfNull() {
         if (openDexFile == null) {
