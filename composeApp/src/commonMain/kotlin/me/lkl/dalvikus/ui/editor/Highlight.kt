@@ -7,6 +7,8 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import com.android.tools.smali.smali.smaliFlexLexer
+import com.android.tools.smali.smali.smaliParser
 
 data class CodeHighlightColors(
     val onSurface: Color,
@@ -25,7 +27,7 @@ fun defaultCodeHighlightColors(): CodeHighlightColors {
     )
 }
 
-fun highlightCode(editable: EditableCode, colors: CodeHighlightColors): AnnotatedString {
+fun highlightCode(editable: Code, colors: CodeHighlightColors): AnnotatedString {
     val code = editable.code  //.replace("\t", " ") // Normalize tabs to spaces
 
     return buildAnnotatedString {
@@ -75,6 +77,8 @@ fun highlightCode(editable: EditableCode, colors: CodeHighlightColors): Annotate
                 commentRe.findAll(code).forEach {
                     addStyle(SpanStyle(color = colors.onSurface.copy(alpha = 0.5f)), it.range.first, it.range.last + 1)
                 }
+
+                // TODO https://github.com/vaibhavpandeyvpz/apkstudio/commit/698e2de5cff19c96692b44b703d752291a17dc6a#diff-9d86366ee99ae761db887b8fee92b4348a137bd0534c69c8c67a6353ecd5ab58
             }
         }
     }

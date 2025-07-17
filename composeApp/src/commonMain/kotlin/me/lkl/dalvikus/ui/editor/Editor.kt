@@ -4,29 +4,22 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.selection.DisableSelection
-import androidx.compose.material3.Text
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.isCtrlPressed
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.*
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,7 +33,7 @@ import kotlin.math.max
  */
 @Composable
 fun Editor(
-    editable: EditableCode,
+    editable: Code,
     viewerSettings: ViewerSettings
 ) {
     var loaded by remember(editable) { mutableStateOf(false) }
@@ -106,6 +99,7 @@ fun Editor(
                 ) {
                     BasicTextField(
                         value = editable.code,
+                        enabled = editable.isEditable,
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.None,
                             keyboardType = KeyboardType.Ascii
@@ -114,9 +108,11 @@ fun Editor(
                             // intermediate highlightedText with updated text and old highlighting.
                             val maxTextLength = max(newText.length, highlightedText.text.length)
                             val textPlaceholder = newText.padEnd(maxTextLength, ' ')
-                            highlightedText = AnnotatedString(textPlaceholder,
+                            highlightedText = AnnotatedString(
+                                textPlaceholder,
                                 highlightedText.spanStyles,
-                                highlightedText.paragraphStyles)
+                                highlightedText.paragraphStyles
+                            )
 
                             editable.updateCode(newText)
                             coroutine.launch { editable.onCodeChange(newText) }
@@ -207,18 +203,18 @@ private fun LineNumberColumn(
             repeat(lines) { i ->
 
                 Box(modifier = Modifier.height(lineHeightDp)) {
-                        // to account for the width of the line numbers
-                        LineNumber(
-                            number = "9".repeat(maxNumDigits),
-                            modifier = Modifier.alpha(0f),
-                            viewerSettings = viewerSettings
-                        )
-                        LineNumber(
-                            number = "${i + 1}",
-                            modifier = Modifier.align(Alignment.CenterEnd),
-                            viewerSettings = viewerSettings
-                        )
-                    }
+                    // to account for the width of the line numbers
+                    LineNumber(
+                        number = "9".repeat(maxNumDigits),
+                        modifier = Modifier.alpha(0f),
+                        viewerSettings = viewerSettings
+                    )
+                    LineNumber(
+                        number = "${i + 1}",
+                        modifier = Modifier.align(Alignment.CenterEnd),
+                        viewerSettings = viewerSettings
+                    )
+                }
 
             }
         }

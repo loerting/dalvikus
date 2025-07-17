@@ -4,12 +4,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
-class EditableCode(
+class Code(
     private val initialCodeProvider: suspend () -> String,
     val codeType: String,
-    val onCodeChange: suspend (String) -> Unit
+    val isEditable: Boolean = true,
+    val onCodeChange: suspend (String) -> Unit = { _ -> }
 ) {
-    // State-backed TextFieldValue property, starting empty
     var code: String by mutableStateOf("")
         private set
 
