@@ -26,7 +26,7 @@ fun defaultCodeHighlightColors(): CodeHighlightColors {
 }
 
 fun highlightCode(editable: EditableCode, colors: CodeHighlightColors): AnnotatedString {
-    val code = editable.textFieldValue.text.replace("\t", " ") // Normalize tabs to spaces
+    val code = editable.code  //.replace("\t", " ") // Normalize tabs to spaces
 
     return buildAnnotatedString {
         // Base style

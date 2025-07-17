@@ -3,24 +3,25 @@ package me.lkl.dalvikus.ui.editor
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.*
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.theme.JetBrainsMono
+import kotlin.math.max
 
 /**
  * A composable code editor with line numbers, scroll syncing,
@@ -50,16 +51,19 @@ fun Editor(
     val horState = rememberScrollState()
     val coroutine = rememberCoroutineScope()
 
-    var highlightedText by remember { mutableStateOf(AnnotatedString("")) }
+    var textFieldValue by remember(editable) {
+        mutableStateOf(TextFieldValue(annotatedString = AnnotatedString(editable.code)))
+    }
+    var isIntermediate by remember { mutableStateOf(false) }
+
     val highlightColors = defaultCodeHighlightColors()
 
-    LaunchedEffect(editable.textFieldValue.text) {
-        // TODO this is good but can be better. instead of setting the whole document black while recoloring, we can make only the changes black while recoloring.
-        highlightedText = AnnotatedString(editable.textFieldValue.text)
-        val highlighted = withContext(Dispatchers.Default) {
+    LaunchedEffect(editable.code) {
+        val highlightedText = withContext(Dispatchers.Default) {
             highlightCode(editable, highlightColors)
         }
-        highlightedText = highlighted
+        textFieldValue = textFieldValue.copy(annotatedString = highlightedText)
+        isIntermediate = false
     }
 
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
@@ -67,7 +71,7 @@ fun Editor(
 
             // Line Numbers
             LineNumberColumn(
-                code = editable.textFieldValue.text,
+                code = editable.code,
                 scrollState = vertState,
                 viewerSettings = viewerSettings
             )
@@ -94,38 +98,38 @@ fun Editor(
                         .padding(8.dp)
                 ) {
                     BasicTextField(
-                        value = editable.textFieldValue,
+                        value = textFieldValue,
                         onValueChange = { new ->
-                            coroutine.launch { editable.updateCode(new) }
+                            // ignore all selection change events, etc.
+                            if(new.text == textFieldValue.text) {
+                                textFieldValue = new
+                                return@BasicTextField
+                            }
+                            if(isIntermediate) {
+                                // if we are in the middle of an update, ignore this change
+                                return@BasicTextField
+                            }
+
+                            // intermediate textFieldValue with updated text and old highlighting.
+                            isIntermediate = true
+                            val newText = new.text
+                            val maxTextLength = max(newText.length, textFieldValue.text.length)
+                            val oldHighlight = textFieldValue.annotatedString
+                            val textPlaceholder = newText.padEnd(maxTextLength, 'X')
+                            textFieldValue = new.copy(annotatedString = AnnotatedString(textPlaceholder,
+                                oldHighlight.spanStyles,
+                                oldHighlight.paragraphStyles))
+
+                            editable.updateCode(new.text)
+                            coroutine.launch { editable.onCodeChange(new.text) }
                         },
                         modifier = Modifier.fillMaxSize(),
                         textStyle = TextStyle(
                             fontFamily = JetBrainsMono(),
                             fontSize = viewerSettings.fontSize,
-                            lineHeight = viewerSettings.fontSize * 1.5f,
-                            color = Color.Transparent
+                            lineHeight = viewerSettings.fontSize * 1.5f
                         ),
-                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                        decorationBox = { inner ->
-                            Box(
-                                Modifier
-                                    .fillMaxSize()
-                                    .padding(1.dp)
-                            ) {
-                                // Highlight background
-                                Text(
-                                    text = highlightedText,
-                                    modifier = Modifier.matchParentSize(),
-                                    style = TextStyle(
-                                        fontFamily = JetBrainsMono(),
-                                        fontSize = viewerSettings.fontSize,
-                                        lineHeight = viewerSettings.fontSize * 1.5f,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                )
-                                inner()
-                            }
-                        }
+                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary)
                     )
                 }
 
