@@ -14,6 +14,8 @@ import me.lkl.dalvikus.tabs.CodeTab
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tabs.WelcomeTab
 import me.lkl.dalvikus.ui.editor.CodeViewer
+import me.lkl.dalvikus.ui.editor.EditableCode
+import me.lkl.dalvikus.ui.editor.Editor
 import me.lkl.dalvikus.ui.editor.ViewerSettings
 
 // TODO replace basicrichtexteditor with https://github.com/JetBrains/compose-multiplatform/tree/master/examples/codeviewer
@@ -37,7 +39,10 @@ fun TabContentRenderer(tab: TabElement) {
         is CodeTab -> {
             val viewerSettings = remember { ViewerSettings() }
             val fileExtension = tab.tabName.substringAfterLast(".", "").lowercase()
-            CodeViewer(tab, { tab.fileContent() }, fileExtension, viewerSettings)
+            //CodeViewer(tab, { tab.fileContent() }, fileExtension, viewerSettings)
+            Editor(EditableCode({ tab.fileContent() }, fileExtension) {
+                println("On Update")
+            }, viewerSettings)
         }
 
         else -> {
