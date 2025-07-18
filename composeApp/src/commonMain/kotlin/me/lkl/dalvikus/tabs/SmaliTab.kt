@@ -14,6 +14,7 @@ import com.android.tools.smali.dexlib2.writer.builder.DexBuilder
 import com.android.tools.smali.smali.smaliFlexLexer
 import com.android.tools.smali.smali.smaliParser
 import com.android.tools.smali.smali.smaliTreeWalker
+import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.io.IOChannel
 import me.lkl.dalvikus.settings.DalvikusSettings
 import org.antlr.runtime.CommonTokenStream
@@ -48,7 +49,7 @@ class SmaliTab(
             },
             writingSupported = true,
             write = { content ->
-                val apiLevel = DalvikusSettings()["api_level"] as Int
+                val apiLevel = dalvikusSettings["api_level"] as Int
                 val lexer = smaliFlexLexer(content.reader(), apiLevel)
                 val tokens = CommonTokenStream(lexer)
 

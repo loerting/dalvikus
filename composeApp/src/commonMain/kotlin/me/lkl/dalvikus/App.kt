@@ -34,6 +34,7 @@ import org.jetbrains.compose.splitpane.rememberSplitPaneState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import java.awt.Desktop
 import java.net.URI
+import java.util.Objects
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,6 +87,12 @@ internal fun App(
     }
 }
 
+internal val dalvikusSettings: DalvikusSettings by lazy {
+    DalvikusSettings(
+        Object()
+    )
+}
+
 @OptIn(ExperimentalSplitPaneApi::class)
 @Composable
 internal fun Content() {
@@ -96,8 +103,8 @@ internal fun Content() {
         )
     }
 
-    var selectedNavItem by remember { mutableStateOf("Editor") }
 
+    var selectedNavItem by remember { mutableStateOf("Editor") }
 
     val navItems = listOf(
         NavItem("Editor", Icons.Default.Edit, Res.string.nav_editor),
@@ -168,7 +175,7 @@ internal fun Content() {
                     modifier = Modifier.fillMaxSize().padding(8.dp),
                 ) {
                     if(selectedNavItem == "Settings") {
-                        SettingsScreen(DalvikusSettings())
+                        SettingsScreen()
                     } else {
                         RightPanelContent(tabManager, selectedNavItem)
                     }

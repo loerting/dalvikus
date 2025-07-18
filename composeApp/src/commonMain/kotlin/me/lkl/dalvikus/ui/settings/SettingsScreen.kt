@@ -18,12 +18,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.settings.Setting
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun SettingsScreen(dalvikusSettings: DalvikusSettings) {
+fun SettingsScreen() {
     val grouped = dalvikusSettings.groupedByCategory()
 
     // Track expanded/collapsed state for each category
@@ -96,7 +97,8 @@ private fun SettingRow(setting: Setting<*>) {
     ) {
         Text(
             text = stringResource(setting.nameRes),
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(end = 32.dp)
         )
         Spacer(modifier = Modifier.weight(1f))
         Box(

@@ -70,7 +70,8 @@ class IntSetting(
     override fun Editor() {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.width(400.dp), // fixed total width
+            modifier = Modifier.width(400.dp)
+                .defaultMinSize(minWidth = 200.dp) ,
             horizontalArrangement = Arrangement.Start
         ) {
             Slider(
@@ -83,12 +84,12 @@ class IntSetting(
                 steps = (max - min) / step - 1,
                 modifier = Modifier
                     .weight(1f, fill = true) // fill available space
-                    .widthIn(min = 200.dp) // ensure slider never shrinks below 200.dp
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 "$value",
-                modifier = Modifier.widthIn(min = 40.dp) // keep text from shrinking too much
+                maxLines = 1,
+                modifier = Modifier.defaultMinSize(minWidth = 40.dp) // keep text from shrinking too much
             )
         }
     }

@@ -1,19 +1,19 @@
 package me.lkl.dalvikus.settings
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.unit.sp
 import com.android.tools.smali.dexlib2.Opcodes
+import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
 import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.settings_api_level
+import dalvikus.composeapp.generated.resources.settings_decompiler_verbose
 import dalvikus.composeapp.generated.resources.settings_font_size
 import java.net.URI
+import java.util.prefs.Preferences
 
-class DalvikusSettings() {
+class DalvikusSettings(val bled: Object) {
 
-    private val settings: Settings = Settings() // TODO
+    private val preferences = Preferences.userRoot().node("me.lkl.dalvikus.settings")
+    private val settings: Settings = PreferencesSettings(preferences)
 
     val settingsList: List<Setting<*>> = listOf(
         IntSetting(
@@ -32,7 +32,13 @@ class DalvikusSettings() {
             defaultValue = Opcodes.getDefault().api,
             min = 1,
             max = 34
-        )
+        ),
+        BooleanSetting(
+            key = "decompiler_verbose",
+            category = SettingsCategory.DECOMPILER,
+            nameRes = Res.string.settings_decompiler_verbose,
+            defaultValue = false
+        ),
     )
 
     init {

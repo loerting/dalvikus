@@ -9,6 +9,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import com.android.tools.smali.smali.smaliFlexLexer
 import com.android.tools.smali.smali.smaliParser
+import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.ui.editor.CodeHighlightColors
 import org.antlr.runtime.CommonToken
@@ -16,7 +17,7 @@ import org.antlr.runtime.CommonTokenStream
 import org.antlr.runtime.RecognitionException
 
 fun highlightSmaliCode(code: String, colors: CodeHighlightColors): AnnotatedString {
-    val apiLevel = DalvikusSettings()["api_level"] as Int
+    val apiLevel = dalvikusSettings["api_level"] as Int
     val lexer = smaliFlexLexer(code.reader(), apiLevel)
     val errorTokens = mutableMapOf<CommonToken, String>()
     val tokens = CommonTokenStream(lexer)

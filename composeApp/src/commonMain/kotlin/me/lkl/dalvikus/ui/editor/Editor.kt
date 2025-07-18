@@ -7,7 +7,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,10 +23,9 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.lkl.dalvikus.settings.DalvikusSettings
+import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.theme.JetBrainsMono
 import kotlin.math.max
 
@@ -37,8 +35,7 @@ import kotlin.math.max
  */
 @Composable
 fun Editor(
-    editable: Code,
-    dalvikusSettings: DalvikusSettings
+    editable: Code
 ) {
     var loaded by remember(editable) { mutableStateOf(false) }
 

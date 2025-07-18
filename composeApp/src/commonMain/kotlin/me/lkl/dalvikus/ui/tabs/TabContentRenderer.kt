@@ -10,13 +10,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.BugReport
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -30,7 +28,6 @@ import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tabs.WelcomeTab
 import me.lkl.dalvikus.ui.editor.Code
 import me.lkl.dalvikus.ui.editor.Editor
-import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.tabs.SmaliTab
 import org.jetbrains.compose.resources.stringResource
 
@@ -39,11 +36,10 @@ import org.jetbrains.compose.resources.stringResource
 fun TabContentRenderer(selectedNavItem: String, tab: TabElement) {
     when (tab) {
         is WelcomeTab -> {
-            val dalvikusSettings = remember { DalvikusSettings() }
             Editor(Code(IOChannel.readOnly {
                 Res.readBytes("files/welcome.md").decodeToString() +
                         Res.readBytes("files/changelog.md").decodeToString()
-            }, "md"), dalvikusSettings)
+            }, "md"))
         }
 
         is CodeTab -> {
@@ -66,21 +62,19 @@ fun TabContentRenderer(selectedNavItem: String, tab: TabElement) {
                     }
                 }
             } else {
-                val dalvikusSettings = remember { DalvikusSettings() }
                 val fileExtension = tab.tabName().substringAfterLast(".", "").lowercase()
                 val code = Code(tab.makeIOChannel(), fileExtension)
-                Editor(code, dalvikusSettings)
+                Editor(code)
             }
         }
         is SmaliTab -> {
 
-            val dalvikusSettings = remember { DalvikusSettings() }
             if(selectedNavItem == "Decompiler") {
                 val code = Code(Decompiler.provideInput(tab.classDef),"java")
-                Editor(code, dalvikusSettings)
+                Editor(code)
             } else {
                 val code = Code(tab.makeIOChannel(), "smali")
-                Editor(code, dalvikusSettings)
+                Editor(code)
             }
         }
         else -> {
