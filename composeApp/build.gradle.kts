@@ -34,6 +34,8 @@ kotlin {
             implementation(libs.smaliDexlib2)
             implementation(libs.smaliBaksmali)
             implementation(libs.smaliUtil)
+            implementation(libs.jadx)
+            implementation(libs.jadxSmaliInput)
 
         }
 

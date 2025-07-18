@@ -9,6 +9,7 @@ materialKolor = "2.1.1"
 kotlinxCoroutinesSwing = "1.10.2"
 commonsCompress = "1.27.1"
 smali = "3.0.9"
+jadx = "1.5.2"
 
 [libraries]
 
@@ -22,6 +23,8 @@ smali = { module = "com.android.tools.smali:smali", version.ref = "smali" }
 smaliDexlib2 = { module = "com.android.tools.smali:smali-dexlib2", version.ref = "smali" }
 smaliBaksmali = { module = "com.android.tools.smali:smali-baksmali", version.ref = "smali" }
 smaliUtil = { module = "com.android.tools.smali:smali-util", version.ref = "smali" }
+jadx = { module = "io.github.skylot:jadx-core", version.ref = "jadx" }
+jadxSmaliInput = { module = "io.github.skylot:jadx-smali-input", version.ref = "jadx" }
 
 [plugins]
 

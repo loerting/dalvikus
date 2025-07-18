@@ -4,34 +4,33 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.outlined.AutoFixHigh
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.DarkMode
-import androidx.compose.material.icons.outlined.LightMode
+import androidx.compose.material.icons.filled.Android
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
+import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.tabs.WelcomeTab
 import me.lkl.dalvikus.theme.AppTheme
 import me.lkl.dalvikus.theme.LocalThemeIsDark
 import me.lkl.dalvikus.ui.LeftPanelContent
 import me.lkl.dalvikus.ui.RightPanelContent
+import me.lkl.dalvikus.ui.nav.NavItem
 import me.lkl.dalvikus.ui.tabs.TabManager
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
 import org.jetbrains.compose.splitpane.HorizontalSplitPane
 import org.jetbrains.compose.splitpane.rememberSplitPaneState
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import java.awt.Desktop
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,22 +93,73 @@ internal fun Content() {
         )
     }
 
-    HorizontalSplitPane(
-        modifier = Modifier.fillMaxSize(),
-        splitPaneState = splitPaneState,
-    ) {
-        first(minSize = 200.dp) {
-            OutlinedCard(
-                modifier = Modifier.fillMaxSize().padding(8.dp),
+    var selectedNavItem by remember { mutableStateOf("Editor") }
+
+
+    val navItems = listOf(
+        NavItem("Editor", Icons.Default.Edit, Res.string.nav_editor),
+        NavItem("Decompiler", Icons.Default.Code, Res.string.nav_decompiler),
+        NavItem("Packaging", Icons.Default.Android, Res.string.nav_packaging),
+
+        NavItem("Settings", Icons.Outlined.Settings, Res.string.nav_settings),
+    )
+    var showTree by remember { mutableStateOf(true) }
+
+    Row {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+        ) {
+            NavigationRail(
+                modifier = Modifier.padding(start = 8.dp, top = 16.dp)
             ) {
-                LeftPanelContent(tabManager)
+                navItems.forEach { item ->
+                    NavigationRailItem(
+                        selected = selectedNavItem == item.key,
+                        onClick = { selectedNavItem = item.key },
+                        icon = { Icon(item.icon, contentDescription = stringResource(item.labelRes)) },
+                        label = { Text(stringResource(item.labelRes)) }
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                NavigationRailItem(
+                    selected = false,
+                    onClick = {
+                        showTree = !showTree
+                        if (!showTree) splitPaneState.positionPercentage = 0.0f
+                    },
+                    icon = {
+                        Icon(
+                            if (showTree) Icons.Outlined.FolderOff else Icons.Outlined.FolderOpen,
+                            contentDescription = stringResource(Res.string.nav_file_tree)
+                        )
+                    },
+                    label = { Text(stringResource(Res.string.nav_file_tree)) }
+                )
             }
         }
-        second(minSize = 200.dp) {
-            OutlinedCard(
-                modifier = Modifier.fillMaxSize().padding(8.dp),
-            ) {
-                RightPanelContent(tabManager)
+
+        HorizontalSplitPane(
+            modifier = Modifier.fillMaxSize(),
+            splitPaneState = splitPaneState,
+        ) {
+
+            first(minSize = if (showTree) 200.dp else 0.dp) {
+                if (showTree) {
+                    OutlinedCard(
+                        modifier = Modifier.fillMaxSize().padding(8.dp),
+                    ) {
+                        LeftPanelContent(tabManager)
+                    }
+                }
+            }
+
+            second(minSize = 200.dp) {
+                OutlinedCard(
+                    modifier = Modifier.fillMaxSize().padding(8.dp),
+                ) {
+                    RightPanelContent(tabManager, selectedNavItem)
+                }
             }
         }
     }
@@ -118,6 +168,8 @@ internal fun Content() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar() {
+    var clickedStar by remember { mutableStateOf(false) }
+
     CenterAlignedTopAppBar(
         title = {
             val infiniteTransition = rememberInfiniteTransition()
@@ -164,16 +216,12 @@ fun TopBar() {
             }
         },
         actions = {
-            IconButton(onClick = { /* TODO: Handle favorite click */ }) {
+            IconButton(onClick = {
+                clickedStar = true
+                Desktop.getDesktop().browse(DalvikusSettings.getRepoURI()) }) {
                 Icon(
-                    imageVector = Icons.Filled.Favorite,
-                    contentDescription = "Favorite"
-                )
-            }
-            IconButton(onClick = { /* TODO: Handle share click */ }) {
-                Icon(
-                    imageVector = Icons.Filled.Share,
-                    contentDescription = "Share"
+                    imageVector = if (clickedStar) Icons.Filled.Star else Icons.Outlined.StarRate,
+                    contentDescription = null
                 )
             }
         },

@@ -9,4 +9,13 @@
 
     <string name="dialog_exit_title">Exit</string>
     <string name="dialog_exit_message">Are you sure you want to exit? Unsaved changes will be lost.</string>
+
+    <string name="nav_editor">Editor</string>
+    <string name="nav_decompiler">Decompiler</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_packaging">Packaging</string>
+    <string name="nav_file_tree">File Tree</string>
+
+    <string name="wrong_mode">This feature is unavailable in the current mode.</string>
+
 </resources>
