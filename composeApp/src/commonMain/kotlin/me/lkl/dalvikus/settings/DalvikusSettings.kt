@@ -56,6 +56,7 @@ class DalvikusSettings(val bled: Object) {
     operator fun <T> get(key: String): T {
         return when (val setting = settingsList.find { it.key == key }) {
             is IntSetting -> setting.value as T
+            is BooleanSetting -> setting.value as T
             else -> throw IllegalArgumentException("Unsupported setting type for key: $key")
         }
     }
