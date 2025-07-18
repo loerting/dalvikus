@@ -1,5 +1,6 @@
 package me.lkl.dalvikus
 
+import SettingsScreen
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -25,7 +26,6 @@ import me.lkl.dalvikus.theme.LocalThemeIsDark
 import me.lkl.dalvikus.ui.LeftPanelContent
 import me.lkl.dalvikus.ui.RightPanelContent
 import me.lkl.dalvikus.ui.nav.NavItem
-import me.lkl.dalvikus.ui.settings.SettingsScreen
 import me.lkl.dalvikus.ui.tabs.TabManager
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi

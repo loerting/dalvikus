@@ -1,20 +1,20 @@
-package me.lkl.dalvikus.ui.settings
-
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.DividerDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -26,24 +26,60 @@ import org.jetbrains.compose.resources.stringResource
 fun SettingsScreen(dalvikusSettings: DalvikusSettings) {
     val grouped = dalvikusSettings.groupedByCategory()
 
+    // Track expanded/collapsed state for each category
+    val expandedStates = remember {
+        mutableStateMapOf<String, Boolean>().apply {
+            grouped.keys.forEach { category -> put(category.nameRes.toString(), true) }
+        }
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         grouped.forEach { (category, settings) ->
+
+            // Use category.nameRes.toString() as a key for state map
+            val key = category.nameRes.toString()
+            val expanded = expandedStates[key] ?: true
+
             item {
-                // Category headline
-                Text(
-                    text = stringResource(category.nameRes),
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            // Toggle expanded state on header click
+                            expandedStates[key] = !(expandedStates[key] ?: true)
+                        }
+                        .padding(vertical = 8.dp, horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(category.nameRes),
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Icon(
+                        imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                        contentDescription = if (expanded) "Collapse" else "Expand"
+                    )
+                }
                 HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
             }
 
-            items(settings) { setting ->
-                SettingRow(setting)
+            // Animate visibility of settings items
+            item {
+                AnimatedVisibility(
+                    visible = expanded,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut()
+                ) {
+                    Column {
+                        settings.forEach { setting ->
+                            SettingRow(setting)
+                        }
+                    }
+                }
             }
         }
     }
@@ -54,20 +90,17 @@ private fun SettingRow(setting: Setting<*>) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp),
+            .padding(vertical = 12.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        // Setting name aligned to start
         Text(
             text = stringResource(setting.nameRes),
             style = MaterialTheme.typography.bodyLarge
         )
         Spacer(modifier = Modifier.weight(1f))
-        // Editor aligned to end
         Box(
-            modifier = Modifier
-                .wrapContentWidth()
+            modifier = Modifier.wrapContentWidth()
         ) {
             setting.Editor()
         }
