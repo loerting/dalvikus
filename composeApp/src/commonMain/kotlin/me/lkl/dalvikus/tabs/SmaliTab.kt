@@ -48,7 +48,7 @@ class SmaliTab(
             },
             writingSupported = true,
             write = { content ->
-                val apiLevel = DalvikusSettings().apiLevel
+                val apiLevel = DalvikusSettings()["api_level"] as Int
                 val lexer = smaliFlexLexer(content.reader(), apiLevel)
                 val tokens = CommonTokenStream(lexer)
 

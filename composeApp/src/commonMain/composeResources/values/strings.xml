@@ -18,4 +18,11 @@
 
     <string name="wrong_mode">This feature is unavailable in the current mode.</string>
 
+    <string name="settings_category_general">General settings</string>
+    <string name="settings_category_smali">Smali assembler and disassembler settings</string>
+    <string name="settings_category_decompiler">Decompiler settings</string>
+
+    <string name="settings_font_size">Font size</string>
+    <string name="settings_api_level">Dalvik Opcodes API level</string>
+
 </resources>

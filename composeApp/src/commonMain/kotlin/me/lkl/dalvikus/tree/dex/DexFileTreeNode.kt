@@ -68,7 +68,7 @@ private val file: File
     private fun openDexFileIfNull() {
         if (openDexFile == null) {
             val dexStream = BufferedInputStream(file.inputStream())
-            openDexFile = DexBackedDexFile.fromInputStream(Opcodes.forApi(DalvikusSettings().apiLevel), dexStream)
+            openDexFile = DexBackedDexFile.fromInputStream(Opcodes.forApi(DalvikusSettings()["api_level"]), dexStream)
         }
     }
 

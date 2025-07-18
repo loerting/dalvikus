@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
+import com.russhwolf.settings.Settings
 import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.tabs.WelcomeTab
@@ -24,6 +25,7 @@ import me.lkl.dalvikus.theme.LocalThemeIsDark
 import me.lkl.dalvikus.ui.LeftPanelContent
 import me.lkl.dalvikus.ui.RightPanelContent
 import me.lkl.dalvikus.ui.nav.NavItem
+import me.lkl.dalvikus.ui.settings.SettingsScreen
 import me.lkl.dalvikus.ui.tabs.TabManager
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
@@ -31,6 +33,7 @@ import org.jetbrains.compose.splitpane.HorizontalSplitPane
 import org.jetbrains.compose.splitpane.rememberSplitPaneState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import java.awt.Desktop
+import java.net.URI
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -146,7 +149,10 @@ internal fun Content() {
 
             first(minSize = if (showTree) 200.dp else 0.dp) {
                 if (showTree) {
-                    OutlinedCard(
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                        ),
                         modifier = Modifier.fillMaxSize().padding(8.dp),
                     ) {
                         LeftPanelContent(tabManager)
@@ -155,10 +161,17 @@ internal fun Content() {
             }
 
             second(minSize = 200.dp) {
-                OutlinedCard(
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                    ),
                     modifier = Modifier.fillMaxSize().padding(8.dp),
                 ) {
-                    RightPanelContent(tabManager, selectedNavItem)
+                    if(selectedNavItem == "Settings") {
+                        SettingsScreen(DalvikusSettings())
+                    } else {
+                        RightPanelContent(tabManager, selectedNavItem)
+                    }
                 }
             }
         }
