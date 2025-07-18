@@ -36,6 +36,7 @@ kotlin {
             implementation(libs.smaliUtil)
             implementation(libs.jadx)
             implementation(libs.jadxSmaliInput)
+            implementation(libs.antlr4)
 
         }
 

@@ -10,6 +10,7 @@ kotlinxCoroutinesSwing = "1.10.2"
 commonsCompress = "1.27.1"
 smali = "3.0.9"
 jadx = "1.5.2"
+antlr4 = "4.13.2"
 
 [libraries]
 
@@ -25,6 +26,7 @@ smaliBaksmali = { module = "com.android.tools.smali:smali-baksmali", version.ref
 smaliUtil = { module = "com.android.tools.smali:smali-util", version.ref = "smali" }
 jadx = { module = "io.github.skylot:jadx-core", version.ref = "jadx" }
 jadxSmaliInput = { module = "io.github.skylot:jadx-smali-input", version.ref = "jadx" }
+antlr4 = { module = "org.antlr:antlr4", version.ref = "antlr4" }
 
 [plugins]
 
