@@ -11,7 +11,6 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Article
 import androidx.compose.material.icons.filled.Android
-import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.FolderZip
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.CircularProgressIndicator
@@ -32,7 +31,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.theme.*
 import me.lkl.dalvikus.tree.TreeElement
-import me.lkl.dalvikus.tree.archive.archiveExtensions
+import me.lkl.dalvikus.io.archiveExtensions
 import me.lkl.dalvikus.ui.tabs.TabManager
 
 @Composable
@@ -201,7 +200,7 @@ fun ColorForFileExtension(fileName: String): Color {
 
     return when (extension) {
         "apk", "dex" -> AndroidGreen
-        "zip", "rar", "7z", "tar", "gz" -> ArchiveOrange
+        "zip", "rar", "7z", "tar", "gz" -> ArchiveGray
         "html", "xml", "json", "yaml", "yml" -> CodeBlue
         "txt", "md", "log" -> MaterialTheme.colorScheme.onSurface
         "jpg", "jpeg", "png", "gif", "bmp", "webp", "svg" -> ImagePurple

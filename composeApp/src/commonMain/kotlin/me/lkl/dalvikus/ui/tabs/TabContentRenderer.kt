@@ -11,33 +11,38 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
+import me.lkl.dalvikus.io.IOChannel
 import me.lkl.dalvikus.tabs.CodeTab
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tabs.WelcomeTab
 import me.lkl.dalvikus.ui.editor.Code
 import me.lkl.dalvikus.ui.editor.Editor
-import me.lkl.dalvikus.ui.editor.ViewerSettings
+import me.lkl.dalvikus.settings.DalvikusSettings
+import me.lkl.dalvikus.tabs.SmaliTab
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabContentRenderer(tab: TabElement) {
     when (tab) {
         is WelcomeTab -> {
-            val viewerSettings = remember { ViewerSettings() }
-            Editor(Code({
+            val dalvikusSettings = remember { DalvikusSettings() }
+            Editor(Code(IOChannel.readOnly {
                 Res.readBytes("files/welcome.md").decodeToString() +
                         Res.readBytes("files/changelog.md").decodeToString()
-            }, "md", isEditable = false), viewerSettings)
+            }, "md"), dalvikusSettings)
         }
 
         is CodeTab -> {
-            val viewerSettings = remember { ViewerSettings() }
-            val fileExtension = tab.tabName.substringAfterLast(".", "").lowercase()
-            Editor(Code({ tab.fileContent() }, fileExtension) {
-                // TODO on update code.
-            }, viewerSettings)
+            val dalvikusSettings = remember { DalvikusSettings() }
+            val fileExtension = tab.tabName().substringAfterLast(".", "").lowercase()
+            val code = Code(tab.makeIOChannel(), fileExtension)
+            Editor(code, dalvikusSettings)
         }
-
+        is SmaliTab -> {
+            val dalvikusSettings = remember { DalvikusSettings() }
+            val code = Code(tab.makeIOChannel(), "smali")
+            Editor(code, dalvikusSettings)
+        }
         else -> {
             Icon(
                 imageVector = Icons.Default.BugReport,

@@ -7,6 +7,8 @@ import me.lkl.dalvikus.tabs.CodeTab
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.TreeElement
 import me.lkl.dalvikus.tree.plaintextFileExtensions
+import me.lkl.dalvikus.io.IOChannel
+import me.lkl.dalvikus.io.LazyArchiveFile
 import me.lkl.dalvikus.ui.tree.IconForFileExtension
 import java.io.File
 
@@ -60,8 +62,8 @@ class ArchiveTreeNode(
             tabIcon = icon,
             tabName = name
         ) {
-            override suspend fun fileContent(): String {
-                return archive.readEntry(path).decodeToString()
+            override fun makeIOChannel(): IOChannel<String> {
+                return IOChannel.fromArchive(archive, path)
             }
         }
     }

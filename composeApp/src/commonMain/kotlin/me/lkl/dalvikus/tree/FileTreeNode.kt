@@ -6,8 +6,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import me.lkl.dalvikus.tabs.CodeTab
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.archive.ArchiveTreeNode
-import me.lkl.dalvikus.tree.archive.archiveExtensions
+import me.lkl.dalvikus.io.archiveExtensions
 import me.lkl.dalvikus.tree.dex.DexFileTreeNode
+import me.lkl.dalvikus.io.IOChannel
 import me.lkl.dalvikus.ui.tree.IconForFileExtension
 import java.io.File
 
@@ -68,8 +69,10 @@ class FileTreeNode(
             tabIcon = icon,
             tabName = name
         ) {
-            override suspend fun fileContent(): String {
-                return file.readText()
+            override fun makeIOChannel(): IOChannel<String> {
+                return IOChannel.fromFile(file).also {
+                    it.setName(name)
+                }
             }
         }
     }

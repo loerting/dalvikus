@@ -1,4 +1,4 @@
-package me.lkl.dalvikus.tree.archive
+package me.lkl.dalvikus.io
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,7 +20,7 @@ val zipLikeExtensions = setOf(
 )
 
 
-class LazyArchiveFile(private val file: File) : Closeable {
+class LazyArchiveFile(val file: File) : Closeable {
     private var contents: Map<String, ArchiveEntry>? = null
     private var zipFile: CommonsZipFile? = null
 

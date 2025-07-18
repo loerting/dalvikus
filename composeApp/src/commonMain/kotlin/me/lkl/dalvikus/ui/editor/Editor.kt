@@ -22,8 +22,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.theme.JetBrainsMono
 import kotlin.math.max
 
@@ -34,18 +36,23 @@ import kotlin.math.max
 @Composable
 fun Editor(
     editable: Code,
-    viewerSettings: ViewerSettings
+    dalvikusSettings: DalvikusSettings
 ) {
     var loaded by remember(editable) { mutableStateOf(false) }
 
     LaunchedEffect(editable) {
-        editable.loadCode()
+        withContext(Dispatchers.Default) {
+            editable.loadCode()
+        }
         loaded = true
     }
 
     if (!loaded) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(48.dp)
+            )
         }
         return
     }
@@ -73,7 +80,7 @@ fun Editor(
             LineNumberColumn(
                 code = editable.code,
                 scrollState = vertState,
-                viewerSettings = viewerSettings
+                dalvikusSettings = dalvikusSettings
             )
             Spacer(
                 modifier = Modifier
@@ -115,14 +122,16 @@ fun Editor(
                             )
 
                             editable.updateCode(newText)
-                            coroutine.launch { editable.onCodeChange(newText) }
+                            if(editable.isEditable) {
+                            coroutine.launch { editable.saveCode() }
+                                }
                         },
                         modifier = Modifier.fillMaxSize(),
                         textStyle = TextStyle(
                             fontFamily = JetBrainsMono(),
-                            fontSize = viewerSettings.fontSize,
-                            lineHeight = viewerSettings.fontSize * 1.5f,
-                            color = Color.Transparent // Hide default text color
+                            fontSize = dalvikusSettings.fontSize,
+                            lineHeight = dalvikusSettings.fontSize * 1.5f,
+                            color = Color.Black.copy(alpha = 0.0f)
                         ),
                         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                         decorationBox = { inner ->
@@ -137,8 +146,8 @@ fun Editor(
                                     modifier = Modifier.matchParentSize(),
                                     style = TextStyle(
                                         fontFamily = JetBrainsMono(),
-                                        fontSize = viewerSettings.fontSize,
-                                        lineHeight = viewerSettings.fontSize * 1.5f,
+                                        fontSize = dalvikusSettings.fontSize,
+                                        lineHeight = dalvikusSettings.fontSize * 1.5f,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
                                 )
@@ -187,10 +196,10 @@ fun Editor(
 private fun LineNumberColumn(
     code: String,
     scrollState: ScrollState,
-    viewerSettings: ViewerSettings,
+    dalvikusSettings: DalvikusSettings,
 ) {
     val lines = code.lines().size
-    val lineHeightDp = with(LocalDensity.current) { viewerSettings.fontSizeDp * 1.5f }
+    val lineHeightDp = with(LocalDensity.current) { dalvikusSettings.fontSize.toDp() * 1.5f }
     val maxNumDigits = lines.toString().length
 
     DisableSelection {
@@ -207,12 +216,12 @@ private fun LineNumberColumn(
                     LineNumber(
                         number = "9".repeat(maxNumDigits),
                         modifier = Modifier.alpha(0f),
-                        viewerSettings = viewerSettings
+                        dalvikusSettings = dalvikusSettings
                     )
                     LineNumber(
                         number = "${i + 1}",
                         modifier = Modifier.align(Alignment.CenterEnd),
-                        viewerSettings = viewerSettings
+                        dalvikusSettings = dalvikusSettings
                     )
                 }
 
@@ -222,11 +231,11 @@ private fun LineNumberColumn(
 }
 
 @Composable
-private fun LineNumber(number: String, modifier: Modifier, viewerSettings: ViewerSettings) {
+private fun LineNumber(number: String, modifier: Modifier, dalvikusSettings: DalvikusSettings) {
     androidx.compose.material.Text(
         text = number,
         fontFamily = JetBrainsMono(),
-        fontSize = viewerSettings.fontSize,
+        fontSize = dalvikusSettings.fontSize,
         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
         modifier = modifier.padding(start = 12.dp)
     )

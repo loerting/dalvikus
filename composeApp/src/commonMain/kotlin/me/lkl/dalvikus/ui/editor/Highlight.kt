@@ -6,15 +6,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import com.android.tools.smali.smali.smaliFlexLexer
 import com.android.tools.smali.smali.smaliParser
+import com.materialkolor.ktx.darken
+import me.lkl.dalvikus.settings.DalvikusSettings
+import org.antlr.runtime.CommonToken
+import org.antlr.runtime.CommonTokenStream
+import org.antlr.runtime.RecognitionException
 
 data class CodeHighlightColors(
     val onSurface: Color,
     val primary: Color,
     val secondary: Color,
-    val tertiary: Color
+    val tertiary: Color,
+    val quaternary: Color,
+    val quinary: Color,
+    val senary: Color
 )
 
 @Composable
@@ -23,12 +36,15 @@ fun defaultCodeHighlightColors(): CodeHighlightColors {
         onSurface = MaterialTheme.colorScheme.onSurface,
         primary = MaterialTheme.colorScheme.primary,
         secondary = MaterialTheme.colorScheme.secondary,
-        tertiary = MaterialTheme.colorScheme.tertiary
+        tertiary = MaterialTheme.colorScheme.tertiary,
+        quaternary = Color(0xff686de0),
+        quinary = Color(0xffbadc58),
+        senary = Color(0xfff0932b)
     )
 }
 
 fun highlightCode(editable: Code, colors: CodeHighlightColors): AnnotatedString {
-    val code = editable.code  //.replace("\t", " ") // Normalize tabs to spaces
+    val code = editable.code
 
     return buildAnnotatedString {
         // Base style
@@ -77,9 +93,93 @@ fun highlightCode(editable: Code, colors: CodeHighlightColors): AnnotatedString 
                 commentRe.findAll(code).forEach {
                     addStyle(SpanStyle(color = colors.onSurface.copy(alpha = 0.5f)), it.range.first, it.range.last + 1)
                 }
-
-                // TODO https://github.com/vaibhavpandeyvpz/apkstudio/commit/698e2de5cff19c96692b44b703d752291a17dc6a#diff-9d86366ee99ae761db887b8fee92b4348a137bd0534c69c8c67a6353ecd5ab58
             }
+
+            "smali" -> {
+                val apiLevel = DalvikusSettings().apiLevel
+                val lexer = smaliFlexLexer(code.reader(), apiLevel)
+
+                val errorTokens = mutableMapOf<CommonToken, String>()
+                val tokens = CommonTokenStream(lexer)
+
+                val parser = object : smaliParser(tokens) {
+                    override fun reportError(e: RecognitionException?) {
+                        super.reportError(e)
+                        val offending = e?.token
+                        if (offending is CommonToken) {
+                            errorTokens[offending] = getErrorMessage(e, tokenNames)
+                        }
+                    }
+                }
+                parser.setVerboseErrors(true)
+                parser.setAllowOdex(true)
+                parser.setApiLevel(apiLevel)
+
+                val result = parser.smali_file()
+
+                for (token in tokens.tokens) {
+                    if (token !is CommonToken) continue
+                    if (token.type < 0 || token.text.isBlank()) continue
+
+                    val isError = token in errorTokens
+
+                    if(isError) {
+                        addStringAnnotation("error", errorTokens[token]!!, token.startIndex, token.stopIndex + 1)
+                        addStyle(
+                            SpanStyle(
+                                color = Color.Red,
+                                textDecoration = TextDecoration.Underline
+                            ),
+                            token.startIndex, token.stopIndex + 1
+                        )
+                    } else {
+                        getToken(token.type, colors)?.let {
+                            addStyle(it, token.startIndex, token.stopIndex + 1)
+                        }
+                    }
+                }
+
+            }
+
         }
     }
+}
+
+private fun getTokenName(tokenType: Int): String? {
+    return smaliParser::class.java.fields
+        .firstOrNull { it.type == Int::class.java && it.get(null) == tokenType }
+        ?.name
+}
+
+private fun getToken(tokenType: Int, colors: CodeHighlightColors): SpanStyle? {
+    val tokenName = getTokenName(tokenType) ?: return null
+    val color = when {
+        tokenName.endsWith("_DIRECTIVE") -> colors.primary
+        tokenName == "REGISTER" -> colors.secondary
+        tokenName.endsWith("_LITERAL") -> colors.tertiary
+        tokenName == "CLASS_DESCRIPTOR" || tokenName == "PRIMITIVE_TYPE" || tokenName == "ARRAY_TYPE_PREFIX" -> colors.quaternary
+        tokenName == "SIMPLE_NAME" -> colors.quinary
+        tokenName.startsWith("INSTRUCTION_") -> colors.senary
+        tokenName in listOf("COLON", "COMMA", "OPEN_PAREN", "CLOSE_PAREN") -> colors.onSurface.copy(alpha = 0.7f)
+        tokenName == "LINE_COMMENT" -> colors.onSurface.copy(alpha = 0.5f)
+        else -> return null
+    }
+    val weight = when {
+        tokenName == "ARROW" -> FontWeight.Bold
+        tokenName.startsWith("INSTRUCTION_") -> FontWeight.Medium
+        tokenName == "REGISTER" -> FontWeight.Medium
+        else -> FontWeight.Normal
+    }
+    val style = when (tokenName) {
+        "LINE_COMMENT" -> FontStyle.Italic
+        "SIMPLE_NAME" -> FontStyle.Italic
+        else -> FontStyle.Normal
+    }
+
+
+    return SpanStyle(
+        color = color,
+        fontWeight = weight,
+        fontStyle = style,
+    )
 }

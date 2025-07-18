@@ -3,7 +3,10 @@ package me.lkl.dalvikus.tree.dex
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.outlined.FolderSpecial
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import me.lkl.dalvikus.theme.PackageOrange
 import me.lkl.dalvikus.tree.TreeElement
 
 class DexPackageTreeNode(
@@ -27,6 +30,9 @@ class DexPackageTreeNode(
     override suspend fun getChildren(): List<TreeElement> {
         return childrenMap[fullPath] ?: emptyList()
     }
+
+    @Composable
+    override fun getColor(): Color = PackageOrange
 
     override fun onCollapse() {}
 }

@@ -1,25 +1,13 @@
 package me.lkl.dalvikus.tree.dex
 
-import androidx.compose.foundation.Image
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Adb
-import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.outlined.Api
 import androidx.compose.material.icons.outlined.DataObject
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.android.tools.smali.baksmali.Adaptors.ClassDefinition
-import com.android.tools.smali.baksmali.BaksmaliOptions
-import com.android.tools.smali.baksmali.formatter.BaksmaliWriter
 import com.android.tools.smali.dexlib2.dexbacked.DexBackedClassDef
-import com.android.tools.smali.smali.smaliParser
-import com.android.tools.smali.smali.smaliTreeWalker
-import me.lkl.dalvikus.tabs.CodeTab
+import me.lkl.dalvikus.tabs.SmaliTab
 import me.lkl.dalvikus.tree.TreeElement
-import me.lkl.dalvikus.ui.tree.IconForFileExtension
-import java.io.BufferedWriter
 import java.io.File
-import java.io.StringWriter
+
 
 class DexClassTreeNode(
     private val classDef: DexBackedClassDef,
@@ -44,25 +32,9 @@ class DexClassTreeNode(
 
     override fun createTab(): me.lkl.dalvikus.tabs.TabElement {
         // Implement tab creation logic if needed
-        return object : CodeTab(
-            tabId = "${file.path}#$name",
-            tabIcon = icon,
-            tabName = name
-        ) {
-            override suspend fun fileContent(): String {
-                // TODO writing using https://github.com/JesusFreke/smali/blob/master/smali/src/main/java/org/jf/smali/Smali.java
-                val classDefinition = ClassDefinition(BaksmaliOptions(), classDef)
-
-                val stringWriter = StringWriter()
-                val bufferedWriter = BufferedWriter(stringWriter)
-
-                val writer = BaksmaliWriter(bufferedWriter, classDef.type)
-
-                classDefinition.writeTo(writer)
-
-                bufferedWriter.flush()
-                return stringWriter.toString()
-            }
-        }
+        return SmaliTab(
+            classDef,
+            tabId = "${file.path}#${classDef.type}"
+        )
     }
 }

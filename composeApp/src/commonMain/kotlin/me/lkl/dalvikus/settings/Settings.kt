@@ -1,12 +1,12 @@
-package me.lkl.dalvikus.ui.editor
+package me.lkl.dalvikus.settings
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.android.tools.smali.dexlib2.Opcodes
 
-class ViewerSettings {
+class DalvikusSettings {
     var fontSize by mutableStateOf(14.sp)
-    val fontSizeDp get() = fontSize.value.dp
+    var apiLevel = Opcodes.getDefault().api
 }

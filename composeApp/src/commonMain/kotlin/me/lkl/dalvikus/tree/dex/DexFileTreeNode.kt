@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.Adb
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.android.tools.smali.dexlib2.Opcodes
 import com.android.tools.smali.dexlib2.dexbacked.DexBackedDexFile
+import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.TreeElement
 import java.io.BufferedInputStream
@@ -67,7 +68,7 @@ private val file: File
     private fun openDexFileIfNull() {
         if (openDexFile == null) {
             val dexStream = BufferedInputStream(file.inputStream())
-            openDexFile = DexBackedDexFile.fromInputStream(Opcodes.getDefault(), dexStream)
+            openDexFile = DexBackedDexFile.fromInputStream(Opcodes.forApi(DalvikusSettings().apiLevel), dexStream)
         }
     }
 
