@@ -190,19 +190,7 @@ internal fun Content() {
             }
 
             second(minSize = 200.dp) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                    ),
-                    modifier = Modifier.fillMaxSize().padding(8.dp),
-                ) {
-                    AnimatedContent(targetState = selectedNavItem, label = "NavItem Animation") { targetTab ->
-                        when (targetTab) {
-                            "Settings" -> SettingsScreen()
-                            else -> RightPanelContent(tabManager, targetTab)
-                        }
-                    }
-                }
+                RightPanelContent(tabManager, selectedNavItem)
             }
         }
     }

@@ -11,6 +11,7 @@ commonsCompress = "1.27.1"
 smali = "3.0.9"
 jadx = "1.5.2"
 antlr4 = "4.13.2"
+apksig = "8.12.0-alpha09"
 
 [libraries]
 
@@ -27,6 +28,7 @@ smaliUtil = { module = "com.android.tools.smali:smali-util", version.ref = "smal
 jadx = { module = "io.github.skylot:jadx-core", version.ref = "jadx" }
 jadxSmaliInput = { module = "io.github.skylot:jadx-smali-input", version.ref = "jadx" }
 antlr4 = { module = "org.antlr:antlr4", version.ref = "antlr4" }
+apksig = { module = "com.android.tools.build:apksig", version.ref = "apksig" }
 
 [plugins]
 

@@ -1,11 +1,18 @@
 package me.lkl.dalvikus.ui
 
+import SettingsScreen
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import me.lkl.dalvikus.ui.packaging.PackagingScreen
 import me.lkl.dalvikus.ui.tabs.TabManager
 import me.lkl.dalvikus.ui.tabs.TabView
 
@@ -14,26 +21,27 @@ internal fun RightPanelContent(tabManager: TabManager, selectedNavItem: String) 
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        when (selectedNavItem) {
-            "Editor", "Decompiler" -> {
-                TabView(
-                    tabManager,
-                    selectedNavItem
+        AnimatedContent(targetState = selectedNavItem, label = "NavItem Animation") { targetTab ->
+            when (targetTab) {
+                "Editor", "Decompiler" -> OnCard({ TabView(tabManager, selectedNavItem) })
+                "Settings" -> OnCard({ SettingsScreen() })
+                "Packaging" -> PackagingScreen()
+                else -> throw IllegalArgumentException(
+                    "Unsupported selectedNavItem: $selectedNavItem. "
                 )
             }
-            else -> {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // work in progress
-                    Text(
-                        text = "WIP",
-                        modifier = Modifier.fillMaxWidth(0.8f),
-                        style = androidx.compose.material3.MaterialTheme.typography.headlineSmall
-                    )
-                }
-            }
         }
+    }
+}
+
+@Composable
+internal fun OnCard(content: @Composable () -> Unit) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        ),
+        modifier = Modifier.fillMaxSize().padding(8.dp),
+    ) {
+        content()
     }
 }

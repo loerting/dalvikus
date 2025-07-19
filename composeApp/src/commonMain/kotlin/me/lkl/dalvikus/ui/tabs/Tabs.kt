@@ -39,14 +39,14 @@ fun TabView(
     tabManager: TabManager,
     selectedNavItem: String
 ) {
-    var pendingCloseTab = remember { mutableStateOf<TabElement?>(null) }
-    var showCloseDialog = remember { mutableStateOf(false) }
+    val pendingCloseTab = remember { mutableStateOf<TabElement?>(null) }
+    val showCloseDialog = remember { mutableStateOf(false) }
     if (showCloseDialog.value && pendingCloseTab.value != null) {
         UnsavedChangesDialog(tabManager, showCloseDialog, pendingCloseTab)
     }
     Column {
         ScrollableTabRow(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             selectedTabIndex = tabManager.selectedTabIndex,
             modifier = Modifier.fillMaxWidth(),
             edgePadding = 0.dp,
@@ -121,20 +121,7 @@ fun UnsavedChangesDialog(
             )
         },
         confirmButton = {
-            androidx.compose.material3.TextButton(
-                onClick = {
-                    // TODO: Save action here
-                    abort()
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Save,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(stringResource(Res.string.save))
-            }
+            // TODO maybe add a save button in the future
         },
         dismissButton = {
             Row {

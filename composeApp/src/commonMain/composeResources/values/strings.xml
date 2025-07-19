@@ -29,7 +29,7 @@
     <string name="settings_save_automatically">Save editor changes automatically</string>
 
     <string name="unsaved_changes_title">Unsaved changes</string>
-    <string name="unsaved_changes_message">Do you want to save changes to "%1$s" before closing?</string>
+    <string name="unsaved_changes_message">"%1$s" has unsaved changes that will be lost when closed. Discard anyway?</string>
 
     <string name="cancel">Cancel</string>
     <string name="discard">Discard</string>
