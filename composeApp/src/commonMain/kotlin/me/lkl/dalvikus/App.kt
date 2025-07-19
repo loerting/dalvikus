@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.settings.DalvikusSettings
@@ -207,7 +208,8 @@ fun TopBar() {
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = stringResource(Res.string.app_name)
+                        text = stringResource(Res.string.app_name),
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
                 Text(

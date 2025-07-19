@@ -96,7 +96,8 @@ private fun SettingRow(setting: Setting<*>) {
         Text(
             text = stringResource(setting.nameRes),
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(end = 32.dp)
+            modifier = Modifier.padding(end = 32.dp),
+            softWrap = false
         )
         Spacer(modifier = Modifier.weight(1f))
         Box(

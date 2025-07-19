@@ -98,7 +98,8 @@ class IntSetting(
                 suffix = {
                     Text(
                         unit,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        softWrap = false
                     )
                 }
             )

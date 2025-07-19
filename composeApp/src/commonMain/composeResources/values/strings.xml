@@ -2,6 +2,14 @@
     <string name="app_name">dalvikus</string>
     <string name="app_description">Bewitch your apps.</string>
 
+    <string name="app_greeting">Welcome %1$s to...</string>
+    <string name="app_introduction">Dalvikus is an Android reverse engineering and modification toolkit written in compose multiplatform. As every computer scientist should know: With great power comes great responsibility, so please use it for ethical purposes only. For more information, open the GitHub page.</string>
+    <string name="app_github_button">Star on GitHub</string>
+    <string name="app_dalvik_button">Dalvik reference</string>
+    <string name="app_gpl_button">GPLv3 license</string>
+
+
+
     <string name="tree_search_placeholder">Search tree element...</string>
 
     <string name="welcome_tab_name">Welcome!</string>
