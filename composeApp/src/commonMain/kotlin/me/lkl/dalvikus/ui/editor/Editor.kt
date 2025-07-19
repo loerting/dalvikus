@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.theme.JetBrainsMono
+import me.lkl.dalvikus.ui.util.onSaveShortcut
 import kotlin.math.max
 
 /**
@@ -122,11 +123,19 @@ fun Editor(
                             )
 
                             editable.updateCode(newText)
-                            if(editable.isEditable) {
-                            coroutine.launch { editable.saveCode() }
-                                }
+                            if (dalvikusSettings["save_automatically"] && editable.isEditable) {
+                                coroutine.launch { editable.saveCode() }
+                            } else {
+                                // If not auto-saving, mark as unsaved changes
+                                editable.hasUnsavedChanges = true
+
+                                print(editable.tab.hasUnsavedChanges)
+                                println(editable.tab.hasUnsavedChanges.value)
+                            }
                         },
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize().onSaveShortcut(enabled = editable.isEditable) {
+                            coroutine.launch { editable.saveCode() }
+                        },
                         textStyle = TextStyle(
                             fontFamily = JetBrainsMono(),
                             fontSize = fontSize,

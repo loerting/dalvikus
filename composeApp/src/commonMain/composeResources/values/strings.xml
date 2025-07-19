@@ -21,9 +21,19 @@
     <string name="settings_category_general">General settings</string>
     <string name="settings_category_smali">Smali assembler and disassembler settings</string>
     <string name="settings_category_decompiler">Decompiler settings</string>
+    <string name="settings_category_editor">Editor settings</string>
 
     <string name="settings_font_size">Font size</string>
     <string name="settings_api_level">Dalvik Opcodes API level</string>
     <string name="settings_decompiler_verbose">Verbose decompiler output</string>
+    <string name="settings_save_automatically">Save editor changes automatically</string>
+
+    <string name="unsaved_changes_title">Unsaved changes</string>
+    <string name="unsaved_changes_message">Do you want to save changes to "%1$s" before closing?</string>
+
+    <string name="cancel">Cancel</string>
+    <string name="discard">Discard</string>
+    <string name="save">Save</string>
+    <string name="exit">Exit</string>
 
 </resources>

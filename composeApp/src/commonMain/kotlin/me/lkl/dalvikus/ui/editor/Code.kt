@@ -4,11 +4,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import me.lkl.dalvikus.io.IOChannel
+import me.lkl.dalvikus.tabs.TabElement
+import me.lkl.dalvikus.tabs.WelcomeTab
 
 class Code(
+    val tab: TabElement,
     private val ioChannel: IOChannel<String>,
     val codeType: String,
 ) {
+
+    var hasUnsavedChanges: Boolean by tab.hasUnsavedChanges
+
     var code: String by mutableStateOf("")
         private set
 
@@ -27,6 +33,7 @@ class Code(
     suspend fun saveCode() {
         if (isEditable) {
             ioChannel.write(code)
+            hasUnsavedChanges = false
         } else {
             throw UnsupportedOperationException("This Code instance is not editable.")
         }

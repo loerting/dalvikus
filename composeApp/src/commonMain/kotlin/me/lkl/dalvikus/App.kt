@@ -1,13 +1,27 @@
 package me.lkl.dalvikus
 
 import SettingsScreen
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.with
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Nature
+import androidx.compose.material.icons.filled.Park
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -71,6 +85,8 @@ internal fun App(
                         imageVector = Icons.AutoMirrored.Outlined.ExitToApp,
                         contentDescription = null
                     )
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(Res.string.exit))
                 }
             },
             dismissButton = {
@@ -78,9 +94,11 @@ internal fun App(
                     showExitDialog.value = false
                 }) {
                     Icon(
-                        imageVector = Icons.Outlined.Close,
+                        imageVector = Icons.Outlined.Cancel,
                         contentDescription = null
                     )
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(Res.string.cancel))
                 }
             }
         )
@@ -134,13 +152,10 @@ internal fun Content() {
                 Spacer(modifier = Modifier.weight(1f))
                 NavigationRailItem(
                     selected = false,
-                    onClick = {
-                        showTree = !showTree
-                        if (!showTree) splitPaneState.positionPercentage = 0.0f
-                    },
+                    onClick = { showTree = !showTree },
                     icon = {
                         Icon(
-                            if (showTree) Icons.Outlined.FolderOff else Icons.Outlined.FolderOpen,
+                            if (!showTree) Icons.Outlined.Park else Icons.Filled.Park,
                             contentDescription = stringResource(Res.string.nav_file_tree)
                         )
                     },
@@ -149,13 +164,20 @@ internal fun Content() {
             }
         }
 
+        val animatedSplit by animateFloatAsState(targetValue = if (showTree) 0.25f else 0f)
+        LaunchedEffect(animatedSplit) { splitPaneState.positionPercentage = animatedSplit }
+
         HorizontalSplitPane(
             modifier = Modifier.fillMaxSize(),
             splitPaneState = splitPaneState,
         ) {
 
             first(minSize = if (showTree) 200.dp else 0.dp) {
-                if (showTree) {
+                AnimatedVisibility(
+                    visible = showTree,
+                    enter = fadeIn() + expandHorizontally(),
+                    exit = fadeOut() + shrinkHorizontally()
+                ) {
                     Card(
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainerLow
@@ -174,10 +196,11 @@ internal fun Content() {
                     ),
                     modifier = Modifier.fillMaxSize().padding(8.dp),
                 ) {
-                    if(selectedNavItem == "Settings") {
-                        SettingsScreen()
-                    } else {
-                        RightPanelContent(tabManager, selectedNavItem)
+                    AnimatedContent(targetState = selectedNavItem, label = "NavItem Animation") { targetTab ->
+                        when (targetTab) {
+                            "Settings" -> SettingsScreen()
+                            else -> RightPanelContent(tabManager, targetTab)
+                        }
                     }
                 }
             }

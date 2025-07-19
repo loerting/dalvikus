@@ -3,6 +3,8 @@ package me.lkl.dalvikus.tabs
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DataObject
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import co.touchlab.kermit.Logger
 import com.android.tools.smali.baksmali.Adaptors.ClassDefinition
@@ -28,6 +30,7 @@ class SmaliTab(
     val classDef: DexBackedClassDef,
     override val tabId: String
 ) : TabElement {
+    override val hasUnsavedChanges: MutableState<Boolean> = mutableStateOf(false)
     @Composable
     override fun tabName(): String = classDef.type.removeSurrounding("L", ";").substringAfterLast('/')
     override val tabIcon: ImageVector = Icons.Outlined.DataObject
@@ -82,6 +85,8 @@ class SmaliTab(
                 dexGen.setDexBuilder(dexBuilder)
                 val smaliFile = dexGen.smali_file()
                 // TODO use the smaliFile or the dexBuilder to write back to the DEX file
+
+                hasUnsavedChanges.value = false
             },
             setName = {
                 throw UnsupportedOperationException("Renaming archive entries is not supported.")

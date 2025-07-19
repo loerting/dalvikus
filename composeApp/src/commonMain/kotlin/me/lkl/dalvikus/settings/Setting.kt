@@ -7,28 +7,48 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.outlined.Android
+import androidx.compose.material.icons.outlined.Code
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.EditNote
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.russhwolf.settings.Settings
 import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.settings_category_decompiler
+import dalvikus.composeapp.generated.resources.settings_category_editor
 import dalvikus.composeapp.generated.resources.settings_category_general
 import dalvikus.composeapp.generated.resources.settings_category_smali
 import org.jetbrains.compose.resources.StringResource
 
 
-enum class SettingsCategory(val nameRes: StringResource) {
-    GENERAL(Res.string.settings_category_general),
-    SMALI(Res.string.settings_category_smali),
-    DECOMPILER(Res.string.settings_category_decompiler)
+enum class SettingsCategory(val nameRes: StringResource, val icon: ImageVector) {
+    GENERAL(Res.string.settings_category_general, Icons.Outlined.Settings),
+    EDITOR(Res.string.settings_category_editor, Icons.Outlined.EditNote),
+    SMALI(Res.string.settings_category_smali, Icons.Outlined.Android),
+    DECOMPILER(Res.string.settings_category_decompiler, Icons.Outlined.Code)
 }
 
 // Base sealed class for settings
@@ -55,7 +75,8 @@ class IntSetting(
     defaultValue: Int,
     val min: Int,
     val max: Int,
-    val step: Int = 1
+    val step: Int = 1,
+    val unit: String = ""
 ) : Setting<Int>(key, category, nameRes, defaultValue) {
 
     override fun save(settings: Settings) {
@@ -70,27 +91,46 @@ class IntSetting(
     override fun Editor() {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.width(400.dp)
-                .defaultMinSize(minWidth = 200.dp) ,
-            horizontalArrangement = Arrangement.Start
+            modifier = Modifier.width(400.dp).defaultMinSize(minWidth = 200.dp),
+            horizontalArrangement = Arrangement.End
         ) {
-            Slider(
-                value = value.toFloat(),
-                onValueChange = { newValue ->
-                    val stepped = ((newValue - min) / step).toInt() * step + min
-                    value = stepped.coerceIn(min, max)
+            IconButton(
+                onClick = {
+                    value = (value - step).coerceAtLeast(min)
                 },
-                valueRange = min.toFloat()..max.toFloat(),
-                steps = (max - min) / step - 1,
-                modifier = Modifier
-                    .weight(1f, fill = true) // fill available space
+                enabled = value > min
+            ) {
+                Icon(Icons.Default.Remove, contentDescription = "Decrease")
+            }
+
+            OutlinedTextField(
+                value = value.toString(),
+                onValueChange = {
+                    it.toIntOrNull()?.let { input ->
+                        value = input.coerceIn(min, max)
+                    }
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+                modifier = Modifier.width(100.dp),
+                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.End),
+                suffix = {
+                    Text(
+                        unit,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                }
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                "$value",
-                maxLines = 1,
-                modifier = Modifier.defaultMinSize(minWidth = 40.dp) // keep text from shrinking too much
-            )
+
+
+            IconButton(
+                onClick = {
+                    value = (value + step).coerceAtMost(max)
+                },
+                enabled = value < max
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Increase")
+            }
         }
     }
 

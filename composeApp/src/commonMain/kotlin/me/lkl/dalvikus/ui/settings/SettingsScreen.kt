@@ -55,9 +55,14 @@ fun SettingsScreen() {
                         .padding(vertical = 8.dp, horizontal = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Icon(
+                        imageVector = category.icon,
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = stringResource(category.nameRes),
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.weight(1f)
                     )
                     Icon(
@@ -97,7 +102,7 @@ private fun SettingRow(setting: Setting<*>) {
     ) {
         Text(
             text = stringResource(setting.nameRes),
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(end = 32.dp)
         )
         Spacer(modifier = Modifier.weight(1f))

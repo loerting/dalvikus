@@ -7,6 +7,7 @@ import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.settings_api_level
 import dalvikus.composeapp.generated.resources.settings_decompiler_verbose
 import dalvikus.composeapp.generated.resources.settings_font_size
+import dalvikus.composeapp.generated.resources.settings_save_automatically
 import java.net.URI
 import java.util.prefs.Preferences
 
@@ -18,12 +19,19 @@ class DalvikusSettings(val bled: Object) {
     val settingsList: List<Setting<*>> = listOf(
         IntSetting(
             key = "font_size",
-            category = SettingsCategory.GENERAL,
+            category = SettingsCategory.EDITOR,
             nameRes = Res.string.settings_font_size,
             defaultValue = 14,
             min = 8,
             max = 30,
-            step = 1
+            step = 1,
+            unit = "sp"
+        ),
+        BooleanSetting(
+            key = "save_automatically",
+            category = SettingsCategory.EDITOR,
+            nameRes = Res.string.settings_save_automatically,
+            defaultValue = false
         ),
         IntSetting(
             key = "api_level",
