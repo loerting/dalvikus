@@ -29,9 +29,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.lkl.dalvikus.io.archiveExtensions
 import me.lkl.dalvikus.theme.*
 import me.lkl.dalvikus.tree.TreeElement
-import me.lkl.dalvikus.io.archiveExtensions
 import me.lkl.dalvikus.ui.tabs.TabManager
 
 @Composable

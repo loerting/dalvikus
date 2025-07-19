@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import me.lkl.dalvikus.io.IOChannel
 import me.lkl.dalvikus.tabs.TabElement
-import me.lkl.dalvikus.tabs.WelcomeTab
 
 class Code(
     val tab: TabElement,

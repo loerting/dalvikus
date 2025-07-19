@@ -3,11 +3,7 @@ package me.lkl.dalvikus.settings
 import com.android.tools.smali.dexlib2.Opcodes
 import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
-import dalvikus.composeapp.generated.resources.Res
-import dalvikus.composeapp.generated.resources.settings_api_level
-import dalvikus.composeapp.generated.resources.settings_decompiler_verbose
-import dalvikus.composeapp.generated.resources.settings_font_size
-import dalvikus.composeapp.generated.resources.settings_save_automatically
+import dalvikus.composeapp.generated.resources.*
 import java.net.URI
 import java.util.prefs.Preferences
 

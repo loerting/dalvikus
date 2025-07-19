@@ -15,6 +15,7 @@ data class WelcomeTab(
     override val tabIcon: ImageVector = Icons.Default.EmojiPeople
 ) : TabElement {
     override val hasUnsavedChanges: MutableState<Boolean> = mutableStateOf(false)
+
     @Composable
     override fun tabName(): String = stringResource(Res.string.welcome_tab_name)
 }

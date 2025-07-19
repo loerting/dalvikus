@@ -6,14 +6,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.android.tools.smali.dexlib2.Opcodes
 import com.android.tools.smali.dexlib2.dexbacked.DexBackedDexFile
 import me.lkl.dalvikus.dalvikusSettings
-import me.lkl.dalvikus.settings.DalvikusSettings
-import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.TreeElement
 import java.io.BufferedInputStream
 import java.io.File
 
 class DexFileTreeNode(
-private val file: File
+    private val file: File
 ) : TreeElement {
     private var openDexFile: DexBackedDexFile? = null
 

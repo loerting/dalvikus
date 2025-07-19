@@ -18,9 +18,7 @@ import com.android.tools.smali.smali.smaliParser
 import com.android.tools.smali.smali.smaliTreeWalker
 import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.io.IOChannel
-import me.lkl.dalvikus.settings.DalvikusSettings
 import org.antlr.runtime.CommonTokenStream
-import org.antlr.runtime.Token
 import org.antlr.runtime.tree.CommonTree
 import org.antlr.runtime.tree.CommonTreeNodeStream
 import java.io.BufferedWriter
@@ -31,6 +29,7 @@ class SmaliTab(
     override val tabId: String
 ) : TabElement {
     override val hasUnsavedChanges: MutableState<Boolean> = mutableStateOf(false)
+
     @Composable
     override fun tabName(): String = classDef.type.removeSurrounding("L", ";").substringAfterLast('/')
     override val tabIcon: ImageVector = Icons.Outlined.DataObject
@@ -83,7 +82,7 @@ class SmaliTab(
                 dexGen.setVerboseErrors(true)
                 val dexBuilder = DexBuilder(Opcodes.forApi(apiLevel))
                 dexGen.setDexBuilder(dexBuilder)
-                val smaliFile = dexGen.smali_file()
+                dexGen.smali_file()
                 // TODO use the smaliFile or the dexBuilder to write back to the DEX file
 
                 hasUnsavedChanges.value = false

@@ -3,12 +3,12 @@ package me.lkl.dalvikus.tree.archive
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.ui.graphics.vector.ImageVector
+import me.lkl.dalvikus.io.IOChannel
+import me.lkl.dalvikus.io.LazyArchiveFile
 import me.lkl.dalvikus.tabs.CodeTab
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.TreeElement
 import me.lkl.dalvikus.tree.plaintextFileExtensions
-import me.lkl.dalvikus.io.IOChannel
-import me.lkl.dalvikus.io.LazyArchiveFile
 import me.lkl.dalvikus.ui.tree.IconForFileExtension
 import java.io.File
 

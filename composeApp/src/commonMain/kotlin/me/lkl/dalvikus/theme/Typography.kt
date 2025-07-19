@@ -6,7 +6,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import dalvikus.composeapp.generated.resources.*
-import dalvikus.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.Font
 
 @Composable
@@ -27,7 +26,7 @@ fun JetBrainsMono() = FontFamily(
     Font(Res.font.JetBrainsMono_SemiBoldItalic, FontWeight.SemiBold, FontStyle.Italic),
     Font(Res.font.JetBrainsMono_Thin, FontWeight.Thin, FontStyle.Normal),
     Font(Res.font.JetBrainsMono_ThinItalic, FontWeight.Thin, FontStyle.Italic)
-    )
+)
 
 fun Typography.withFontFamily(fontFamily: FontFamily): Typography {
     return Typography(

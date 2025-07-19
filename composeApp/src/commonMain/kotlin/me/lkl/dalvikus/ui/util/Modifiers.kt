@@ -1,8 +1,8 @@
 package me.lkl.dalvikus.ui.util
 
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.input.key.*
+import androidx.compose.ui.layout.layout
 
 fun Modifier.onSaveShortcut(
     enabled: Boolean = true,

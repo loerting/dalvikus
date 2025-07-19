@@ -35,7 +35,8 @@ class Decompiler {
                     // Setup Jadx arguments
                     val jadxArgs = JadxArgs().apply {
                         inputFiles = listOf(tempDexFile)
-                        commentsLevel = if(dalvikusSettings["decompiler_verbose"]) CommentsLevel.DEBUG else CommentsLevel.WARN
+                        commentsLevel =
+                            if (dalvikusSettings["decompiler_verbose"]) CommentsLevel.DEBUG else CommentsLevel.WARN
                         isShowInconsistentCode = true
                         isDebugInfo = false
                         codeCache = NoOpCodeCache()

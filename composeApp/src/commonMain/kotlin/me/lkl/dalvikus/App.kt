@@ -1,28 +1,11 @@
 package me.lkl.dalvikus
 
-import SettingsScreen
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.*
 import androidx.compose.animation.core.*
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
-import androidx.compose.animation.with
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
-import androidx.compose.material.icons.filled.Android
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Nature
-import androidx.compose.material.icons.filled.Park
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -31,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
-import com.russhwolf.settings.Settings
 import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.tabs.WelcomeTab
@@ -47,8 +29,6 @@ import org.jetbrains.compose.splitpane.HorizontalSplitPane
 import org.jetbrains.compose.splitpane.rememberSplitPaneState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import java.awt.Desktop
-import java.net.URI
-import java.util.Objects
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -249,7 +229,8 @@ fun TopBar() {
         actions = {
             IconButton(onClick = {
                 clickedStar = true
-                Desktop.getDesktop().browse(DalvikusSettings.getRepoURI()) }) {
+                Desktop.getDesktop().browse(DalvikusSettings.getRepoURI())
+            }) {
                 Icon(
                     imageVector = if (clickedStar) Icons.Filled.Star else Icons.Outlined.StarRate,
                     contentDescription = null

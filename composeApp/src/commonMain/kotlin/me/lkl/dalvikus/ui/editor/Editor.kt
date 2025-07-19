@@ -129,8 +129,6 @@ fun Editor(
                                 // If not auto-saving, mark as unsaved changes
                                 editable.hasUnsavedChanges = true
 
-                                print(editable.tab.hasUnsavedChanges)
-                                println(editable.tab.hasUnsavedChanges.value)
                             }
                         },
                         modifier = Modifier.fillMaxSize().onSaveShortcut(enabled = editable.isEditable) {

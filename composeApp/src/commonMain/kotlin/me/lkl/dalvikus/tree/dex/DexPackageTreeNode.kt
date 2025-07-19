@@ -1,7 +1,6 @@
 package me.lkl.dalvikus.tree.dex
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.outlined.FolderSpecial
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color

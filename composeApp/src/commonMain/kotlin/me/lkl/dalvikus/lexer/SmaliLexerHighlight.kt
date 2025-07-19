@@ -1,6 +1,5 @@
 package me.lkl.dalvikus.lexer
 
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -10,7 +9,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import com.android.tools.smali.smali.smaliFlexLexer
 import com.android.tools.smali.smali.smaliParser
 import me.lkl.dalvikus.dalvikusSettings
-import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.ui.editor.CodeHighlightColors
 import org.antlr.runtime.CommonToken
 import org.antlr.runtime.CommonTokenStream

@@ -64,7 +64,10 @@ class IOChannel<T>(
 
                     // Create appropriate output stream
                     BufferedOutputStream(FileOutputStream(tempFile)).use { outStream ->
-                        val archiveOut = ArchiveStreamFactory().createArchiveOutputStream(extension, outStream) as ArchiveOutputStream<ArchiveEntry>
+                        val archiveOut = ArchiveStreamFactory().createArchiveOutputStream(
+                            extension,
+                            outStream
+                        ) as ArchiveOutputStream<ArchiveEntry>
 
                         archiveOut.use { aos ->
                             for ((entryName, entry) in entries) {

@@ -6,10 +6,9 @@ import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.ArchiveInputStream
 import org.apache.commons.compress.archivers.ArchiveStreamFactory
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
-import org.apache.commons.compress.archivers.zip.ZipFile as CommonsZipFile
 import java.io.*
 import java.util.*
-import kotlin.collections.LinkedHashMap
+import org.apache.commons.compress.archivers.zip.ZipFile as CommonsZipFile
 
 val archiveExtensions = setOf(
     "zip", "jar", "war", "ear", "apk", "aar", "tar", "gz", "tgz", "bz2", "xz"
@@ -50,7 +49,8 @@ class LazyArchiveFile(val file: File) : Closeable {
             // Use stream-based ArchiveStreamFactory for other archive types
             val entries = LinkedHashMap<String, ArchiveEntry>()
             val input = BufferedInputStream(FileInputStream(file))
-            val archiveStream = ArchiveStreamFactory().createArchiveInputStream(input) as ArchiveInputStream<ArchiveEntry>
+            val archiveStream =
+                ArchiveStreamFactory().createArchiveInputStream(input) as ArchiveInputStream<ArchiveEntry>
             archiveStream.use { stream ->
                 var entry = stream.nextEntry
                 while (entry != null) {

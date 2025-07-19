@@ -12,6 +12,7 @@ abstract class CodeTab(
     override val tabIcon: ImageVector
 ) : TabElement {
     override val hasUnsavedChanges: MutableState<Boolean> = mutableStateOf(false)
+
     @Composable
     override fun tabName(): String = tabName
 
