@@ -2,6 +2,10 @@ package me.lkl.dalvikus.settings
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
@@ -10,10 +14,8 @@ import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.ExposedDropdownMenuDefaults.TrailingIcon
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -140,6 +142,71 @@ class BooleanSetting(
                 checked = value,
                 onCheckedChange = { checked -> value = checked }
             )
+        }
+    }
+}
+
+class StringOptionSetting(
+    key: String,
+    category: SettingsCategory,
+    nameRes: StringResource,
+    defaultKey: String,
+    val options: List<Pair<String, String>> // key to label
+) : Setting<String>(key, category, nameRes, defaultKey) {
+
+    override fun save(settings: Settings) {
+        settings.putString(key, value)
+    }
+
+    override fun load(settings: Settings) {
+        value = settings.getString(key, defaultValue)
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    override fun Editor() {
+        var expanded by remember { mutableStateOf(false) }
+
+        // Text state for the dropdown — initialized from current value
+        val currentLabel = options.find { it.first == value }?.second ?: value
+        val textFieldState = rememberTextFieldState(currentLabel)
+
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = it }
+        ) {
+            OutlinedTextField(
+                state = textFieldState,
+                readOnly = true,
+                modifier = Modifier
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                    .fillMaxWidth(),
+                lineLimits = TextFieldLineLimits.SingleLine,
+                trailingIcon = { TrailingIcon(expanded = expanded) }
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                options.forEach { (optionKey, optionLabel) ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = optionLabel,
+                                style = MaterialTheme.typography.bodyLarge,
+                                textAlign = TextAlign.Start
+                            )
+                        },
+                        onClick = {
+                            value = optionKey
+                            textFieldState.setTextAndPlaceCursorAtEnd(optionLabel)
+                            expanded = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                    )
+                }
+            }
         }
     }
 }

@@ -35,8 +35,24 @@ class EditorViewModel(private val code: Code, val highlightColors: CodeHighlight
     }
 
     fun onCodeChanged(oldText: String, newText: String, coroutineScope: CoroutineScope) {
-        mimicOldHighlight(oldText, newText)
+        val diffIndex = newText.commonPrefixWith(oldText).length
 
+        val newTextSuffix = newText.substring(diffIndex)
+        val oldTextSuffix = oldText.substring(diffIndex)
+        val commonSuffixLength = newTextSuffix.commonSuffixWith(oldTextSuffix).length
+
+        val oldSuffixStart = oldText.length - commonSuffixLength
+        val newSuffixStart = newText.length - commonSuffixLength
+
+        val safeNewSuffixStart = maxOf(newSuffixStart, diffIndex)
+        val insertedText = newText.substring(diffIndex, safeNewSuffixStart)
+
+        val isNewlineInserted = insertedText == "\n"
+        if (isNewlineInserted) {
+            // TODO implement new line indentation
+        }
+
+        mimicOldHighlight(newText, diffIndex, newSuffixStart, oldSuffixStart, insertedText)
         code.updateCode(newText)
 
         if (dalvikusSettings["save_automatically"] && code.isEditable) {
@@ -49,18 +65,13 @@ class EditorViewModel(private val code: Code, val highlightColors: CodeHighlight
     /**
      * Inserts the changes into the old highlight and uses it temporarily as the current one.
      */
-    private fun mimicOldHighlight(oldText: String, newText: String) {
-        val diffIndex = newText.commonPrefixWith(oldText).length
-
-        val newTextSuffix = newText.substring(diffIndex)
-        val oldTextSuffix = oldText.substring(diffIndex)
-        val commonSuffixLength = newTextSuffix.commonSuffixWith(oldTextSuffix).length
-
-        val oldSuffixStart = oldText.length - commonSuffixLength
-        val newSuffixStart = newText.length - commonSuffixLength
-
-        val safeNewSuffixStart = maxOf(newSuffixStart, diffIndex)
-        val insertedText = newText.substring(diffIndex, safeNewSuffixStart)
+    private fun mimicOldHighlight(
+        newText: String,
+        diffIndex: Int,
+        newSuffixStart: Int,
+        oldSuffixStart: Int,
+        insertedText: String
+    ) {
         val offsetAfterChange = newSuffixStart - oldSuffixStart
 
         val builder = AnnotatedString.Builder()

@@ -37,12 +37,21 @@ class DalvikusSettings(val bled: Object) {
             min = 1,
             max = 34
         ),
+        // TODO actually implement CFR decompiler.
+        StringOptionSetting(
+            key = "decompiler_implementation",
+            category = SettingsCategory.DECOMPILER,
+            nameRes = Res.string.settings_decompiler_implementation,
+            "jadx",
+            options = listOf(Pair("jadx", "JADX 1.5.2"), Pair("cfr", "CFR 0.152"))
+        ),
         BooleanSetting(
             key = "decompiler_verbose",
             category = SettingsCategory.DECOMPILER,
             nameRes = Res.string.settings_decompiler_verbose,
             defaultValue = false
         ),
+
     )
 
     init {

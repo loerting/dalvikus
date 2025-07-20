@@ -34,6 +34,7 @@
     <string name="settings_font_size">Font size</string>
     <string name="settings_api_level">Dalvik Opcodes API level</string>
     <string name="settings_decompiler_verbose">Verbose decompiler output</string>
+    <string name="settings_decompiler_implementation">Decompiler implementation</string>
     <string name="settings_save_automatically">Save editor changes automatically</string>
 
     <string name="unsaved_changes_title">Unsaved changes</string>
