@@ -37,7 +37,7 @@ import me.lkl.dalvikus.tabs.SmaliTab
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tabs.WelcomeTab
 import me.lkl.dalvikus.ui.editor.Code
-import me.lkl.dalvikus.ui.editor.Editor
+import me.lkl.dalvikus.ui.editor.EditorScreen
 import org.jetbrains.compose.resources.stringResource
 import java.awt.Desktop
 import java.net.URI
@@ -54,7 +54,7 @@ fun TabContentRenderer(selectedNavItem: String, tab: TabElement) {
             } else {
                 val fileExtension = tab.tabName().substringAfterLast(".", "").lowercase()
                 val code = remember(tab) { Code(tab, tab.makeIOChannel(), fileExtension) }
-                Editor(code)
+                EditorScreen(code)
             }
         }
 
@@ -62,10 +62,10 @@ fun TabContentRenderer(selectedNavItem: String, tab: TabElement) {
 
             if (selectedNavItem == "Decompiler") {
                 val code = remember(tab) { Code(tab, Decompiler.provideInput(tab.classDef), "java") }
-                Editor(code)
+                EditorScreen(code)
             } else {
                 val code = remember(tab) { Code(tab, tab.makeIOChannel(), "smali") }
-                Editor(code)
+                EditorScreen(code)
             }
         }
 

@@ -9,7 +9,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import com.android.tools.smali.smali.smaliFlexLexer
 import com.android.tools.smali.smali.smaliParser
 import me.lkl.dalvikus.dalvikusSettings
-import me.lkl.dalvikus.ui.editor.CodeHighlightColors
+import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
 import org.antlr.runtime.CommonToken
 import org.antlr.runtime.CommonTokenStream
 import org.antlr.runtime.RecognitionException

@@ -1,4 +1,4 @@
-package me.lkl.dalvikus.ui.editor
+package me.lkl.dalvikus.ui.editor.highlight
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -8,6 +8,7 @@ import me.lkl.dalvikus.lexer.highlightJavaCode
 import me.lkl.dalvikus.lexer.highlightJsonCode
 import me.lkl.dalvikus.lexer.highlightSmaliCode
 import me.lkl.dalvikus.lexer.highlightXmlCode
+import me.lkl.dalvikus.ui.editor.Code
 
 data class CodeHighlightColors(
     val onSurface: Color,
@@ -36,6 +37,7 @@ fun defaultCodeHighlightColors(): CodeHighlightColors {
 
 fun highlightCode(editable: Code, colors: CodeHighlightColors): AnnotatedString {
     val code = editable.code
+    if (code.trim().isEmpty()) return AnnotatedString(code)
     return when (editable.codeType.lowercase()) {
         "json" -> highlightJsonCode(code, colors)
         "xml", "html" -> highlightXmlCode(code, colors)

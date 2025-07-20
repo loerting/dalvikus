@@ -3,10 +3,9 @@ package me.lkl.dalvikus.lexer
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
-import me.lkl.dalvikus.ui.editor.CodeHighlightColors
+import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
 
 actual fun highlightJsonCode(code: String, colors: CodeHighlightColors): AnnotatedString {
     val lexer = JSONLexer(CharStreams.fromString(code))

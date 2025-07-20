@@ -10,7 +10,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import me.lkl.dalvikus.ui.editor.CodeHighlightColors
+import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
 
 actual fun highlightJavaCode(code: String, colors: CodeHighlightColors): AnnotatedString {
     val lexer = Java20Lexer(CharStreams.fromString(code))
