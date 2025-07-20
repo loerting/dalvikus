@@ -2,6 +2,7 @@ package me.lkl.dalvikus.ui.tree
 
 import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.VerticalScrollbar
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,7 +33,11 @@ import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.io.archiveExtensions
 import me.lkl.dalvikus.theme.*
 import me.lkl.dalvikus.tree.TreeElement
+import me.lkl.dalvikus.tree.dex.DexFileTreeNode
 import me.lkl.dalvikus.ui.tabs.TabManager
+
+internal var currentSelection by mutableStateOf<TreeElement?>(null)
+internal var lastAndroidArchive by mutableStateOf<DexFileTreeNode?>(null)
 
 @Composable
 fun TreeView(
@@ -78,12 +83,7 @@ fun TreeView(
         VerticalScrollbar(
             adapter = rememberScrollbarAdapter(scrollState),
             modifier = Modifier.align(Alignment.CenterEnd).padding(8.dp),
-            style = LocalScrollbarStyle.current.copy(
-                minimalHeight = 24.dp,
-                thickness = 12.dp,
-                unhoverColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.12f),
-                hoverColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.50f)
-            )
+            style = LocalScrollbarStyle.current
         )
     }
 }
@@ -102,8 +102,12 @@ private fun TreeRow(
     Row(
         modifier = Modifier
             .requiredHeight(48.dp)
+            .background(if (currentSelection == node) MaterialTheme.colorScheme.primary.copy(alpha = 0.25f) else Color.Transparent)
             .fillMaxWidth()
             .clickable(enabled = !loading && node.isClickable) {
+                currentSelection = node
+                if (node is DexFileTreeNode)
+                    lastAndroidArchive = node
                 if (node.isContainer) {
                     val currentlyExpanded = expandedState[node] ?: false
                     if (!currentlyExpanded) {

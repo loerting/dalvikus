@@ -2,6 +2,9 @@ package me.lkl.dalvikus
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BasicTooltipBox
+import androidx.compose.foundation.BasicTooltipDefaults
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
@@ -14,16 +17,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.tabs.WelcomeTab
+import me.lkl.dalvikus.theme.AndroidGreen
 import me.lkl.dalvikus.theme.AppTheme
 import me.lkl.dalvikus.theme.LocalThemeIsDark
 import me.lkl.dalvikus.ui.LeftPanelContent
 import me.lkl.dalvikus.ui.RightPanelContent
 import me.lkl.dalvikus.ui.nav.NavItem
 import me.lkl.dalvikus.ui.tabs.TabManager
+import me.lkl.dalvikus.ui.tree.lastAndroidArchive
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
 import org.jetbrains.compose.splitpane.HorizontalSplitPane
@@ -177,11 +183,10 @@ internal fun Content() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun TopBar() {
-    var clickedStar by remember { mutableStateOf(false) }
-
+    val tooltipState = rememberTooltipState(isPersistent = true)
     CenterAlignedTopAppBar(
         title = {
             val infiniteTransition = rememberInfiniteTransition()
@@ -229,14 +234,26 @@ fun TopBar() {
             }
         },
         actions = {
-            IconButton(onClick = {
-                clickedStar = true
-                Desktop.getDesktop().browse(DalvikusSettings.getRepoURI())
-            }) {
-                Icon(
-                    imageVector = if (clickedStar) Icons.Filled.Star else Icons.Outlined.StarRate,
-                    contentDescription = null
-                )
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(),
+                tooltip = {
+                    RichTooltip(
+                        title = { Text(stringResource(Res.string.tooltip_deploy_title)) }
+                    ) {
+                        Text(stringResource(Res.string.tooltip_deploy_message, lastAndroidArchive?.name ?: "?"))
+                    }
+                },
+                state = tooltipState
+            ) {
+                IconButton(onClick = {
+                    // TODO implement deploy
+                }) {
+                    Icon(
+                        imageVector = Icons.Filled.InstallMobile,
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = null
+                    )
+                }
             }
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(

@@ -101,7 +101,9 @@ internal fun LeftPanelContent(tabManager: TabManager) {
     }
 }
 
+internal val treeRoot: FileTreeNode = FileTreeNode(File(System.getProperty("user.home")))
+
 @Composable
 fun SampleTree(tabManager: TabManager) {
-    TreeView(FileTreeNode(File(System.getProperty("user.home"))), tabManager)
+    TreeView(treeRoot, tabManager)
 }

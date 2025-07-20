@@ -1,9 +1,10 @@
 package me.lkl.dalvikus.theme
 
 import androidx.compose.ui.graphics.Color
+import com.materialkolor.ktx.darken
 
 internal val AndroidGreen = Color(0xFF97AA4E)
-internal val ArchiveGray = Color(0xFF878B87)
+internal val ArchiveGray = Color(0xFF878B87).darken()
 
 internal val CodeBlue = Color(0xFF5C87B8)
 internal val ImagePurple = Color(0xFF7A5A99)

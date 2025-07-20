@@ -40,6 +40,10 @@
     <string name="unsaved_changes_title">Unsaved changes</string>
     <string name="unsaved_changes_message">"%1$s" has unsaved changes that will be lost when closed. Discard anyway?</string>
 
+    <string name="tooltip_deploy_title">Deploy application</string>
+    <string name="tooltip_deploy_message">Sign and deploy the last selected Android archive %1$s using adb.</string>
+
+
     <string name="cancel">Cancel</string>
     <string name="discard">Discard</string>
     <string name="save">Save</string>
