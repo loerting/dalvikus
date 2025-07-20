@@ -13,7 +13,7 @@ import me.lkl.dalvikus.ui.tree.IconForFileExtension
 import java.io.File
 
 class ArchiveTreeNode(
-    private val file: File,
+    val file: File,
     private val path: String = "",
     private var archive: LazyArchiveFile = LazyArchiveFile(file),
 ) : TreeElement {
@@ -50,7 +50,7 @@ class ArchiveTreeNode(
         return children.sortedWith(compareBy({ !it.isContainer }, { it.name.lowercase() }))
     }
 
-    private fun isZipRoot(): Boolean = path.isEmpty()
+    fun isZipRoot(): Boolean = path.isEmpty()
 
     override val isClickable: Boolean
         get() = isContainer || name.substringAfterLast('.').lowercase() in plaintextFileExtensions

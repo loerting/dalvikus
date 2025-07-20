@@ -17,7 +17,7 @@ import me.lkl.dalvikus.settings.Setting
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun SettingsScreen() {
+fun SettingsView() {
     val grouped = dalvikusSettings.groupedByCategory()
 
     // Track expanded/collapsed state for each category

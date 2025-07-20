@@ -33,11 +33,12 @@ import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.io.archiveExtensions
 import me.lkl.dalvikus.theme.*
 import me.lkl.dalvikus.tree.TreeElement
+import me.lkl.dalvikus.tree.archive.ArchiveTreeNode
 import me.lkl.dalvikus.tree.dex.DexFileTreeNode
 import me.lkl.dalvikus.ui.tabs.TabManager
 
 internal var currentSelection by mutableStateOf<TreeElement?>(null)
-internal var lastAndroidArchive by mutableStateOf<DexFileTreeNode?>(null)
+internal var lastAndroidArchive by mutableStateOf<ArchiveTreeNode?>(null)
 
 @Composable
 fun TreeView(
@@ -106,8 +107,9 @@ private fun TreeRow(
             .fillMaxWidth()
             .clickable(enabled = !loading && node.isClickable) {
                 currentSelection = node
-                if (node is DexFileTreeNode)
+                if (node is ArchiveTreeNode && node.isZipRoot() && node.file.extension.equals("apk", ignoreCase = true))
                     lastAndroidArchive = node
+
                 if (node.isContainer) {
                     val currentlyExpanded = expandedState[node] ?: false
                     if (!currentlyExpanded) {

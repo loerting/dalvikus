@@ -1,6 +1,6 @@
 package me.lkl.dalvikus.ui
 
-import SettingsScreen
+import SettingsView
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,7 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import me.lkl.dalvikus.ui.packaging.PackagingScreen
+import me.lkl.dalvikus.ui.packaging.PackagingView
 import me.lkl.dalvikus.ui.tabs.TabManager
 import me.lkl.dalvikus.ui.tabs.TabView
 
@@ -24,8 +24,8 @@ internal fun RightPanelContent(tabManager: TabManager, selectedNavItem: String) 
         AnimatedContent(targetState = selectedNavItem, label = "NavItem Animation") { targetTab ->
             when (targetTab) {
                 "Editor", "Decompiler" -> OnCard({ TabView(tabManager, selectedNavItem) })
-                "Settings" -> OnCard({ SettingsScreen() })
-                "Packaging" -> PackagingScreen()
+                "Settings" -> OnCard({ SettingsView() })
+                "Packaging" -> OnCard { PackagingView() }
                 else -> throw IllegalArgumentException(
                     "Unsupported selectedNavItem: $selectedNavItem. "
                 )

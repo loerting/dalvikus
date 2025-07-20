@@ -240,7 +240,7 @@ fun TopBar() {
                     RichTooltip(
                         title = { Text(stringResource(Res.string.tooltip_deploy_title)) }
                     ) {
-                        Text(stringResource(Res.string.tooltip_deploy_message, lastAndroidArchive?.name ?: "?"))
+                        Text(stringResource(Res.string.tooltip_deploy_message, lastAndroidArchive?.name ?: stringResource(Res.string.no_app_selected)))
                     }
                 },
                 state = tooltipState
