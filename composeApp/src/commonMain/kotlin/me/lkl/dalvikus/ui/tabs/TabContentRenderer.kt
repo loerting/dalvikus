@@ -5,6 +5,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.outlined.AutoFixHigh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -15,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -79,14 +81,13 @@ fun TabContentRenderer(selectedNavItem: String, tab: TabElement) {
 
 @Composable
 fun Welcome() {
-    Box(Modifier.fillMaxSize().padding(48.dp), contentAlignment = Alignment.Center) {
+    Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                stringResource(Res.string.app_greeting, System.getProperty("user.name")),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                textAlign = TextAlign.Center,
-                fontStyle = FontStyle.Italic
+            Icon(
+                imageVector = Icons.Outlined.AutoFixHigh,
+                tint = MaterialTheme.colorScheme.primary,
+                contentDescription = stringResource(Res.string.app_name),
+                modifier = Modifier.size(48.dp)
             )
             Spacer(Modifier.height(8.dp))
             Text(
