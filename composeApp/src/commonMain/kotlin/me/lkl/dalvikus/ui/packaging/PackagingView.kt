@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedSuggestionChip
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,18 +40,24 @@ import dalvikus.composeapp.generated.resources.app_dalvik_button
 import dalvikus.composeapp.generated.resources.app_github_button
 import dalvikus.composeapp.generated.resources.app_gpl_button
 import dalvikus.composeapp.generated.resources.app_name
+import dalvikus.composeapp.generated.resources.dialog_select_android_archive_title
 import dalvikus.composeapp.generated.resources.no_app_selected
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.theme.AndroidGreen
-import me.lkl.dalvikus.ui.lastAndroidArchive
+import me.lkl.dalvikus.tree.archive.ArchiveTreeNode
+import me.lkl.dalvikus.ui.tree.FileSelectorDialog
 import org.jetbrains.compose.resources.stringResource
 import java.awt.Desktop
 import java.net.URI
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun PackagingView() {
+    var lastAndroidArchive by remember { mutableStateOf<ArchiveTreeNode?>(null) }
+    var showFileSelector by remember { mutableStateOf(false) }
+
     val packagingViewModel = remember(lastAndroidArchive) { PackagingViewModel(lastAndroidArchive) }
     val signatureResult by remember { mutableStateOf<String?>(null) }
 
@@ -61,6 +69,20 @@ fun PackagingView() {
         }
     }
 
+    if (showFileSelector) {
+        FileSelectorDialog(
+            title = stringResource(Res.string.dialog_select_android_archive_title),
+            filePredicate = { it is ArchiveTreeNode && it.isZipRoot() && it.file.extension.lowercase() == "apk" },
+            onDismissRequest = { showFileSelector = false },
+            onFileSelected = { selectedFile ->
+                if (selectedFile is ArchiveTreeNode) {
+                    lastAndroidArchive = selectedFile
+                }
+                showFileSelector = false
+            }
+        )
+    }
+
     Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
@@ -70,13 +92,19 @@ fun PackagingView() {
                 modifier = Modifier.size(48.dp)
             )
             Spacer(Modifier.height(8.dp))
-            Text(
-                lastAndroidArchive?.name ?: stringResource(Res.string.no_app_selected),
-                style = MaterialTheme.typography.bodyLarge,
-                color = AndroidGreen,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center
-            )
+            TextButton(
+                onClick = {
+                    showFileSelector = true
+                }
+            ) {
+                Text(
+                    text = lastAndroidArchive?.file?.name ?: stringResource(Res.string.no_app_selected),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = AndroidGreen,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center
+                )
+            }
 
             Spacer(Modifier.height(32.dp))
             Column {
@@ -88,7 +116,6 @@ fun PackagingView() {
                         VerificationChip("V1", sigRes.isVerifiedUsingV1Scheme)
                         VerificationChip("V2", sigRes.isVerifiedUsingV2Scheme)
                         VerificationChip("V3", sigRes.isVerifiedUsingV3Scheme)
-                        VerificationChip("V3.1", sigRes.isVerifiedUsingV31Scheme)
                         VerificationChip("V4", sigRes.isVerifiedUsingV4Scheme)
                     } else {
                         if(lastAndroidArchive == null) {

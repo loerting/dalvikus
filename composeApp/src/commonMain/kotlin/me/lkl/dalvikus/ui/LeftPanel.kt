@@ -103,8 +103,6 @@ internal fun LeftPanelContent() {
                     node ->
                     if (!node.isClickable) return@TreeView
                     currentSelection = node
-                    if (node is ArchiveTreeNode && node.isZipRoot() && node.file.extension.equals("apk", ignoreCase = true))
-                        lastAndroidArchive = node
 
                     if(!node.isContainer) {
                         val newTab = node.createTab()
@@ -117,4 +115,3 @@ internal fun LeftPanelContent() {
 
 internal val treeRoot: FileTreeNode = FileTreeNode(File(System.getProperty("user.home")), null)
 internal var currentSelection by mutableStateOf<TreeElement?>(null)
-internal var lastAndroidArchive by mutableStateOf<ArchiveTreeNode?>(null)

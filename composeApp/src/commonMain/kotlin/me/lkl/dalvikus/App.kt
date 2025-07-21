@@ -26,7 +26,6 @@ import me.lkl.dalvikus.ui.LeftPanelContent
 import me.lkl.dalvikus.ui.RightPanelContent
 import me.lkl.dalvikus.ui.nav.NavItem
 import me.lkl.dalvikus.ui.tabs.TabManager
-import me.lkl.dalvikus.ui.lastAndroidArchive
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
 import org.jetbrains.compose.splitpane.HorizontalSplitPane
@@ -233,7 +232,8 @@ fun TopBar() {
                     RichTooltip(
                         title = { Text(stringResource(Res.string.tooltip_deploy_title)) }
                     ) {
-                        Text(stringResource(Res.string.tooltip_deploy_message, lastAndroidArchive?.name ?: stringResource(Res.string.no_app_selected)))
+                        // TODO fix and implement
+                        Text(stringResource(Res.string.tooltip_deploy_message, stringResource(Res.string.no_app_selected)))
                     }
                 },
                 state = tooltipState

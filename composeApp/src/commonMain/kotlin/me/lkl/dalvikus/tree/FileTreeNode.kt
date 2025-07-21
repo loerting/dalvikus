@@ -13,7 +13,7 @@ import me.lkl.dalvikus.ui.tree.IconForFileExtension
 import java.io.File
 
 class FileTreeNode(
-    private val file: File, override val parent: TreeElement?
+    val file: File, override val parent: TreeElement?
 ) : TreeElement {
 
     override val name: String

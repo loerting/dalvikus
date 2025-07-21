@@ -18,6 +18,12 @@
     <string name="dialog_exit_title">Exit</string>
     <string name="dialog_exit_message">Are you sure you want to exit? Unsaved changes will be lost.</string>
 
+    <string name="dialog_select_android_archive_title">Select Android Archive</string>
+
+    <string name="unsaved_changes_title">Unsaved changes</string>
+    <string name="unsaved_changes_message">"%1$s" has unsaved changes that will be lost when closed. Discard anyway?</string>
+
+
     <string name="nav_editor">Editor</string>
     <string name="nav_decompiler">Decompiler</string>
     <string name="nav_settings">Settings</string>
@@ -37,9 +43,6 @@
     <string name="settings_decompiler_implementation">Decompiler implementation</string>
     <string name="settings_save_automatically">Save editor changes automatically</string>
 
-    <string name="unsaved_changes_title">Unsaved changes</string>
-    <string name="unsaved_changes_message">"%1$s" has unsaved changes that will be lost when closed. Discard anyway?</string>
-
     <string name="tooltip_deploy_title">Deploy application</string>
     <string name="tooltip_deploy_message">Sign and deploy the last selected Android archive using adb. (%1$s)</string>
     <string name="tooltip_tab_title">Editor tab</string>
@@ -49,6 +52,7 @@
 
 
     <string name="close">Close</string>
+    <string name="select">Select</string>
     <string name="cancel">Cancel</string>
     <string name="discard">Discard</string>
     <string name="save">Save</string>
