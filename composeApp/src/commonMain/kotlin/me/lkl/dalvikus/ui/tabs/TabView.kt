@@ -13,12 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
+import me.lkl.dalvikus.tabManager
 import me.lkl.dalvikus.tabs.TabElement
 import org.jetbrains.compose.resources.stringResource
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabView(
-    tabManager: TabManager,
     selectedNavItem: String
 ) {
     val pendingCloseTab = remember { mutableStateOf<TabElement?>(null) }
@@ -27,13 +28,14 @@ fun TabView(
         UnsavedChangesDialog(tabManager, showCloseDialog, pendingCloseTab)
     }
     Column {
-        ScrollableTabRow(
+        SecondaryScrollableTabRow(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             selectedTabIndex = tabManager.selectedTabIndex,
             modifier = Modifier.fillMaxWidth(),
             edgePadding = 0.dp,
         ) {
             tabManager.tabs.forEachIndexed { index, tab ->
+                val tooltipState = rememberTooltipState(isPersistent = true)
                 Tab(
                     selected = tabManager.selectedTabIndex == index,
                     onClick = { tabManager.selectTab(index) },
@@ -45,12 +47,24 @@ fun TabView(
                         ) {
                             Icon(imageVector = tab.tabIcon, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                if (unsaved) "${tab.tabName()}*" else tab.tabName(),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
+                            TooltipBox(
+                                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(8.dp),
+                                tooltip = {
+                                    RichTooltip(
+                                        title = { Text(stringResource(Res.string.tooltip_tab_title)) }
+                                    ) {
+                                        Text(tab.tabSource?.getSourceDescription() ?: stringResource(Res.string.unknown_source))
+                                    }
+                                },
+                                state = tooltipState
+                            ) {
+                                Text(
+                                    if (unsaved) "${tab.tabName()}*" else tab.tabName(),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
 
                             Spacer(modifier = Modifier.width(4.dp))
                             Icon(

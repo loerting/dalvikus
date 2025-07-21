@@ -7,6 +7,7 @@ import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.ui.tree.ColorForFileExtension
 
 interface TreeElement {
+    val parent: TreeElement?
     val name: String
     val icon: ImageVector
 
@@ -24,6 +25,13 @@ interface TreeElement {
 
     fun onCollapse() {
         // Default implementation does nothing
+    }
+
+    fun getSourceDescription(): String {
+        if(parent == null) {
+            return name
+        }
+        return "${parent!!.getSourceDescription()}/$name"
     }
 }
 

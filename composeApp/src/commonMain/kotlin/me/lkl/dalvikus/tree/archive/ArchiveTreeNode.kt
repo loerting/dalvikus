@@ -14,6 +14,7 @@ import java.io.File
 
 class ArchiveTreeNode(
     val file: File,
+    override val parent: TreeElement? = null,
     private val path: String = "",
     private var archive: LazyArchiveFile = LazyArchiveFile(file),
 ) : TreeElement {
@@ -42,7 +43,7 @@ class ArchiveTreeNode(
 
             if (seen.add(topLevel)) {
                 val childPath = if (isZipRoot()) topLevel else "$path/$topLevel"
-                children.add(ArchiveTreeNode(file, childPath, archive))
+                children.add(ArchiveTreeNode(file, this, childPath, archive))
                 // TODO support DEX inside archives
             }
         }
@@ -60,7 +61,8 @@ class ArchiveTreeNode(
         return object : CodeTab(
             tabId = "${file.path}#$path",
             tabIcon = icon,
-            tabName = name
+            tabName = name,
+            tabSource = this
         ) {
             override fun makeIOChannel(): IOChannel<String> {
                 return IOChannel.fromArchive(archive, path)

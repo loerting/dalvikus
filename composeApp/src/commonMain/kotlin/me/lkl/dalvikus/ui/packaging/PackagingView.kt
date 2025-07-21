@@ -1,6 +1,5 @@
 package me.lkl.dalvikus.ui.packaging
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,20 +8,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Chip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Error
-import androidx.compose.material.icons.outlined.HelpOutline
-import androidx.compose.material.icons.outlined.IndeterminateCheckBox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedSuggestionChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -48,7 +43,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.theme.AndroidGreen
-import me.lkl.dalvikus.ui.tree.lastAndroidArchive
+import me.lkl.dalvikus.ui.lastAndroidArchive
 import org.jetbrains.compose.resources.stringResource
 import java.awt.Desktop
 import java.net.URI
@@ -77,7 +72,7 @@ fun PackagingView() {
             Spacer(Modifier.height(8.dp))
             Text(
                 lastAndroidArchive?.name ?: stringResource(Res.string.no_app_selected),
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.bodyLarge,
                 color = AndroidGreen,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center

@@ -21,7 +21,7 @@ class EditorViewModel(private val code: Code, val highlightColors: CodeHighlight
     val fontSize = (dalvikusSettings["font_size"] as Int).sp
 
     suspend fun loadCode() {
-        withContext(Dispatchers.Default) {
+        withContext(Dispatchers.IO) {
             code.loadCode()
         }
         isLoaded = true

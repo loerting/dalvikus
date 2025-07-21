@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import me.lkl.dalvikus.theme.JetBrainsMono
@@ -24,8 +25,8 @@ fun EditorScreen(editable: Code) {
     val viewModel = remember(editable) { EditorViewModel(editable, highlightColors) }
     val coroutine = rememberCoroutineScope()
 
-    var firstLoad by remember { mutableStateOf(true) }
-    LaunchedEffect(firstLoad) {
+    var firstLoad by remember(editable) { mutableStateOf(true) }
+    LaunchedEffect(editable.code) {
         if (firstLoad) {
             viewModel.loadCode()
             firstLoad = false
@@ -102,7 +103,7 @@ fun EditorScreen(editable: Code) {
                             fontFamily = JetBrainsMono(),
                             fontSize = viewModel.fontSize,
                             lineHeight = viewModel.fontSize * 1.5f,
-                            color = Color.Transparent
+                            color = Color.Black.copy(alpha = 0.0f)
                         ),
                         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                         decorationBox = { inner ->
@@ -113,6 +114,9 @@ fun EditorScreen(editable: Code) {
                             ) {
                                 Text(
                                     text = viewModel.highlightedText,
+                                    maxLines = Int.MAX_VALUE,
+                                    softWrap = false,
+                                    overflow = TextOverflow.Clip,
                                     modifier = Modifier.matchParentSize(),
                                     style = TextStyle(
                                         fontFamily = JetBrainsMono(),

@@ -179,7 +179,7 @@ class StringOptionSetting(
                 state = textFieldState,
                 readOnly = true,
                 modifier = Modifier
-                    .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                     .fillMaxWidth(),
                 lineLimits = TextFieldLineLimits.SingleLine,
                 trailingIcon = { TrailingIcon(expanded = expanded) }

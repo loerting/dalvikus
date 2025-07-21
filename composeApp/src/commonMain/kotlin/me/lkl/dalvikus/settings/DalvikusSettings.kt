@@ -66,12 +66,18 @@ class DalvikusSettings(val bled: Object) {
         settingsList.forEach { it.save(settings) }
     }
 
-    operator fun <T> get(key: String): T {
-        return when (val setting = settingsList.find { it.key == key }) {
-            is IntSetting -> setting.value as T
-            is BooleanSetting -> setting.value as T
+    inline operator fun <reified T> get(key: String): T {
+        val setting = settingsList.find { it.key == key }
+            ?: throw IllegalArgumentException("Setting not found for key: $key")
+
+        val value = when (setting) {
+            is IntSetting -> setting.value
+            is BooleanSetting -> setting.value
             else -> throw IllegalArgumentException("Unsupported setting type for key: $key")
         }
+
+        return value as? T
+            ?: throw IllegalArgumentException("Expected type ${T::class}, but got ${value::class}")
     }
 
     fun groupedByCategory(): Map<SettingsCategory, List<Setting<*>>> {

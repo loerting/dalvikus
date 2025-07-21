@@ -11,10 +11,10 @@ import java.io.File
 
 class DexClassTreeNode(
     private val classDef: DexBackedClassDef,
-    private val file: File
+    private val file: File, override val parent: TreeElement?
 ) : TreeElement {
     override val name: String
-        get() = classDef.type.removeSurrounding("L", ";").substringAfterLast('/')
+        get() = getClassName().substringAfterLast('/')
 
     override val icon: ImageVector
         get() = Icons.Outlined.DataObject
@@ -34,7 +34,10 @@ class DexClassTreeNode(
         // Implement tab creation logic if needed
         return SmaliTab(
             classDef,
-            tabId = "${file.path}#${classDef.type}"
+            tabId = "${file.path}#${classDef.type}",
+            tabSource = this
         )
     }
+
+    private fun getClassName(): String = classDef.type.removeSurrounding("L", ";")
 }

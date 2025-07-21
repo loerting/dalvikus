@@ -33,20 +33,15 @@ import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.io.archiveExtensions
 import me.lkl.dalvikus.theme.*
 import me.lkl.dalvikus.tree.TreeElement
-import me.lkl.dalvikus.tree.archive.ArchiveTreeNode
-import me.lkl.dalvikus.tree.dex.DexFileTreeNode
-import me.lkl.dalvikus.ui.tabs.TabManager
-
-internal var currentSelection by mutableStateOf<TreeElement?>(null)
-internal var lastAndroidArchive by mutableStateOf<ArchiveTreeNode?>(null)
 
 @Composable
 fun TreeView(
     root: TreeElement,
-    tabManager: TabManager,
-    modifier: Modifier = Modifier
-) {
-
+    modifier: Modifier = Modifier,
+    onFileSelected: ((TreeElement) -> Unit)? = null,
+    selectedElement: TreeElement? = null
+)
+{
     val childrenCache = remember { mutableMapOf<TreeElement, List<TreeElement>>() }
     val expandedState = remember { mutableStateMapOf<TreeElement, Boolean>() }
     val coroutineScope = rememberCoroutineScope()
@@ -76,7 +71,7 @@ fun TreeView(
             itemsIndexed(
                 items = visibleNodes,
             ) { _, (node, indent) ->
-                TreeRow(node, indent, expandedState, childrenCache, coroutineScope, tabManager)
+                TreeRow(node, indent, expandedState, childrenCache, coroutineScope, onFileSelected, selectedElement)
             }
         }
 
@@ -96,21 +91,19 @@ private fun TreeRow(
     expandedState: SnapshotStateMap<TreeElement, Boolean>,
     childrenCache: MutableMap<TreeElement, List<TreeElement>>,
     coroutineScope: CoroutineScope,
-    tabManager: TabManager
+    onFileSelected: ((TreeElement) -> Unit)?,
+    selectedElement: TreeElement?
 ) {
     var loading by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
             .requiredHeight(48.dp)
-            .background(if (currentSelection == node) MaterialTheme.colorScheme.primary.copy(alpha = 0.25f) else Color.Transparent)
+            .background(if (selectedElement == node) MaterialTheme.colorScheme.primary.copy(alpha = 0.25f) else Color.Transparent)
             .fillMaxWidth()
-            .clickable(enabled = !loading && node.isClickable) {
-                currentSelection = node
-                if (node is ArchiveTreeNode && node.isZipRoot() && node.file.extension.equals("apk", ignoreCase = true))
-                    lastAndroidArchive = node
-
-                if (node.isContainer) {
+            .clickable(enabled = !loading) {
+                onFileSelected?.invoke(node)
+                if (node.isContainer && node.isClickable) {
                     val currentlyExpanded = expandedState[node] ?: false
                     if (!currentlyExpanded) {
                         if (childrenCache[node] == null) {
@@ -129,9 +122,6 @@ private fun TreeRow(
                         node.onCollapse()
                         childrenCache.remove(node)
                     }
-                } else {
-                    val newTab = node.createTab()
-                    tabManager.addOrSelectTab(newTab)
                 }
             }
             .padding(start = (4 + indent * 16).dp),

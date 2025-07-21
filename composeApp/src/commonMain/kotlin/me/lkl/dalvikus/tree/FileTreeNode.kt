@@ -13,7 +13,7 @@ import me.lkl.dalvikus.ui.tree.IconForFileExtension
 import java.io.File
 
 class FileTreeNode(
-    private val file: File
+    private val file: File, override val parent: TreeElement?
 ) : TreeElement {
 
     override val name: String
@@ -47,15 +47,15 @@ class FileTreeNode(
 
         when {
             file.isFile && extension in dexFileExtensions -> {
-                DexFileTreeNode(file)
+                DexFileTreeNode(file, this)
             }
 
             file.isFile && extension in archiveExtensions -> {
-                ArchiveTreeNode(file)
+                ArchiveTreeNode(file, this)
             }
 
             else -> {
-                FileTreeNode(file)
+                FileTreeNode(file, this)
             }
         }
     }
@@ -69,7 +69,8 @@ class FileTreeNode(
         return object : CodeTab(
             tabId = file.path,
             tabIcon = icon,
-            tabName = name
+            tabName = name,
+            tabSource = this
         ) {
             override fun makeIOChannel(): IOChannel<String> {
                 return IOChannel.fromFile(file).also {

@@ -42,9 +42,13 @@
 
     <string name="tooltip_deploy_title">Deploy application</string>
     <string name="tooltip_deploy_message">Sign and deploy the last selected Android archive using adb. (%1$s)</string>
+    <string name="tooltip_tab_title">Editor tab</string>
+
     <string name="no_app_selected">No app selected</string>
+    <string name="unknown_source">Unknown source</string>
 
 
+    <string name="close">Close</string>
     <string name="cancel">Cancel</string>
     <string name="discard">Discard</string>
     <string name="save">Save</string>

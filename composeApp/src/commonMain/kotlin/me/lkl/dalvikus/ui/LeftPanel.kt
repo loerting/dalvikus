@@ -16,15 +16,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.tree_search_placeholder
+import me.lkl.dalvikus.tabManager
 import me.lkl.dalvikus.tree.FileTreeNode
-import me.lkl.dalvikus.ui.tabs.TabManager
+import me.lkl.dalvikus.tree.TreeElement
+import me.lkl.dalvikus.tree.archive.ArchiveTreeNode
 import me.lkl.dalvikus.ui.tree.TreeView
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun LeftPanelContent(tabManager: TabManager) {
+internal fun LeftPanelContent() {
     var query by remember { mutableStateOf("") }
 
     Column(
@@ -96,14 +98,23 @@ internal fun LeftPanelContent(tabManager: TabManager) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SampleTree(tabManager)
+            TreeView(treeRoot,
+                onFileSelected = {
+                    node ->
+                    if (!node.isClickable) return@TreeView
+                    currentSelection = node
+                    if (node is ArchiveTreeNode && node.isZipRoot() && node.file.extension.equals("apk", ignoreCase = true))
+                        lastAndroidArchive = node
+
+                    if(!node.isContainer) {
+                        val newTab = node.createTab()
+                        tabManager.addOrSelectTab(newTab)
+                    }
+                }, selectedElement = currentSelection)
         }
     }
 }
 
-internal val treeRoot: FileTreeNode = FileTreeNode(File(System.getProperty("user.home")))
-
-@Composable
-fun SampleTree(tabManager: TabManager) {
-    TreeView(treeRoot, tabManager)
-}
+internal val treeRoot: FileTreeNode = FileTreeNode(File(System.getProperty("user.home")), null)
+internal var currentSelection by mutableStateOf<TreeElement?>(null)
+internal var lastAndroidArchive by mutableStateOf<ArchiveTreeNode?>(null)

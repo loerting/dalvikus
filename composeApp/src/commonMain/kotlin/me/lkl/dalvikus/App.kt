@@ -2,8 +2,6 @@ package me.lkl.dalvikus
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.BasicTooltipBox
-import androidx.compose.foundation.BasicTooltipDefaults
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -14,28 +12,26 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.tabs.WelcomeTab
-import me.lkl.dalvikus.theme.AndroidGreen
 import me.lkl.dalvikus.theme.AppTheme
 import me.lkl.dalvikus.theme.LocalThemeIsDark
 import me.lkl.dalvikus.ui.LeftPanelContent
 import me.lkl.dalvikus.ui.RightPanelContent
 import me.lkl.dalvikus.ui.nav.NavItem
 import me.lkl.dalvikus.ui.tabs.TabManager
-import me.lkl.dalvikus.ui.tree.lastAndroidArchive
+import me.lkl.dalvikus.ui.lastAndroidArchive
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
 import org.jetbrains.compose.splitpane.HorizontalSplitPane
 import org.jetbrains.compose.splitpane.rememberSplitPaneState
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import java.awt.Desktop
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,18 +42,17 @@ internal fun App(
     onExitConfirmed: () -> Unit
 ) = AppTheme {
     Scaffold(
-        topBar = {
-            TopBar()
-        }
+        topBar = { TopBar() }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding) // Ensures content doesn't go under the app bar
+                .padding(innerPadding)
         ) {
             Content()
         }
     }
+
 
     if (showExitDialog.value) {
         AlertDialog(
@@ -97,16 +92,16 @@ internal val dalvikusSettings: DalvikusSettings by lazy {
         Object()
     )
 }
+internal val tabManager: TabManager by lazy {
+    TabManager(
+        initialTabs = listOf(WelcomeTab())
+    )
+}
 
 @OptIn(ExperimentalSplitPaneApi::class)
 @Composable
 internal fun Content() {
     val splitPaneState = rememberSplitPaneState(0.25f)
-    val tabManager = remember {
-        TabManager(
-            initialTabs = listOf(WelcomeTab())
-        )
-    }
 
 
     var selectedNavItem by remember { mutableStateOf("Editor") }
@@ -171,13 +166,13 @@ internal fun Content() {
                         ),
                         modifier = Modifier.fillMaxSize().padding(8.dp),
                     ) {
-                        LeftPanelContent(tabManager)
+                        LeftPanelContent()
                     }
                 }
             }
 
             second(minSize = 200.dp) {
-                RightPanelContent(tabManager, selectedNavItem)
+                RightPanelContent(selectedNavItem)
             }
         }
     }
@@ -199,8 +194,6 @@ fun TopBar() {
                 )
             )
             Column(
-                modifier = Modifier.fillMaxHeight(),
-                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -235,7 +228,7 @@ fun TopBar() {
         },
         actions = {
             TooltipBox(
-                positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(),
+                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(8.dp),
                 tooltip = {
                     RichTooltip(
                         title = { Text(stringResource(Res.string.tooltip_deploy_title)) }
@@ -256,9 +249,12 @@ fun TopBar() {
                 }
             }
         },
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+        colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+            scrolledContainerColor = Color.Unspecified,
+            navigationIconContentColor = Color.Unspecified,
+            titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            actionIconContentColor = Color.Unspecified
         ),
     )
 

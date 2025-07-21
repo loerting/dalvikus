@@ -13,17 +13,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import me.lkl.dalvikus.ui.packaging.PackagingView
-import me.lkl.dalvikus.ui.tabs.TabManager
 import me.lkl.dalvikus.ui.tabs.TabView
 
 @Composable
-internal fun RightPanelContent(tabManager: TabManager, selectedNavItem: String) {
+internal fun RightPanelContent(selectedNavItem: String) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
         AnimatedContent(targetState = selectedNavItem, label = "NavItem Animation") { targetTab ->
             when (targetTab) {
-                "Editor", "Decompiler" -> OnCard({ TabView(tabManager, selectedNavItem) })
+                "Editor", "Decompiler" -> OnCard({ TabView(selectedNavItem) })
                 "Settings" -> OnCard({ SettingsView() })
                 "Packaging" -> OnCard { PackagingView() }
                 else -> throw IllegalArgumentException(

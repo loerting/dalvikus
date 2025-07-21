@@ -18,6 +18,7 @@ import com.android.tools.smali.smali.smaliParser
 import com.android.tools.smali.smali.smaliTreeWalker
 import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.io.IOChannel
+import me.lkl.dalvikus.tree.TreeElement
 import org.antlr.runtime.CommonTokenStream
 import org.antlr.runtime.tree.CommonTree
 import org.antlr.runtime.tree.CommonTreeNodeStream
@@ -26,7 +27,8 @@ import java.io.StringWriter
 
 class SmaliTab(
     val classDef: DexBackedClassDef,
-    override val tabId: String
+    override val tabId: String,
+    override val tabSource: TreeElement
 ) : TabElement {
     override val hasUnsavedChanges: MutableState<Boolean> = mutableStateOf(false)
 

@@ -34,8 +34,7 @@ class TabManager(initialTabs: List<TabElement>) {
 
     fun addTab(tab: TabElement) {
         _tabs.add(tab)
-        // TODO this line crashes the tabview, as the selectedTabIndex is increased before compose knows about the new tab.
-        // selectedTabIndex = _tabs.lastIndex
+        selectedTabIndex = _tabs.lastIndex
     }
 
     fun addOrSelectTab(tab: TabElement) {

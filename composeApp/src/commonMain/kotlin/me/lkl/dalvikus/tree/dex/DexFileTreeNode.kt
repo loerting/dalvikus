@@ -11,7 +11,7 @@ import java.io.BufferedInputStream
 import java.io.File
 
 class DexFileTreeNode(
-    private val file: File
+    private val file: File, override val parent: TreeElement?
 ) : TreeElement {
     private var openDexFile: DexBackedDexFile? = null
 
@@ -31,37 +31,42 @@ class DexFileTreeNode(
         openDexFileIfNull()
 
         val packageChildrenMap = mutableMapOf<String, MutableList<TreeElement>>()
-        val createdPackageNodes = mutableSetOf<String>()
+        val createdPackageNodes = mutableMapOf<String, DexPackageTreeNode>()
 
         for (classDef in openDexFile!!.classes) {
             val fqcn = classDef.type.removeSurrounding("L", ";").replace('/', '.')
             val parts = fqcn.split('.')
             val packageParts = parts.dropLast(1)
 
-            // Ensure package hierarchy exists
             var currentPath = ""
+            var parentNode: TreeElement = this
+
+            // Build or reuse package nodes
             for (part in packageParts) {
                 val nextPath = if (currentPath.isEmpty()) part else "$currentPath.$part"
-                if (nextPath !in createdPackageNodes) {
+                val pkgNode = createdPackageNodes.getOrPut(nextPath) {
                     val node = DexPackageTreeNode(
                         nameSegment = part,
                         childrenMap = packageChildrenMap,
-                        fullPath = nextPath
+                        fullPath = nextPath,
+                        parent = parentNode
                     )
                     packageChildrenMap.getOrPut(currentPath) { mutableListOf() }.add(node)
-                    createdPackageNodes.add(nextPath)
+                    node
                 }
+                parentNode = pkgNode
                 currentPath = nextPath
             }
 
-            // Add class node to its package
+            // Add class node to the package children list
             val packagePath = packageParts.joinToString(".")
-            val classNode = DexClassTreeNode(classDef, file)
+            val classNode = DexClassTreeNode(classDef, file, parent = parentNode)
             packageChildrenMap.getOrPut(packagePath) { mutableListOf() }.add(classNode)
         }
 
         return packageChildrenMap[""]?.sortedBy { it.name.lowercase() } ?: emptyList()
     }
+
 
 
     private fun openDexFileIfNull() {

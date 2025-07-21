@@ -8,11 +8,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.welcome_tab_name
+import me.lkl.dalvikus.tree.TreeElement
 import org.jetbrains.compose.resources.stringResource
 
 data class WelcomeTab(
     override val tabId: String = "welcome",
-    override val tabIcon: ImageVector = Icons.Default.EmojiPeople
+    override val tabIcon: ImageVector = Icons.Default.EmojiPeople,
+    override val tabSource: TreeElement? = null
 ) : TabElement {
     override val hasUnsavedChanges: MutableState<Boolean> = mutableStateOf(false)
 

@@ -10,8 +10,9 @@ import me.lkl.dalvikus.tree.TreeElement
 
 class DexPackageTreeNode(
     private val nameSegment: String,
-    private val childrenMap: Map<String, List<TreeElement>>, // Can be DexPackageTreeNode or DexClassTreeNode
-    private val fullPath: String
+    val childrenMap: Map<String, List<TreeElement>>, // Can be DexPackageTreeNode or DexClassTreeNode
+    private val fullPath: String,
+    override val parent: TreeElement?
 ) : TreeElement {
 
     override val name: String
