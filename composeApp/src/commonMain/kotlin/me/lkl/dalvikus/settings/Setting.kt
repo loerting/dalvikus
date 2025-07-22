@@ -5,14 +5,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.outlined.Android
-import androidx.compose.material.icons.outlined.Code
-import androidx.compose.material.icons.outlined.EditNote
-import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.material3.ExposedDropdownMenuDefaults.TrailingIcon
 import androidx.compose.runtime.*
@@ -24,14 +21,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.russhwolf.settings.Settings
 import dalvikus.composeapp.generated.resources.*
+import me.lkl.dalvikus.tree.FileTreeNode
+import me.lkl.dalvikus.ui.tree.FileSelectorDialog
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
+import java.io.File
 
 
 enum class SettingsCategory(val nameRes: StringResource, val icon: ImageVector) {
     GENERAL(Res.string.settings_category_general, Icons.Outlined.Settings),
     EDITOR(Res.string.settings_category_editor, Icons.Outlined.EditNote),
     SMALI(Res.string.settings_category_smali, Icons.Outlined.Android),
-    DECOMPILER(Res.string.settings_category_decompiler, Icons.Outlined.Code)
+    DECOMPILER(Res.string.settings_category_decompiler, Icons.Outlined.Code),
+    SIGNING(Res.string.settings_category_signing, Icons.Outlined.Draw),
 }
 
 // Base sealed class for settings
@@ -75,17 +77,7 @@ class IntSetting(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.width(400.dp).defaultMinSize(minWidth = 200.dp),
-            horizontalArrangement = Arrangement.End
         ) {
-            IconButton(
-                onClick = {
-                    value = (value - step).coerceAtLeast(min)
-                },
-                enabled = value > min
-            ) {
-                Icon(Icons.Default.Remove, contentDescription = "Decrease")
-            }
-
             OutlinedTextField(
                 value = value.toString(),
                 onValueChange = {
@@ -105,15 +97,27 @@ class IntSetting(
                     )
                 }
             )
-
-
-            IconButton(
-                onClick = {
-                    value = (value + step).coerceAtMost(max)
-                },
-                enabled = value < max
+            OutlinedCard (
+                modifier = Modifier.padding(start = 8.dp),
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Increase")
+                Row {
+                    IconButton(
+                        onClick = {
+                            value = (value - step).coerceAtLeast(min)
+                        },
+                        enabled = value > min
+                    ) {
+                        Icon(Icons.Default.Remove, contentDescription = "Decrease")
+                    }
+                    IconButton(
+                        onClick = {
+                            value = (value + step).coerceAtMost(max)
+                        },
+                        enabled = value < max
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Increase")
+                    }
+                }
             }
         }
     }
@@ -208,5 +212,94 @@ class StringOptionSetting(
                 }
             }
         }
+    }
+}
+
+
+class FileSetting(
+    key: String,
+    category: SettingsCategory,
+    nameRes: StringResource,
+    defaultPath: String,
+    val extensions: List<String>
+) : Setting<String>(key, category, nameRes, defaultPath) {
+
+    override fun save(settings: Settings) {
+        settings.putString(key, value)
+    }
+
+    override fun load(settings: Settings) {
+        value = settings.getString(key, defaultValue)
+    }
+
+    fun isValid(): Boolean {
+        if (value.isBlank()) return false
+        val file = File(value)
+        return file.exists() && !file.isDirectory && file.extension.lowercase() in extensions
+    }
+
+    @Composable
+    override fun Editor() {
+        var showFilePicker by remember { mutableStateOf(false) }
+
+        if (showFilePicker) {
+            FileSelectorDialog(
+                title = stringResource(Res.string.dialog_select_keystore_title),
+                message = stringResource(Res.string.dialog_select_keystore_message),
+                filePredicate = { it is FileTreeNode && !it.file.isDirectory && it.file.extension.lowercase() in extensions },
+                onDismissRequest = {
+                    showFilePicker = false
+                }) { node ->
+                if (node !is FileTreeNode) return@FileSelectorDialog
+                value = node.file.absolutePath
+                showFilePicker = false
+            }
+        }
+            OutlinedTextField(
+                value = value,
+                modifier = Modifier.fillMaxWidth(),
+                onValueChange = { value = it },
+                keyboardOptions = KeyboardOptions.Default,
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = if (isValid()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                ),
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            showFilePicker = true
+                        }
+                    ) {
+                        Icon(Icons.Default.FolderOpen, contentDescription = null)
+                    }
+                }
+            )
+
+    }
+}
+
+class StringSetting(
+    key: String,
+    category: SettingsCategory,
+    nameRes: StringResource,
+    defaultValue: String
+) : Setting<String>(key, category, nameRes, defaultValue) {
+
+    override fun save(settings: Settings) {
+        settings.putString(key, value)
+    }
+
+    override fun load(settings: Settings) {
+        value = settings.getString(key, defaultValue)
+    }
+
+    @Composable
+    override fun Editor() {
+        OutlinedTextField(
+            value = value,
+            onValueChange = { value = it },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
     }
 }

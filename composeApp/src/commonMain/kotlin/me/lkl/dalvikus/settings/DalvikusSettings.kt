@@ -4,10 +4,11 @@ import com.android.tools.smali.dexlib2.Opcodes
 import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
 import dalvikus.composeapp.generated.resources.*
+import java.io.File
 import java.net.URI
 import java.util.prefs.Preferences
 
-class DalvikusSettings(val bled: Object) {
+class DalvikusSettings() {
 
     private val preferences = Preferences.userRoot().node("me.lkl.dalvikus.settings")
     private val settings: Settings = PreferencesSettings(preferences)
@@ -51,7 +52,19 @@ class DalvikusSettings(val bled: Object) {
             nameRes = Res.string.settings_decompiler_verbose,
             defaultValue = false
         ),
-
+        FileSetting(
+            key = "keystore_file",
+            category = SettingsCategory.SIGNING,
+            nameRes = Res.string.settings_keystore_path,
+            defaultPath = File(System.getProperty("user.home"), ".dalvikus.keystore").absolutePath,
+            extensions = listOf("jks", "keystore"),
+        ),
+        StringSetting(
+            key = "key_alias",
+            category = SettingsCategory.SIGNING,
+            nameRes = Res.string.settings_keystore_alias,
+            defaultValue = "dalvikus"
+        ),
     )
 
     init {
@@ -73,6 +86,9 @@ class DalvikusSettings(val bled: Object) {
         val value = when (setting) {
             is IntSetting -> setting.value
             is BooleanSetting -> setting.value
+            is StringSetting -> setting.value
+            is StringOptionSetting -> setting.value
+            is FileSetting -> File(setting.value)
             else -> throw IllegalArgumentException("Unsupported setting type for key: $key")
         }
 

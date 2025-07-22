@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
+import dalvikus.composeapp.generated.resources.dialog_select_android_archive_message
 import dalvikus.composeapp.generated.resources.dialog_select_android_archive_title
 import dalvikus.composeapp.generated.resources.fab_load_file
 import dalvikus.composeapp.generated.resources.tree_search_placeholder
@@ -38,7 +39,9 @@ internal fun LeftPanelContent() {
     val searchQuery = remember { mutableStateOf("") }
 
     if (showAddDialog) {
-        FileSelectorDialog(stringResource(Res.string.dialog_select_android_archive_title),
+        FileSelectorDialog(
+            title = stringResource(Res.string.dialog_select_android_archive_title),
+            message = stringResource(Res.string.dialog_select_android_archive_message),
             filePredicate = { it is FileTreeNode && !it.file.isDirectory && it.file.extension in editableFiles},
             onDismissRequest = {
             showAddDialog = false

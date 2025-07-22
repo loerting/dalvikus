@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.Draw
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -93,9 +94,7 @@ internal fun App(
 }
 
 internal val dalvikusSettings: DalvikusSettings by lazy {
-    DalvikusSettings(
-        Object()
-    )
+    DalvikusSettings()
 }
 internal val tabManager: TabManager by lazy {
     TabManager(
@@ -114,7 +113,7 @@ internal fun Content() {
     val navItems = listOf(
         NavItem("Editor", Icons.Default.Edit, Res.string.nav_editor),
         NavItem("Decompiler", Icons.Default.Code, Res.string.nav_decompiler),
-        NavItem("Packaging", Icons.Default.Android, Res.string.nav_packaging),
+        NavItem("Packaging", Icons.Default.Draw, Res.string.nav_signing),
 
         NavItem("Settings", Icons.Outlined.Settings, Res.string.nav_settings),
     )

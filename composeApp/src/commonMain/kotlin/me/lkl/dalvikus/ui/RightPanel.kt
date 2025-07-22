@@ -24,7 +24,7 @@ internal fun RightPanelContent(selectedNavItem: String) {
             when (targetTab) {
                 "Editor", "Decompiler" -> OnCard({ TabView(selectedNavItem) })
                 "Settings" -> OnCard({ SettingsView() })
-                "Packaging" -> OnCard { PackagingView() }
+                "Packaging" ->  PackagingView()
                 else -> throw IllegalArgumentException(
                     "Unsupported selectedNavItem: $selectedNavItem. "
                 )
@@ -39,7 +39,7 @@ internal fun OnCard(content: @Composable () -> Unit) {
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow
         ),
-        modifier = Modifier.fillMaxSize().padding(8.dp),
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
     ) {
         content()
     }

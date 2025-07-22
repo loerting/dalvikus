@@ -33,7 +33,6 @@ fun SettingsView() {
     ) {
         grouped.forEach { (category, settings) ->
 
-            // Use category.nameRes.toString() as a key for state map
             val key = category.nameRes.toString()
             val expanded = expandedStates[key] ?: true
 
@@ -42,20 +41,20 @@ fun SettingsView() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            // Toggle expanded state on header click
                             expandedStates[key] = !(expandedStates[key] ?: true)
                         }
-                        .padding(vertical = 8.dp, horizontal = 12.dp),
+                        .padding(vertical = 16.dp, horizontal = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         imageVector = category.icon,
-                        contentDescription = null
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = stringResource(category.nameRes),
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.weight(1f)
                     )
                     Icon(
@@ -86,24 +85,18 @@ fun SettingsView() {
 
 @Composable
 private fun SettingRow(setting: Setting<*>) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp, horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+            .padding(vertical = 12.dp, horizontal = 16.dp)
     ) {
         Text(
             text = stringResource(setting.nameRes),
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(end = 32.dp),
             softWrap = false
         )
-        Spacer(modifier = Modifier.weight(1f))
-        Box(
-            modifier = Modifier.wrapContentWidth()
-        ) {
-            setting.Editor()
-        }
+        setting.Editor()
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }

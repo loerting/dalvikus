@@ -1,6 +1,7 @@
 package me.lkl.dalvikus.ui.tree
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -30,6 +31,7 @@ import java.io.File
 @Composable
 fun FileSelectorDialog(
     title: String,
+    message: String? = null,
     filePredicate: (TreeElement) -> Boolean = { it is FileTreeNode && !it.file.isDirectory },
     onDismissRequest: () -> Unit,
     onFileSelected: (TreeElement) -> Unit,
@@ -47,12 +49,18 @@ fun FileSelectorDialog(
             Text(text = title)
         },
         text = {
-            Box(modifier = Modifier.size(500.dp, 400.dp)) {
-                TreeView(
-                    root = treeRoot,
-                    selectedElement = selectedFile,
-                    onFileSelected = { selectedFile = it }
-                )
+            Column {
+                message?.let {
+                    Text(text = it)
+                    Spacer(Modifier.size(8.dp))
+                }
+                Box(modifier = Modifier.size(500.dp, 400.dp)) {
+                    TreeView(
+                        root = treeRoot,
+                        selectedElement = selectedFile,
+                        onFileSelected = { selectedFile = it }
+                    )
+                }
             }
         },
         confirmButton = {

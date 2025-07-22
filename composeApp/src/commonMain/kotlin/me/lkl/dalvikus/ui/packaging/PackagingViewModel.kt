@@ -1,28 +1,18 @@
 package me.lkl.dalvikus.ui.packaging
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import co.touchlab.kermit.Logger
 import com.android.apksig.ApkSigner
 import com.android.apksig.ApkVerifier
-import me.lkl.dalvikus.tree.archive.ArchiveTreeNode
+import me.lkl.dalvikus.tree.TreeElement
 import java.io.File
 import java.security.KeyStore
 import java.security.PrivateKey
 import java.security.cert.X509Certificate
 
-class PackagingViewModel(val apk: ArchiveTreeNode?) {
-    var signatureResult: ApkVerifier.Result? by mutableStateOf(null)
-    var signSuccess: Boolean by mutableStateOf(false)
-    var signError: String? by mutableStateOf(null)
-
-    fun checkSignature() {
-        if (apk == null) {
-            signatureResult = null
-            return
-        }
-        val verifier: ApkVerifier = ApkVerifier.Builder(apk.file).build()
-        signatureResult = verifier.verify()
+class PackagingViewModel() {
+    fun checkSignature(apk: File): ApkVerifier.Result? {
+        val verifier: ApkVerifier = ApkVerifier.Builder(apk).build()
+        return verifier.verify()
     }
 
     fun signApk(
@@ -30,15 +20,10 @@ class PackagingViewModel(val apk: ArchiveTreeNode?) {
         keystorePassword: CharArray,
         keyAlias: String,
         keyPassword: CharArray,
-        outputApk: File
-    ) {
+        outputApk: File,
+        apk: File
+    ): ApkVerifier.Result? {
         try {
-            if (apk == null) {
-                signError = "APK not loaded"
-                signSuccess = false
-                return
-            }
-
             // Load keystore
             val ks = KeyStore.getInstance("JKS").apply {
                 load(keystoreFile.inputStream(), keystorePassword)
@@ -51,9 +36,8 @@ class PackagingViewModel(val apk: ArchiveTreeNode?) {
                 ?.map { it as X509Certificate }
                 ?.toTypedArray() ?: throw IllegalArgumentException("Certificate chain missing")
 
-            // Sign the APK
             val signer = ApkSigner.Builder(listOf(ApkSigner.SignerConfig.Builder("signer", privateKey, listOf(*certs)).build()))
-                .setInputApk(apk.file)
+                .setInputApk(apk)
                 .setOutputApk(outputApk)
                 .setV1SigningEnabled(true)
                 .setV2SigningEnabled(true)
@@ -62,17 +46,11 @@ class PackagingViewModel(val apk: ArchiveTreeNode?) {
 
             signer.sign()
 
-            // Re-verify
             val verifier = ApkVerifier.Builder(outputApk).build()
-            signatureResult = verifier.verify()
-
-            signSuccess = signatureResult?.isVerified == true
-            signError = null
-
+            return verifier.verify()
         } catch (e: Exception) {
-            signSuccess = false
-            signError = "Signing failed: ${e.message}"
-            e.printStackTrace()
+            Logger.e("Error signing APK: ${e.message}", e)
         }
+        return null
     }
 }
