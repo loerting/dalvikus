@@ -1,11 +1,10 @@
 package me.lkl.dalvikus.ui
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -15,103 +14,112 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
+import dalvikus.composeapp.generated.resources.dialog_select_android_archive_title
+import dalvikus.composeapp.generated.resources.fab_load_file
 import dalvikus.composeapp.generated.resources.tree_search_placeholder
 import me.lkl.dalvikus.tabManager
 import me.lkl.dalvikus.tree.FileTreeNode
 import me.lkl.dalvikus.tree.TreeElement
 import me.lkl.dalvikus.tree.archive.ArchiveTreeNode
+import me.lkl.dalvikus.tree.dex.DexFileTreeNode
+import me.lkl.dalvikus.tree.root.TreeRoot
+import me.lkl.dalvikus.ui.tree.FileSelectorDialog
 import me.lkl.dalvikus.ui.tree.TreeView
+import org.apache.commons.compress.harmony.pack200.Archive
 import org.jetbrains.compose.resources.stringResource
-import java.io.File
+
+val editableFiles = listOf("apk", "apks", "aab", "jar", "zip", "xapk", "dex", "odex")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun LeftPanelContent() {
-    var query by remember { mutableStateOf("") }
+    var showAddDialog by remember { mutableStateOf(false) }
+    val searchBarState = rememberSearchBarState()
+    val searchQuery = remember { mutableStateOf("") }
 
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        SearchBar(
-            inputField = {
-                TextField(
-                    value = query,
-                    onValueChange = {
-                        query = it
-                    },
-                    placeholder = {
-                        Text(
-                            stringResource(Res.string.tree_search_placeholder),
-                            color = MaterialTheme.colorScheme.onSurface,
+    if (showAddDialog) {
+        FileSelectorDialog(stringResource(Res.string.dialog_select_android_archive_title),
+            filePredicate = { it is FileTreeNode && !it.file.isDirectory && it.file.extension in editableFiles},
+            onDismissRequest = {
+            showAddDialog = false
+        }) { node ->
+            if (node !is FileTreeNode) return@FileSelectorDialog
+            when(node.file.extension.lowercase()) {
+                "apk", "apks", "aab", "jar", "zip", "xapk" -> uiTreeRoot.children.add(ArchiveTreeNode(node.file, uiTreeRoot))
+                "dex", "odex" -> uiTreeRoot.children.add(DexFileTreeNode(node.file, uiTreeRoot))
+                else -> throw AssertionError("Unsupported file type: ${node.file.extension} not in $editableFiles")
+            }
+            showAddDialog = false
+        }
+    }
+
+    Scaffold(
+        containerColor = Color.Transparent,
+        topBar = {
+            TopSearchBar(
+                state = searchBarState,
+                inputField = {
+                    TextField(
+                        value = searchQuery.value,
+                        onValueChange = { searchQuery.value = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text(stringResource(Res.string.tree_search_placeholder),
                             maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = stringResource(Res.string.tree_search_placeholder)
-                        )
-                    },
-                    trailingIcon = {
-                        if (query.isNotEmpty()) {
-                            IconButton(
-                                onClick = {
-                                    query = ""
+                            overflow = TextOverflow.Ellipsis) },
+                        singleLine = true,
+                        leadingIcon = {
+                            Icon(Icons.Default.Search, contentDescription = "Search")
+                        },
+                        trailingIcon = {
+                            if (searchQuery.value.isNotEmpty()) {
+                                IconButton(onClick = { searchQuery.value = "" }) {
+                                    Icon(Icons.Default.Clear, contentDescription = "Clear")
                                 }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Clear,
-                                    contentDescription = null
-                                )
                             }
-                        }
-                    },
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                    maxLines = 1
-                )
-            },
-            expanded = false,
-            onExpandedChange = { },
-            shape = RoundedCornerShape(16.dp),
-            colors = SearchBarDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.surface
-            ),
-            tonalElevation = 4.dp,
-            shadowElevation = 0.dp,
-            windowInsets = SearchBarDefaults.windowInsets,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            content = {}
-        )
+                        },
+                        colors = TextFieldDefaults.colors()
+                    )
+                },
+                shape = RoundedCornerShape(16.dp),
+                tonalElevation = 4.dp,
+                shadowElevation = 0.dp,
+                windowInsets = SearchBarDefaults.windowInsets,
+                modifier = Modifier.fillMaxWidth(),
+                scrollBehavior = null
+            )
+        },
 
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = { showAddDialog = true },
+                icon = {
+                    Icon(Icons.Default.FolderOpen, contentDescription = stringResource(Res.string.fab_load_file))
+                },
+                text = {
+                    Text(stringResource(Res.string.fab_load_file))
+                }
+            )
+        }
+    ) { innerPadding ->
         Column(
+            modifier = Modifier.padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TreeView(treeRoot,
-                onFileSelected = {
-                    node ->
+            TreeView(
+                uiTreeRoot,
+                onFileSelected = { node ->
                     if (!node.isClickable) return@TreeView
                     currentSelection = node
 
-                    if(!node.isContainer) {
+                    if (!node.isContainer) {
                         val newTab = node.createTab()
                         tabManager.addOrSelectTab(newTab)
                     }
-                }, selectedElement = currentSelection)
+                }, selectedElement = currentSelection
+            )
         }
     }
 }
 
-internal val treeRoot: FileTreeNode = FileTreeNode(File(System.getProperty("user.home")), null)
+internal val uiTreeRoot: TreeRoot = TreeRoot()
 internal var currentSelection by mutableStateOf<TreeElement?>(null)

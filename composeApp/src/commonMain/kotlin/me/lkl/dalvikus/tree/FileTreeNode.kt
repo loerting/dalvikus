@@ -33,30 +33,12 @@ class FileTreeNode(
             file.isDirectory -> {
                 file.listFiles()
                     ?.filterNotNull()
-                    ?.map(toTreeElement())
+                    ?.map { FileTreeNode(it, this) }
                     ?.sortedWith(compareBy({ !it.isContainer }, { it.name.lowercase() }))
                     ?: emptyList()
             }
 
             else -> throw IllegalStateException("FileTreeNode can only have children if it is a directory: $name")
-        }
-    }
-
-    private fun toTreeElement(): (File) -> TreeElement = { file ->
-        val extension = file.extension.lowercase()
-
-        when {
-            file.isFile && extension in dexFileExtensions -> {
-                DexFileTreeNode(file, this)
-            }
-
-            file.isFile && extension in archiveExtensions -> {
-                ArchiveTreeNode(file, this)
-            }
-
-            else -> {
-                FileTreeNode(file, this)
-            }
         }
     }
 

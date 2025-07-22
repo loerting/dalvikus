@@ -58,4 +58,6 @@
     <string name="save">Save</string>
     <string name="exit">Exit</string>
 
+    <string name="fab_load_file">Load file</string>
+
 </resources>

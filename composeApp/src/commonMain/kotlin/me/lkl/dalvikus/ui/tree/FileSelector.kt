@@ -23,6 +23,7 @@ import dalvikus.composeapp.generated.resources.cancel
 import dalvikus.composeapp.generated.resources.select
 import me.lkl.dalvikus.tree.FileTreeNode
 import me.lkl.dalvikus.tree.TreeElement
+import me.lkl.dalvikus.tree.root.TreeRoot
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
 
@@ -37,7 +38,7 @@ fun FileSelectorDialog(
         mutableStateOf<TreeElement?>(null)
     }
     var treeRoot by remember {
-        mutableStateOf(FileTreeNode(File(System.getProperty("user.home")), null))
+        mutableStateOf(TreeRoot(FileTreeNode(File(System.getProperty("user.home")), null)))
     }
 
     AlertDialog(

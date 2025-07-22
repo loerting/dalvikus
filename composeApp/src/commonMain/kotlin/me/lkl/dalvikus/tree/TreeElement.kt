@@ -11,6 +11,9 @@ interface TreeElement {
     val name: String
     val icon: ImageVector
 
+    val isRoot: Boolean
+        get() = false // Default implementation, can be overridden
+
     @Composable
     fun getColor(): Color = ColorForFileExtension(name)
 
@@ -33,6 +36,7 @@ interface TreeElement {
         }
         return "${parent!!.getSourceDescription()}/$name"
     }
+
 }
 
 val plaintextFileExtensions = setOf(

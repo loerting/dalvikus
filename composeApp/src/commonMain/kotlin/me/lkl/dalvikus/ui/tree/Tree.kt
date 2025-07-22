@@ -33,10 +33,12 @@ import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.io.archiveExtensions
 import me.lkl.dalvikus.theme.*
 import me.lkl.dalvikus.tree.TreeElement
+import me.lkl.dalvikus.tree.root.TreeRoot
+import org.antlr.runtime.tree.Tree
 
 @Composable
 fun TreeView(
-    root: TreeElement,
+    root: TreeRoot,
     modifier: Modifier = Modifier,
     onFileSelected: ((TreeElement) -> Unit)? = null,
     selectedElement: TreeElement? = null
@@ -51,11 +53,14 @@ fun TreeView(
             result.add(node to indent)
             if (expandedState[node] == true) {
                 childrenCache[node]?.forEach { child ->
-                    visit(child, indent + 1)
+                    visit(child, indent + if (node.isRoot) 0 else 1)
                 }
             }
         }
-        visit(root, 0)
+
+        root.children.forEach {
+            visit(it, 0)
+        }
         return result
     }
 
