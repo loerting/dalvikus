@@ -37,7 +37,7 @@
     <string name="wrong_mode">This feature is unavailable in the current mode.</string>
 
     <string name="settings_category_general">General settings</string>
-    <string name="settings_category_smali">Smali assembler and disassembler settings</string>
+    <string name="settings_category_smali">Smali (dis-)assembler settings</string>
     <string name="settings_category_decompiler">Decompiler settings</string>
     <string name="settings_category_editor">Editor settings</string>
     <string name="settings_category_signing">Signing settings</string>
@@ -70,6 +70,8 @@
     <string name="discard">Discard</string>
     <string name="save">Save</string>
     <string name="exit">Exit</string>
+    <string name="sign">Sign</string>
+    <string name="sign_and_deploy">Sign and deploy</string>
     <string name="select_file">Select file</string>
 
     <string name="fab_load_file">Load file</string>
