@@ -11,11 +11,10 @@ import androidx.compose.material.icons.outlined.InstallMobile
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.dalvikusSettings
@@ -23,7 +22,7 @@ import me.lkl.dalvikus.tree.FileTreeNode
 import me.lkl.dalvikus.tree.TreeElement
 import me.lkl.dalvikus.tree.archive.ArchiveTreeNode
 import me.lkl.dalvikus.tree.root.TreeRoot
-import me.lkl.dalvikus.ui.DefaultCard
+import me.lkl.dalvikus.ui.util.DefaultCard
 import me.lkl.dalvikus.ui.tree.TreeView
 import me.lkl.dalvikus.ui.uiTreeRoot
 import me.lkl.dalvikus.ui.util.CardTitleWithDivider
@@ -38,44 +37,44 @@ fun PackagingView() {
     remember { PackagingViewModel() }
     Column(Modifier.fillMaxSize()) {
         DefaultCard {
-            Column {
-                CardTitleWithDivider(
-                    title = stringResource(Res.string.signature_settings_title),
-                    icon = Icons.Outlined.Key
-                )
-                val keystorePassword = remember { mutableStateOf("") }
-                val keyPassword = remember { mutableStateOf("") }
+                Column {
+                    CardTitleWithDivider(
+                        title = stringResource(Res.string.signature_settings_title),
+                        icon = Icons.Outlined.Key
+                    )
+                    val keystorePassword = remember { mutableStateOf("") }
+                    val keyPassword = remember { mutableStateOf("") }
 
-                Column(Modifier.padding(16.dp)) {
-                    Text(
-                        stringResource(Res.string.signature_keystore_password, keystoreFile.name),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    OutlinedTextField(
-                        value = keystorePassword.value,
-                        onValueChange = { keystorePassword.value = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation()
-                    )
+                    Column(Modifier.padding(16.dp)) {
+                        Text(
+                            stringResource(Res.string.signature_keystore_password, keystoreFile.name),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        OutlinedTextField(
+                            value = keystorePassword.value,
+                            onValueChange = { keystorePassword.value = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            visualTransformation = PasswordVisualTransformation()
+                        )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                    Text(
-                        stringResource(Res.string.signature_key_password, keyAlias),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    OutlinedTextField(
-                        value = keyPassword.value,
-                        onValueChange = { keyPassword.value = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation()
-                    )
+                        Text(
+                            stringResource(Res.string.signature_key_password, keyAlias),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        OutlinedTextField(
+                            value = keyPassword.value,
+                            onValueChange = { keyPassword.value = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            visualTransformation = PasswordVisualTransformation()
+                        )
+                    }
+
                 }
-
             }
-        }
 
         DefaultCard { APKSelectionView() }
     }

@@ -53,7 +53,10 @@ fun TabView(
                                     RichTooltip(
                                         title = { Text(stringResource(Res.string.tooltip_tab_title)) }
                                     ) {
-                                        Text(tab.tabSource?.getSourceDescription() ?: stringResource(Res.string.unknown_source))
+                                        Text(
+                                            tab.tabSource?.getSourceDescription()
+                                                ?: stringResource(Res.string.unknown_source)
+                                        )
                                     }
                                 },
                                 state = tooltipState

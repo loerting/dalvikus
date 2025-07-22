@@ -8,7 +8,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.material.icons.outlined.Draw
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -251,48 +250,11 @@ fun DeployButton(deploy: (TreeElement) -> Unit) {
     val apks =
         uiTreeRoot.children.filter { it is ArchiveTreeNode && it.file.extension.equals("apk", ignoreCase = true) }
     var checked by remember { mutableStateOf(false) }
-    SplitButtonLayout(
-        leadingButton = {
-            SplitButtonDefaults.LeadingButton(
-                onClick = {
-                    deploy(apks.last())
-                },
-                enabled = apks.isNotEmpty(),
-                colors = ButtonDefaults.buttonColors(containerColor = AndroidGreen.lighten(1.2f))
-            ) {
-                Icon(
-                    Icons.Filled.InstallMobile,
-                    contentDescription = null,
-                    modifier = Modifier.size(SplitButtonDefaults.LeadingIconSize),
-                )
-                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text(stringResource(Res.string.deploy))
-            }
-        },
-        trailingButton = {
-            SplitButtonDefaults.TrailingButton(
-                checked = checked,
-                onCheckedChange = { checked = it },
-                colors = ButtonDefaults.buttonColors(containerColor = AndroidGreen.lighten(1.2f)),
-                enabled = apks.isNotEmpty()
-            ) {
-                val rotation: Float by
-                animateFloatAsState(
-                    targetValue = if (checked) 180f else 0f,
-                    label = "Trailing Icon Rotation",
-                )
-                Icon(
-                    Icons.Filled.KeyboardArrowDown,
-                    modifier =
-                        Modifier.size(SplitButtonDefaults.TrailingIconSize).graphicsLayer {
-                            this.rotationZ = rotation
-                        },
-                    contentDescription = null,
-                )
-            }
-        },
-        modifier = Modifier.padding(horizontal = 8.dp),
-    )
+    IconButton(
+        onClick = { checked = !checked },
+    ) {
+        Icon(Icons.Outlined.InstallMobile, contentDescription = stringResource(Res.string.deploy))
+    }
     DropdownMenu(expanded = checked, onDismissRequest = { checked = false }) {
         DropdownMenuItem(
             text = { Text(stringResource(Res.string.deploy_last_selected)) },

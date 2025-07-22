@@ -1,14 +1,10 @@
 package me.lkl.dalvikus.ui.tree
 
-import androidx.compose.foundation.LocalScrollbarStyle
-import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Article
 import androidx.compose.material.icons.filled.Android
@@ -34,7 +30,6 @@ import me.lkl.dalvikus.io.archiveExtensions
 import me.lkl.dalvikus.theme.*
 import me.lkl.dalvikus.tree.TreeElement
 import me.lkl.dalvikus.tree.root.TreeRoot
-import org.antlr.runtime.tree.Tree
 
 @Composable
 fun TreeView(
@@ -42,8 +37,7 @@ fun TreeView(
     modifier: Modifier = Modifier,
     onFileSelected: ((TreeElement) -> Unit)? = null,
     selectedElement: TreeElement? = null
-)
-{
+) {
     val childrenCache = remember { mutableMapOf<TreeElement, List<TreeElement>>() }
     val expandedState = remember { mutableStateMapOf<TreeElement, Boolean>() }
     val coroutineScope = rememberCoroutineScope()

@@ -1,37 +1,20 @@
 package me.lkl.dalvikus.ui.tabs
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.outlined.AutoFixHigh
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonGroup
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import dalvikus.composeapp.generated.resources.Res
-import dalvikus.composeapp.generated.resources.app_dalvik_button
-import dalvikus.composeapp.generated.resources.app_github_button
-import dalvikus.composeapp.generated.resources.app_gpl_button
-import dalvikus.composeapp.generated.resources.app_greeting
-import dalvikus.composeapp.generated.resources.app_introduction
-import dalvikus.composeapp.generated.resources.app_name
-import dalvikus.composeapp.generated.resources.wrong_mode
+import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.decompiler.Decompiler
-import me.lkl.dalvikus.io.IOChannel
 import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.tabs.CodeTab
 import me.lkl.dalvikus.tabs.SmaliTab
@@ -112,20 +95,26 @@ fun Welcome() {
                 TextButton(onClick = {
                     Desktop.getDesktop().browse(DalvikusSettings.getRepoURI())
                 }) {
-                    Text(stringResource(Res.string.app_github_button),
-                        softWrap = false)
+                    Text(
+                        stringResource(Res.string.app_github_button),
+                        softWrap = false
+                    )
                 }
                 TextButton(onClick = {
                     Desktop.getDesktop().browse(URI("https://source.android.com/docs/core/runtime/dalvik-bytecode"))
                 }) {
-                    Text(stringResource(Res.string.app_dalvik_button),
-                        softWrap = false)
+                    Text(
+                        stringResource(Res.string.app_dalvik_button),
+                        softWrap = false
+                    )
                 }
                 TextButton(onClick = {
                     Desktop.getDesktop().browse(URI("https://www.gnu.org/licenses/gpl-3.0.html"))
                 }) {
-                    Text(stringResource(Res.string.app_gpl_button),
-                        softWrap = false)
+                    Text(
+                        stringResource(Res.string.app_gpl_button),
+                        softWrap = false
+                    )
                 }
             }
         }

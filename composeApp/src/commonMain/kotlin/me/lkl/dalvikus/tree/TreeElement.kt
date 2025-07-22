@@ -31,7 +31,7 @@ interface TreeElement {
     }
 
     fun getSourceDescription(): String {
-        if(parent == null) {
+        if (parent == null) {
             return name
         }
         return "${parent!!.getSourceDescription()}/$name"

@@ -68,7 +68,6 @@ class DexFileTreeNode(
     }
 
 
-
     private fun openDexFileIfNull() {
         if (openDexFile == null) {
             val dexStream = BufferedInputStream(file.inputStream())

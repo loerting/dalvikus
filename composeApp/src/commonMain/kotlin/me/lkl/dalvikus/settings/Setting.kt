@@ -97,7 +97,7 @@ class IntSetting(
                     )
                 }
             )
-            OutlinedCard (
+            OutlinedCard(
                 modifier = Modifier.padding(start = 8.dp),
             ) {
                 Row {
@@ -255,25 +255,25 @@ class FileSetting(
                 showFilePicker = false
             }
         }
-            OutlinedTextField(
-                value = value,
-                modifier = Modifier.fillMaxWidth(),
-                onValueChange = { value = it },
-                keyboardOptions = KeyboardOptions.Default,
-                singleLine = true,
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = if (isValid()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
-                ),
-                trailingIcon = {
-                    IconButton(
-                        onClick = {
-                            showFilePicker = true
-                        }
-                    ) {
-                        Icon(Icons.Default.FolderOpen, contentDescription = null)
+        OutlinedTextField(
+            value = value,
+            modifier = Modifier.fillMaxWidth(),
+            onValueChange = { value = it },
+            keyboardOptions = KeyboardOptions.Default,
+            singleLine = true,
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = if (isValid()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+            ),
+            trailingIcon = {
+                IconButton(
+                    onClick = {
+                        showFilePicker = true
                     }
+                ) {
+                    Icon(Icons.Default.FolderOpen, contentDescription = null)
                 }
-            )
+            }
+        )
 
     }
 }

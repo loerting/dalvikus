@@ -1,6 +1,8 @@
 package me.lkl.dalvikus.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -13,11 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import dalvikus.composeapp.generated.resources.Res
-import dalvikus.composeapp.generated.resources.dialog_select_android_archive_message
-import dalvikus.composeapp.generated.resources.dialog_select_android_archive_title
-import dalvikus.composeapp.generated.resources.fab_load_file
-import dalvikus.composeapp.generated.resources.tree_search_placeholder
+import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.tabManager
 import me.lkl.dalvikus.tree.FileTreeNode
 import me.lkl.dalvikus.tree.TreeElement
@@ -26,7 +24,6 @@ import me.lkl.dalvikus.tree.dex.DexFileTreeNode
 import me.lkl.dalvikus.tree.root.TreeRoot
 import me.lkl.dalvikus.ui.tree.FileSelectorDialog
 import me.lkl.dalvikus.ui.tree.TreeView
-import org.apache.commons.compress.harmony.pack200.Archive
 import org.jetbrains.compose.resources.stringResource
 
 val editableFiles = listOf("apk", "apks", "aab", "jar", "zip", "xapk", "dex", "odex")
@@ -42,13 +39,19 @@ internal fun LeftPanelContent() {
         FileSelectorDialog(
             title = stringResource(Res.string.dialog_select_android_archive_title),
             message = stringResource(Res.string.dialog_select_android_archive_message),
-            filePredicate = { it is FileTreeNode && !it.file.isDirectory && it.file.extension in editableFiles},
+            filePredicate = { it is FileTreeNode && !it.file.isDirectory && it.file.extension in editableFiles },
             onDismissRequest = {
-            showAddDialog = false
-        }) { node ->
+                showAddDialog = false
+            }) { node ->
             if (node !is FileTreeNode) return@FileSelectorDialog
-            when(node.file.extension.lowercase()) {
-                "apk", "apks", "aab", "jar", "zip", "xapk" -> uiTreeRoot.children.add(ArchiveTreeNode(node.file, uiTreeRoot))
+            when (node.file.extension.lowercase()) {
+                "apk", "apks", "aab", "jar", "zip", "xapk" -> uiTreeRoot.children.add(
+                    ArchiveTreeNode(
+                        node.file,
+                        uiTreeRoot
+                    )
+                )
+
                 "dex", "odex" -> uiTreeRoot.children.add(DexFileTreeNode(node.file, uiTreeRoot))
                 else -> throw AssertionError("Unsupported file type: ${node.file.extension} not in $editableFiles")
             }
@@ -66,9 +69,13 @@ internal fun LeftPanelContent() {
                         value = searchQuery.value,
                         onValueChange = { searchQuery.value = it },
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text(stringResource(Res.string.tree_search_placeholder),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis) },
+                        placeholder = {
+                            Text(
+                                stringResource(Res.string.tree_search_placeholder),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        },
                         singleLine = true,
                         leadingIcon = {
                             Icon(Icons.Default.Search, contentDescription = "Search")

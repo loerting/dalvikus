@@ -17,8 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.settings.Setting
+import me.lkl.dalvikus.ui.util.DefaultCard
 import org.jetbrains.compose.resources.stringResource
-
 @Composable
 fun SettingsView() {
     val grouped = dalvikusSettings.groupedByCategory()
@@ -43,43 +43,47 @@ fun SettingsView() {
                 val expanded = expandedStates[key] ?: true
 
                 item {
-                    Row(
+                    DefaultCard(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {
-                                expandedStates[key] = !(expandedStates[key] ?: true)
-                            }
-                            .padding(vertical = 16.dp, horizontal = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = category.icon,
-                            contentDescription = null,
-                            modifier = Modifier.size(32.dp),
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = stringResource(category.nameRes),
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Icon(
-                            imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                            contentDescription = if (expanded) "Collapse" else "Expand"
-                        )
-                    }
-                    HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
-                }
-
-                item {
-                    AnimatedVisibility(
-                        visible = expanded,
-                        enter = expandVertically() + fadeIn(),
-                        exit = shrinkVertically() + fadeOut()
                     ) {
                         Column {
-                            settings.forEach { setting ->
-                                SettingRow(setting)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        expandedStates[key] = !(expandedStates[key] ?: true)
+                                    }
+                                    .padding(vertical = 16.dp, horizontal = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = category.icon,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(32.dp),
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = stringResource(category.nameRes),
+                                    style = MaterialTheme.typography.titleLarge,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Icon(
+                                    imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                    contentDescription = if (expanded) "Collapse" else "Expand"
+                                )
+                            }
+
+                            AnimatedVisibility(
+                                visible = expanded,
+                                enter = expandVertically() + fadeIn(),
+                                exit = shrinkVertically() + fadeOut()
+                            ) {
+                                Column {
+                                    settings.forEach { setting ->
+                                        SettingRow(setting)
+                                    }
+                                }
                             }
                         }
                     }

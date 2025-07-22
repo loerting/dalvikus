@@ -3,7 +3,6 @@ package me.lkl.dalvikus.ui.packaging
 import co.touchlab.kermit.Logger
 import com.android.apksig.ApkSigner
 import com.android.apksig.ApkVerifier
-import me.lkl.dalvikus.tree.TreeElement
 import java.io.File
 import java.security.KeyStore
 import java.security.PrivateKey
@@ -36,13 +35,14 @@ class PackagingViewModel() {
                 ?.map { it as X509Certificate }
                 ?.toTypedArray() ?: throw IllegalArgumentException("Certificate chain missing")
 
-            val signer = ApkSigner.Builder(listOf(ApkSigner.SignerConfig.Builder("signer", privateKey, listOf(*certs)).build()))
-                .setInputApk(apk)
-                .setOutputApk(outputApk)
-                .setV1SigningEnabled(true)
-                .setV2SigningEnabled(true)
-                .setV3SigningEnabled(true)
-                .build()
+            val signer =
+                ApkSigner.Builder(listOf(ApkSigner.SignerConfig.Builder("signer", privateKey, listOf(*certs)).build()))
+                    .setInputApk(apk)
+                    .setOutputApk(outputApk)
+                    .setV1SigningEnabled(true)
+                    .setV2SigningEnabled(true)
+                    .setV3SigningEnabled(true)
+                    .build()
 
             signer.sign()
 
