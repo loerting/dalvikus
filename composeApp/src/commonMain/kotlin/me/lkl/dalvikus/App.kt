@@ -16,16 +16,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.materialkolor.ktx.lighten
 import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.tabs.WelcomeTab
+import me.lkl.dalvikus.theme.AndroidGreen
 import me.lkl.dalvikus.theme.AppTheme
 import me.lkl.dalvikus.theme.LocalThemeIsDark
+import me.lkl.dalvikus.tree.TreeElement
+import me.lkl.dalvikus.tree.archive.ArchiveTreeNode
 import me.lkl.dalvikus.ui.LeftPanelContent
 import me.lkl.dalvikus.ui.RightPanelContent
 import me.lkl.dalvikus.ui.nav.NavItem
 import me.lkl.dalvikus.ui.tabs.TabManager
+import me.lkl.dalvikus.ui.uiTreeRoot
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
 import org.jetbrains.compose.splitpane.HorizontalSplitPane
@@ -177,10 +183,10 @@ internal fun Content() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TopBar() {
-    val tooltipState = rememberTooltipState(isPersistent = true)
+    rememberTooltipState(isPersistent = true)
     CenterAlignedTopAppBar(
         title = {
             val infiniteTransition = rememberInfiniteTransition()
@@ -226,27 +232,7 @@ fun TopBar() {
             }
         },
         actions = {
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(8.dp),
-                tooltip = {
-                    RichTooltip(
-                        title = { Text(stringResource(Res.string.tooltip_deploy_title)) }
-                    ) {
-                        // TODO fix and implement
-                        Text(stringResource(Res.string.tooltip_deploy_message, stringResource(Res.string.no_app_selected)))
-                    }
-                },
-                state = tooltipState
-            ) {
-                IconButton(onClick = {
-                    // TODO implement deploy
-                }) {
-                    Icon(
-                        imageVector = Icons.Filled.InstallMobile,
-                        tint = MaterialTheme.colorScheme.primary,
-                        contentDescription = null
-                    )
-                }
+            DeployButton { node ->
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -257,5 +243,82 @@ fun TopBar() {
             actionIconContentColor = Color.Unspecified
         ),
     )
+}
 
+@Composable
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Preview
+fun DeployButton(deploy: (TreeElement) -> Unit) {
+    val apks =
+        uiTreeRoot.children.filter { it is ArchiveTreeNode && it.file.extension.equals("apk", ignoreCase = true) }
+    var checked by remember { mutableStateOf(false) }
+    SplitButtonLayout(
+        leadingButton = {
+            SplitButtonDefaults.LeadingButton(
+                onClick = {
+                    deploy(apks.last())
+                },
+                enabled = apks.isNotEmpty(),
+                colors = ButtonDefaults.buttonColors(containerColor = AndroidGreen.lighten(1.2f))
+            ) {
+                Icon(
+                    Icons.Filled.InstallMobile,
+                    contentDescription = null,
+                    modifier = Modifier.size(SplitButtonDefaults.LeadingIconSize),
+                )
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Text(stringResource(Res.string.deploy))
+            }
+        },
+        trailingButton = {
+            SplitButtonDefaults.TrailingButton(
+                checked = checked,
+                onCheckedChange = { checked = it },
+                colors = ButtonDefaults.buttonColors(containerColor = AndroidGreen.lighten(1.2f)),
+                enabled = apks.isNotEmpty()
+            ) {
+                val rotation: Float by
+                animateFloatAsState(
+                    targetValue = if (checked) 180f else 0f,
+                    label = "Trailing Icon Rotation",
+                )
+                Icon(
+                    Icons.Filled.KeyboardArrowDown,
+                    modifier =
+                        Modifier.size(SplitButtonDefaults.TrailingIconSize).graphicsLayer {
+                            this.rotationZ = rotation
+                        },
+                    contentDescription = null,
+                )
+            }
+        },
+        modifier = Modifier.padding(horizontal = 8.dp),
+    )
+    DropdownMenu(expanded = checked, onDismissRequest = { checked = false }) {
+        DropdownMenuItem(
+            text = { Text(stringResource(Res.string.deploy_last_selected)) },
+            onClick = {
+                checked = false
+                deploy(apks.last())
+            },
+            leadingIcon = { Icon(Icons.Outlined.Email, contentDescription = null) },
+            trailingIcon = { Text("F1", textAlign = TextAlign.Center) },
+        )
+        HorizontalDivider()
+        apks.forEach { apk ->
+            DropdownMenuItem(
+                text = { Text(stringResource(Res.string.deploy_specific, apk.name)) },
+                onClick = {
+                    checked = false
+                    deploy(apk)
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Android,
+                        contentDescription = null
+                    )
+                }
+            )
+        }
+    }
 }

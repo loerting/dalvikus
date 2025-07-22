@@ -51,6 +51,9 @@
     <string name="unknown_source">Unknown source</string>
 
 
+    <string name="deploy">Deploy</string>
+    <string name="deploy_last_selected">Deploy last selected</string>
+    <string name="deploy_specific">Deploy %1$s</string>
     <string name="close">Close</string>
     <string name="select">Select</string>
     <string name="cancel">Cancel</string>
