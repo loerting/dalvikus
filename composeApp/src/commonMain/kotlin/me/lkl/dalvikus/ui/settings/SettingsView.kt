@@ -8,10 +8,10 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -19,14 +19,13 @@ import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.settings.Setting
 import me.lkl.dalvikus.ui.util.DefaultCard
 import org.jetbrains.compose.resources.stringResource
+
 @Composable
 fun SettingsView() {
     val grouped = dalvikusSettings.groupedByCategory()
 
-    val expandedStates = remember {
-        mutableStateMapOf<String, Boolean>().apply {
-            grouped.keys.forEach { category -> put(category.nameRes.toString(), true) }
-        }
+    var expandedState by remember {
+        mutableStateOf(grouped.keys.first().nameRes.toString())
     }
 
     val listState = rememberLazyListState()
@@ -40,7 +39,7 @@ fun SettingsView() {
         ) {
             grouped.forEach { (category, settings) ->
                 val key = category.nameRes.toString()
-                val expanded = expandedStates[key] ?: true
+                val expanded = expandedState == key
 
                 item {
                     DefaultCard(
@@ -52,7 +51,7 @@ fun SettingsView() {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        expandedStates[key] = !(expandedStates[key] ?: true)
+                                        expandedState = key
                                     }
                                     .padding(vertical = 16.dp, horizontal = 12.dp),
                                 verticalAlignment = Alignment.CenterVertically
@@ -96,7 +95,7 @@ fun SettingsView() {
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .fillMaxHeight()
-                .padding(vertical = 8.dp, horizontal = 4.dp)
+                .padding(vertical = 8.dp, horizontal = 8.dp)
         )
     }
 }

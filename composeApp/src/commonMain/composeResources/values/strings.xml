@@ -3,7 +3,7 @@
     <string name="app_description">Bewitch your apps.</string>
 
     <string name="app_greeting">Welcome %1$s to...</string>
-    <string name="app_introduction">Dalvikus is an Android reverse engineering and modification toolkit written in compose multiplatform. As every computer scientist should know: With great power comes great responsibility, so please use it for ethical purposes only. For more information, open the GitHub page.</string>
+    <string name="app_introduction">Dalvikus is an Android reverse engineering and modification toolkit written in compose multiplatform. The goal was to develop a comfortable and visually stunning application. As every computer scientist should know: With great power comes great responsibility, so please use it for ethical purposes only. For more information, open the GitHub page.</string>
     <string name="app_github_button">Star on GitHub</string>
     <string name="app_dalvik_button">Dalvik reference</string>
     <string name="app_gpl_button">GPLv3 license</string>
@@ -58,8 +58,11 @@
     <string name="unknown_source">Unknown source</string>
 
     <string name="signature_settings_title">App signature passwords</string>
+    <string name="signature_settings_info">First set the keystore file and key alias in the settings, then enter the passwords for the keystore file and the key alias to sign the application.</string>
     <string name="signature_keystore_password">Password for keystore file "%1$s"</string>
     <string name="signature_key_password">Password for key alias "%1$s"</string>
+    <string name="error_signing_apk">Error signing "%1$s": %2$s.</string>
+    <string name="apk_signed_successfully">"%1$s" signed successfully.</string>
 
     <string name="deploy">Deploy</string>
     <string name="deploy_last_selected">Deploy last selected</string>
@@ -71,6 +74,7 @@
     <string name="save">Save</string>
     <string name="exit">Exit</string>
     <string name="sign">Sign</string>
+    <string name="dismiss">Dismiss</string>
     <string name="sign_and_deploy">Sign and deploy</string>
     <string name="select_file">Select file</string>
 

@@ -30,7 +30,7 @@ import java.net.URI
 @Composable
 fun TabContentRenderer(selectedNavItem: String, tab: TabElement) {
     when (tab) {
-        is WelcomeTab -> Welcome()
+        is WelcomeTab -> WelcomeView()
 
         is CodeTab -> {
             if (selectedNavItem == "Decompiler") {
@@ -64,7 +64,7 @@ fun TabContentRenderer(selectedNavItem: String, tab: TabElement) {
 }
 
 @Composable
-fun Welcome() {
+fun WelcomeView() {
     Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(

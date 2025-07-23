@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.materialkolor.ktx.lighten
 import dalvikus.composeapp.generated.resources.*
+import kotlinx.coroutines.launch
 import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.tabs.WelcomeTab
 import me.lkl.dalvikus.theme.AndroidGreen
@@ -39,6 +40,10 @@ import org.jetbrains.compose.splitpane.rememberSplitPaneState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
+
+internal var snackbarHostStateDelegate: SnackbarHostState? = null
+    private set
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
@@ -46,8 +51,11 @@ internal fun App(
     showExitDialog: MutableState<Boolean>,
     onExitConfirmed: () -> Unit
 ) = AppTheme {
+    val snackbarHostState = remember { SnackbarHostState() }
+    snackbarHostStateDelegate = snackbarHostState
     Scaffold(
-        topBar = { TopBar() }
+        topBar = { TopBar() },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -174,7 +182,7 @@ internal fun Content() {
                 }
             }
 
-            second(minSize = 200.dp) {
+            second(minSize = 400.dp) {
                 RightPanelContent(selectedNavItem)
             }
         }
