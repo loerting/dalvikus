@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.russhwolf.settings.Settings
 import dalvikus.composeapp.generated.resources.*
-import me.lkl.dalvikus.tree.FileTreeNode
+import me.lkl.dalvikus.tree.file.FileTreeNode
 import me.lkl.dalvikus.ui.tree.FileSelectorDialog
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource

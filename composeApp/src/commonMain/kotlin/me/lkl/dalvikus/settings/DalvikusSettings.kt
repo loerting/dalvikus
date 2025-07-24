@@ -54,6 +54,12 @@ class DalvikusSettings() {
             defaultValue = false
         ),
         FileSetting(
+            key = "adb_path",
+            category = SettingsCategory.SIGNING,
+            nameRes = Res.string.settings_adb_path,
+            defaultPath = getDefaultAdbInstallation().absolutePath,
+        ),
+        FileSetting(
             key = "keystore_file",
             category = SettingsCategory.SIGNING,
             nameRes = Res.string.settings_keystore_path,
@@ -66,12 +72,6 @@ class DalvikusSettings() {
             nameRes = Res.string.settings_keystore_alias,
             defaultValue = "dalvikus",
             regex = "^[a-zA-Z0-9_\\-]+$",
-        ),
-        FileSetting(
-            key = "adb_path",
-            category = SettingsCategory.SIGNING,
-            nameRes = Res.string.settings_adb_path,
-            defaultPath = getDefaultAdbInstallation().absolutePath,
         ),
     )
 
@@ -131,6 +131,11 @@ class DalvikusSettings() {
 
         return value as? T
             ?: throw IllegalArgumentException("Expected type ${T::class}, but got ${value::class}")
+    }
+
+    fun getSetting(key: String): Setting<*> {
+        return settingsList.find { it.key == key }
+            ?: throw IllegalArgumentException("Setting not found for key: $key")
     }
 
     fun groupedByCategory(): Map<SettingsCategory, List<Setting<*>>> {

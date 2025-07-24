@@ -1,6 +1,9 @@
 package me.lkl.dalvikus.ui.packaging
 
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import co.touchlab.kermit.Logger
 import com.android.apksig.ApkSigner
 import com.android.apksig.ApkVerifier
@@ -10,6 +13,8 @@ import com.android.ddmlib.IDevice
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.dalvikusSettings
@@ -21,6 +26,19 @@ import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
 
 class PackagingViewModel() {
+    private val _keystorePassword = MutableStateFlow("")
+    val keystorePassword: StateFlow<String> = _keystorePassword
+
+    private val _keyPassword = MutableStateFlow("")
+    val keyPassword: StateFlow<String> = _keyPassword
+
+    fun updateKeystorePassword(value: String) {
+        _keystorePassword.value = value
+    }
+
+    fun updateKeyPassword(value: String) {
+        _keyPassword.value = value
+    }
     suspend fun checkSignature(apk: File): ApkVerifier.Result? = withContext(Dispatchers.IO) {
         try {
             val verifier = ApkVerifier.Builder(apk).build()
@@ -32,16 +50,17 @@ class PackagingViewModel() {
     }
 
     suspend fun signApk(
-        keystoreFile: File,
-        keystorePassword: CharArray,
-        keyAlias: String,
-        keyPassword: CharArray,
+        keystoreInfo: KeystoreInfo,
         outputApk: File,
         apk: File,
         onError: (Throwable) -> Unit,
         onSuccess: (ApkVerifier.Result) -> Unit,
     ) = withContext(Dispatchers.IO) {
         try {
+            val keystoreFile = keystoreInfo.keystoreFile
+            val keyAlias = keystoreInfo.keyAlias
+            val keystorePassword = keystoreInfo.keystorePassword.value.toCharArray()
+            val keyPassword = keystoreInfo.keyPassword.value.toCharArray()
             // Load keystore
             val ks = KeyStore.getInstance("JKS").apply {
                 load(keystoreFile.inputStream(), keystorePassword)
@@ -147,6 +166,10 @@ class PackagingViewModel() {
             }
             val bridge = AndroidDebugBridge.createBridge(adbLocation.absolutePath, false, 10000, TimeUnit.MILLISECONDS)
 
+            if(!bridge.isConnected) {
+                throw Exception("Failed to connect to Android Debug Bridge. Ensure adb is installed.")
+            }
+
             // Wait up to 10 seconds for devices to appear
             var attempts = 0
             var devices: Array<IDevice> = emptyArray()
@@ -155,10 +178,6 @@ class PackagingViewModel() {
                 if (devices.isNotEmpty()) break
                 delay(500)
                 attempts++
-            }
-
-            if(!bridge.isConnected) {
-                throw Exception("Failed to connect to Android Debug Bridge. Ensure adb is installed.")
             }
 
             if (devices.isEmpty()) {
@@ -174,6 +193,7 @@ class PackagingViewModel() {
                     throw Exception("Failed to install APK on device ${device.serialNumber}: ${e.message}", e)
                 }
             }
+            // TODO launch the app on all devices. this requires the package name.
 
             onSuccess()
         } catch (e: Exception) {
@@ -182,5 +202,37 @@ class PackagingViewModel() {
             AndroidDebugBridge.disconnectBridge(1000, TimeUnit.MILLISECONDS)
             AndroidDebugBridge.terminate()
         }
+    }
+
+    fun getKeystoreInfo(): KeystoreInfo {
+        val keystoreFile = dalvikusSettings["keystore_file"] as File
+        val keyAlias = dalvikusSettings["key_alias"] as String
+        val keystorePassword = _keystorePassword
+        val keyPassword = _keyPassword
+
+        return KeystoreInfo(
+            keystoreFile = keystoreFile,
+            keyAlias = keyAlias,
+            keystorePassword = keystorePassword,
+            keyPassword = keyPassword
+        )
+    }
+}
+
+data class KeystoreInfo(
+    val keystoreFile: File,
+    val keyAlias: String,
+    val keystorePassword: MutableStateFlow<String>,
+    val keyPassword: MutableStateFlow<String>
+) {
+    @Composable
+    fun isValid(): Boolean {
+        val keystorePassword by keystorePassword.collectAsState()
+        val keyPassword by keyPassword.collectAsState()
+
+        return keystoreFile.exists() && keystoreFile.canRead() &&
+                keyAlias.isNotBlank() &&
+                keystorePassword.length >= 6 &&
+                keyPassword.length >= 6
     }
 }

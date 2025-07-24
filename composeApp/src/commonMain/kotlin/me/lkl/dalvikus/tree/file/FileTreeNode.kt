@@ -1,4 +1,4 @@
-package me.lkl.dalvikus.tree
+package me.lkl.dalvikus.tree.file
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
@@ -6,6 +6,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import me.lkl.dalvikus.io.IOChannel
 import me.lkl.dalvikus.tabs.CodeTab
 import me.lkl.dalvikus.tabs.TabElement
+import me.lkl.dalvikus.tree.TreeElement
+import me.lkl.dalvikus.tree.plaintextFileExtensions
 import me.lkl.dalvikus.ui.tree.IconForFileExtension
 import java.io.File
 
@@ -52,7 +54,7 @@ class FileTreeNode(
             tabSource = this
         ) {
             override fun makeIOChannel(): IOChannel<String> {
-                return IOChannel.fromFile(file).also {
+                return IOChannel.Companion.fromFile(file).also {
                     it.setName(name)
                 }
             }

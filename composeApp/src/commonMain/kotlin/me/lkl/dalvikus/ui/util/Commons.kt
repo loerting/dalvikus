@@ -1,7 +1,15 @@
 package me.lkl.dalvikus.ui.util
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
@@ -15,39 +23,57 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CardTitleWithDivider(
+internal fun CollapseCard(
     title: String,
-    subtitle: String? = null,
-    icon: ImageVector
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    defaultState : Boolean = false,
+    content: @Composable () -> Unit
 ) {
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(32.dp),
-            )
-            Spacer(Modifier.width(8.dp))
-            Text(
-                title,
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
+    var expanded by remember { mutableStateOf(defaultState) }
+
+    DefaultCard(modifier = modifier) {
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { expanded = !expanded }
+                    .padding(vertical = 16.dp, horizontal = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.weight(1f)
+                )
+                Icon(
+                    imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                    contentDescription = if (expanded) "Collapse" else "Expand"
+                )
+            }
+
+            AnimatedVisibility(
+                visible = expanded,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                Column(Modifier.padding(16.dp)) {
+                    content()
+                }
+            }
         }
-        HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
     }
 }
+
 
 @Composable
 internal fun DefaultCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
@@ -75,7 +101,6 @@ fun PasswordField(
         value = password,
         onValueChange = onPasswordChange,
         modifier = modifier.fillMaxWidth(),
-        label = if (isError && errorMessage != null) { { Text(errorMessage) } } else null,
         isError = isError,
         singleLine = true,
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -93,4 +118,11 @@ fun PasswordField(
             }
         }
     )
+    if (isError && errorMessage != null) {
+        Text(
+            text = errorMessage,
+            style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.error),
+            modifier = Modifier.padding(start = 8.dp, top = 4.dp)
+        )
+    }
 }

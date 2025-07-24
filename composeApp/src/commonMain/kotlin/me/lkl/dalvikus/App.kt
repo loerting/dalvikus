@@ -16,23 +16,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.materialkolor.ktx.lighten
 import dalvikus.composeapp.generated.resources.*
 import kotlinx.coroutines.launch
 import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.tabs.WelcomeTab
-import me.lkl.dalvikus.theme.AndroidGreen
 import me.lkl.dalvikus.theme.AppTheme
 import me.lkl.dalvikus.theme.LocalThemeIsDark
-import me.lkl.dalvikus.tree.TreeElement
 import me.lkl.dalvikus.tree.archive.ArchiveTreeNode
 import me.lkl.dalvikus.ui.LeftPanelContent
 import me.lkl.dalvikus.ui.RightPanelContent
 import me.lkl.dalvikus.ui.nav.NavItem
+import me.lkl.dalvikus.ui.packagingViewModel
 import me.lkl.dalvikus.ui.tabs.TabManager
 import me.lkl.dalvikus.ui.uiTreeRoot
+import me.lkl.dalvikus.ui.util.toOneLiner
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
 import org.jetbrains.compose.splitpane.HorizontalSplitPane
@@ -192,6 +190,7 @@ internal fun Content() {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TopBar() {
+    val scope = rememberCoroutineScope()
     rememberTooltipState(isPersistent = true)
     CenterAlignedTopAppBar(
         title = {
@@ -238,7 +237,53 @@ fun TopBar() {
             }
         },
         actions = {
+            val failureMessage = stringResource(Res.string.snack_failed)
+            val successMessage = stringResource(Res.string.snack_success)
+            val dismiss = stringResource(Res.string.dismiss)
             DeployButton { node ->
+                scope.launch {
+                    packagingViewModel.signApk(
+                        keystoreInfo = packagingViewModel.getKeystoreInfo(),
+                        apk = node.file,
+                        outputApk = node.file,
+                        onError = { throwable ->
+                            scope.launch {
+                                snackbarHostStateDelegate?.showSnackbar(
+                                    // TODO find a better way of formatting stringResource later.
+                                    message = failureMessage + " " + throwable.toOneLiner(),
+                                    actionLabel = dismiss,
+                                    duration = SnackbarDuration.Short
+                                )
+                            }
+                        },
+                        onSuccess = {
+                            scope.launch {
+                                packagingViewModel.deployApk(
+                                    apk = node.file,
+                                    onError = { throwable ->
+                                        scope.launch {
+                                            snackbarHostStateDelegate?.showSnackbar(
+                                                // TODO find a better way of formatting stringResource later.
+                                                message = failureMessage + " " + throwable.toOneLiner(),
+                                                actionLabel = dismiss,
+                                                duration = SnackbarDuration.Short
+                                            )
+                                        }
+                                    },
+                                    onSuccess = {
+                                        scope.launch {
+                                            snackbarHostStateDelegate?.showSnackbar(
+                                                message = successMessage,
+                                                actionLabel = dismiss,
+                                                duration = SnackbarDuration.Short
+                                            )
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    )
+                }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -254,29 +299,21 @@ fun TopBar() {
 @Composable
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview
-fun DeployButton(deploy: (TreeElement) -> Unit) {
+fun DeployButton(deploy: (ArchiveTreeNode) -> Unit) {
     val apks =
-        uiTreeRoot.children.filter { it is ArchiveTreeNode && it.file.extension.equals("apk", ignoreCase = true) }
+        uiTreeRoot.children
+            .filter { it is ArchiveTreeNode && it.file.extension.equals("apk", ignoreCase = true) }
+            .map { it as ArchiveTreeNode }
     var checked by remember { mutableStateOf(false) }
     IconButton(
         onClick = { checked = !checked },
     ) {
-        Icon(Icons.Outlined.InstallMobile, contentDescription = stringResource(Res.string.deploy))
+        Icon(Icons.Outlined.PlayCircle, contentDescription = stringResource(Res.string.sign_and_deploy))
     }
     DropdownMenu(expanded = checked, onDismissRequest = { checked = false }) {
-        DropdownMenuItem(
-            text = { Text(stringResource(Res.string.deploy_last_selected)) },
-            onClick = {
-                checked = false
-                deploy(apks.last())
-            },
-            leadingIcon = { Icon(Icons.Outlined.Email, contentDescription = null) },
-            trailingIcon = { Text("F1", textAlign = TextAlign.Center) },
-        )
-        HorizontalDivider()
         apks.forEach { apk ->
             DropdownMenuItem(
-                text = { Text(stringResource(Res.string.deploy_specific, apk.name)) },
+                text = { Text(stringResource(Res.string.sign_deploy_app, apk.name)) },
                 onClick = {
                     checked = false
                     deploy(apk)

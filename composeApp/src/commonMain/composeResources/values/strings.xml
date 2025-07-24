@@ -3,7 +3,7 @@
     <string name="app_description">Bewitch your apps.</string>
 
     <string name="app_greeting">Welcome %1$s to...</string>
-    <string name="app_introduction">Dalvikus is an Android reverse engineering and modification toolkit written in compose multiplatform. The goal was to develop a comfortable and visually stunning application. As every computer scientist should know: With great power comes great responsibility, so please use it for ethical purposes only. For more information, open the GitHub page.</string>
+    <string name="app_introduction">Dalvikus is an Android reverse engineering and modification toolkit written in compose multiplatform. It supports smali editing, resource editing, app signing and deploying. As every computer scientist should know: With great power comes great responsibility. Dalvikus is intended for ethical purposes only. For more information, visit the GitHub page.</string>
     <string name="app_github_button">Star on GitHub</string>
     <string name="app_dalvik_button">Dalvik reference</string>
     <string name="app_gpl_button">GPLv3 license</string>
@@ -31,7 +31,7 @@
     <string name="nav_editor">Editor</string>
     <string name="nav_decompiler">Decompiler</string>
     <string name="nav_settings">Settings</string>
-    <string name="nav_signing">Signing</string>
+    <string name="nav_signing">Sign &amp; Deploy</string>
     <string name="nav_file_tree">File Tree</string>
 
     <string name="wrong_mode">This feature is unavailable in the current mode.</string>
@@ -40,7 +40,7 @@
     <string name="settings_category_smali">Smali (dis-)assembler settings</string>
     <string name="settings_category_decompiler">Decompiler settings</string>
     <string name="settings_category_editor">Editor settings</string>
-    <string name="settings_category_signing">Signing settings</string>
+    <string name="settings_category_signing">Sign &amp; Deploy settings</string>
 
     <string name="settings_font_size">Font size</string>
     <string name="settings_api_level">Dalvik Opcodes API level</string>
@@ -58,8 +58,8 @@
     <string name="no_app_selected">No app selected</string>
     <string name="unknown_source">Unknown source</string>
 
-    <string name="signature_settings_title">App signature passwords</string>
-    <string name="signature_settings_info">First set the keystore file and key alias in the settings, then enter the passwords for the keystore file and the key alias to sign the application.</string>
+    <string name="signature_settings_title">Keystore configuration</string>
+    <string name="signature_settings_info">First set the keystore file and key alias in the settings, then enter the passwords for the keystore file and the key alias to sign the application. Install Java's "keytool" for signing and "adb" for deploying.</string>
     <string name="signature_keystore_password">Password for keystore file "%1$s"</string>
     <string name="signature_key_password">Password for key alias "%1$s"</string>
     <string name="fab_create_keystore">Create keystore with keytool</string>
@@ -68,8 +68,7 @@
     <string name="snack_success">Successfully completed action.</string>
 
     <string name="deploy">Deploy</string>
-    <string name="deploy_last_selected">Deploy last selected</string>
-    <string name="deploy_specific">Deploy %1$s</string>
+    <string name="sign_deploy_app">Sign and deploy %1$s via adb.</string>
     <string name="close">Close</string>
     <string name="select">Select</string>
     <string name="cancel">Cancel</string>

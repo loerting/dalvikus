@@ -17,7 +17,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.tabManager
-import me.lkl.dalvikus.tree.FileTreeNode
+import me.lkl.dalvikus.tree.file.FileTreeNode
 import me.lkl.dalvikus.tree.TreeElement
 import me.lkl.dalvikus.tree.archive.ArchiveTreeNode
 import me.lkl.dalvikus.tree.dex.DexFileTreeNode

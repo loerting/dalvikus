@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.cancel
 import dalvikus.composeapp.generated.resources.select
-import me.lkl.dalvikus.tree.FileTreeNode
+import me.lkl.dalvikus.tree.file.FileTreeNode
 import me.lkl.dalvikus.tree.TreeElement
 import me.lkl.dalvikus.tree.root.TreeRoot
 import org.jetbrains.compose.resources.stringResource

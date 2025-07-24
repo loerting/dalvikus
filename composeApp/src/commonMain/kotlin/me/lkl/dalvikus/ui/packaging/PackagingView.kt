@@ -1,5 +1,6 @@
 package me.lkl.dalvikus.ui.packaging
 
+import SettingRow
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,7 +17,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.android.apksig.ApkVerifier
 import dalvikus.composeapp.generated.resources.*
@@ -25,35 +25,34 @@ import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.snackbarHostStateDelegate
 import me.lkl.dalvikus.tree.archive.ArchiveTreeNode
 import me.lkl.dalvikus.ui.uiTreeRoot
-import me.lkl.dalvikus.ui.util.CardTitleWithDivider
+import me.lkl.dalvikus.ui.util.CollapseCard
 import me.lkl.dalvikus.ui.util.DefaultCard
 import me.lkl.dalvikus.ui.util.PasswordField
 import me.lkl.dalvikus.ui.util.toOneLiner
 import org.jetbrains.compose.resources.stringResource
-import java.io.File
+import settingPadHor
+import settingPadVer
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun PackagingView() {
-    val keystoreFile = dalvikusSettings["keystore_file"] as File
-    val keyAlias = dalvikusSettings["key_alias"] as String
+fun PackagingView(packagingViewModel: PackagingViewModel) {
+    val keystorePassword by packagingViewModel.keystorePassword.collectAsState()
+    val keyPassword by packagingViewModel.keyPassword.collectAsState()
 
-    val keystorePassword = remember { mutableStateOf("") }
-    val keyPassword = remember { mutableStateOf("") }
+    val keystoreInfo = packagingViewModel.getKeystoreInfo()
 
-    val packagingViewModel = remember { PackagingViewModel() }
     val scope = rememberCoroutineScope()
 
     Scaffold(
         containerColor = Color.Transparent,
         floatingActionButton = {
-            if (keystoreFile.exists() || keystorePassword.value.length < 6 || keyPassword.value.length < 6) return@Scaffold
+            if (keystoreInfo.isValid()) return@Scaffold
             ExtendedFloatingActionButton(
                 onClick = {
                     packagingViewModel.openConsoleCreateKeystore(
                         scope,
-                        keystorePassword.value,
-                        keyPassword.value
+                        keystorePassword,
+                        keyPassword
                     )
                 },
                 icon = {
@@ -69,62 +68,55 @@ fun PackagingView() {
         Column(
             modifier = Modifier.fillMaxSize().padding(innerPadding)
         ) {
-            DefaultCard {
+            CollapseCard(
+                title = stringResource(Res.string.signature_settings_title),
+                icon = Icons.Outlined.Key,
+                defaultState = true
+            ) {
                 Column {
-                    CardTitleWithDivider(
-                        title = stringResource(Res.string.signature_settings_title),
-                        icon = Icons.Outlined.Key
-                    )
-                    Column(Modifier.padding(16.dp)) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                stringResource(Res.string.signature_settings_info),
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(12.dp))
+                    SettingRow(dalvikusSettings.getSetting("keystore_file"))
+                    Column(Modifier.padding(horizontal = settingPadHor)) {
                         Text(
-                            stringResource(Res.string.signature_keystore_password, keystoreFile.name),
+                            stringResource(Res.string.signature_keystore_password, keystoreInfo.keystoreFile.name),
                             style = MaterialTheme.typography.bodyLarge
                         )
                         PasswordField(
-                            password = keystorePassword.value,
-                            onPasswordChange = { keystorePassword.value = it },
-                            isError = keystorePassword.value.length < 6,
+                            password = keystorePassword,
+                            onPasswordChange = packagingViewModel::updateKeystorePassword,
+                            isError = keystorePassword.length < 6,
                             errorMessage = stringResource(Res.string.error_password_min_length)
                         )
+                        Spacer(modifier = Modifier.height(settingPadVer))
+                    }
 
-                        Spacer(modifier = Modifier.height(12.dp))
-
+                    SettingRow(dalvikusSettings.getSetting("key_alias"))
+                    Column(Modifier.padding(horizontal = settingPadHor)) {
                         Text(
-                            stringResource(Res.string.signature_key_password, keyAlias),
+                            stringResource(Res.string.signature_key_password, keystoreInfo.keyAlias),
                             style = MaterialTheme.typography.bodyLarge
                         )
                         PasswordField(
-                            password = keyPassword.value,
-                            onPasswordChange = { keyPassword.value = it },
-                            isError = keyPassword.value.length < 6,
+                            password = keyPassword,
+                            onPasswordChange = packagingViewModel::updateKeyPassword,
+                            isError = keyPassword.length < 6,
                             errorMessage = stringResource(Res.string.error_password_min_length)
                         )
+                        Spacer(modifier = Modifier.height(settingPadVer))
                     }
                 }
             }
-
-            SignInfoCards(keystoreFile, keystorePassword, keyAlias, keyPassword, packagingViewModel)
+            SignInfoCards(packagingViewModel)
         }
     }
 }
 
+
 @Composable
 private fun SignInfoCards(
-    keystoreFile: File,
-    keystorePassword: MutableState<String>,
-    keyAlias: String,
-    keyPassword: MutableState<String>,
     packagingViewModel: PackagingViewModel
 ) {
+    val keystoreInfo = packagingViewModel.getKeystoreInfo()
+
     val apks = remember(uiTreeRoot.children) {
         uiTreeRoot.children.filter {
             it is ArchiveTreeNode && it.file.extension.equals(
@@ -189,10 +181,7 @@ private fun SignInfoCards(
                                     loadingApk.value = apk
                                     scope.launch {
                                         packagingViewModel.signApk(
-                                            keystoreFile = keystoreFile,
-                                            keystorePassword = keystorePassword.value.toCharArray(),
-                                            keyAlias = keyAlias,
-                                            keyPassword = keyPassword.value.toCharArray(),
+                                            keystoreInfo = keystoreInfo,
                                             apk = apk.file,
                                             outputApk = apk.file,
                                             onError = { throwable ->
