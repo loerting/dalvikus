@@ -31,8 +31,8 @@ class Code(
 
     suspend fun saveCode() {
         if (isEditable) {
-            ioChannel.write(code)
-            hasUnsavedChanges = false
+            if(ioChannel.write(code))
+                hasUnsavedChanges = false
         } else {
             throw UnsupportedOperationException("This Code instance is not editable.")
         }

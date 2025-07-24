@@ -18,6 +18,7 @@ import com.android.tools.smali.smali.smaliParser
 import com.android.tools.smali.smali.smaliTreeWalker
 import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.io.IOChannel
+import me.lkl.dalvikus.snackbarHostStateDelegate
 import me.lkl.dalvikus.tree.TreeElement
 import org.antlr.runtime.CommonTokenStream
 import org.antlr.runtime.tree.CommonTree
@@ -70,7 +71,7 @@ class SmaliTab(
                                 "Lexer errors: ${lexer.numberOfSyntaxErrors}, " +
                                 "Parser errors: ${parser.numberOfSyntaxErrors}"
                     }
-                    return@IOChannel
+                    return@IOChannel false
                 }
 
                 val t: CommonTree = result.getTree()
@@ -83,11 +84,16 @@ class SmaliTab(
 
                 dexGen.setVerboseErrors(true)
                 val dexBuilder = DexBuilder(Opcodes.forApi(apiLevel))
+
                 dexGen.setDexBuilder(dexBuilder)
-                dexGen.smali_file()
+                val classDef = dexGen.smali_file()
+
+                print(classDef.javaClass.name)
+
+
                 // TODO use the smaliFile or the dexBuilder to write back to the DEX file
 
-                hasUnsavedChanges.value = false
+                return@IOChannel true
             },
             setName = {
                 throw UnsupportedOperationException("Renaming archive entries is not supported.")

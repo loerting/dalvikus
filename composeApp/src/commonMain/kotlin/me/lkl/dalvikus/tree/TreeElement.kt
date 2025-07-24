@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.ui.tree.ColorForFileExtension
+import me.lkl.dalvikus.ui.uiTreeRoot
 
 interface TreeElement {
     val parent: TreeElement?
@@ -37,6 +38,9 @@ interface TreeElement {
         return "${parent!!.getSourceDescription()}/$name"
     }
 
+    fun onChildChanged(child: TreeElement) {
+        parent?.onChildChanged(this)
+    }
 }
 
 val plaintextFileExtensions = setOf(

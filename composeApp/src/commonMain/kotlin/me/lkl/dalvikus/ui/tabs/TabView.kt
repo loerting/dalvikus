@@ -77,7 +77,7 @@ fun TabView(
                                     .size(16.dp)
                                     .clickable {
                                         if (tabManager.tabs.size > 1) {
-                                            if (tab.hasUnsavedChanges.value) {
+                                            if (unsaved) {
                                                 pendingCloseTab.value = tab
                                                 showCloseDialog.value = true
                                             } else {

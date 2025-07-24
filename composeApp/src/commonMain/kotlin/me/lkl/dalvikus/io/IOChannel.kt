@@ -1,5 +1,6 @@
 package me.lkl.dalvikus.io
 
+import co.touchlab.kermit.Logger
 import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.ArchiveOutputStream
 import org.apache.commons.compress.archivers.ArchiveStreamFactory
@@ -11,7 +12,7 @@ import java.io.IOException
 class IOChannel<T>(
     val read: suspend () -> T,
     val writingSupported: Boolean = true,
-    val write: suspend (T) -> Unit,
+    val write: suspend (T) -> Boolean,
     val setName: (String) -> Unit = { _ -> } // Default no-op implementation
 ) {
 
@@ -36,7 +37,15 @@ class IOChannel<T>(
                 },
                 writingSupported = true,
                 write = { content ->
-                    file.writeText(content)
+                    try {
+                        file.writeText(content)
+                    } catch (e: Exception) {
+                        Logger.e("IOChannel") {
+                            "Failed to write to file ${file.path}: ${e.message}"
+                        }
+                        return@IOChannel false
+                    }
+                    return@IOChannel true
                 },
                 setName = { newName ->
                     val newFile = file.resolveSibling(newName)
@@ -91,10 +100,7 @@ class IOChannel<T>(
                     }
 
                     archive.close()
-
-                    if (!tempFile.renameTo(archiveFile)) {
-                        throw IOException("Failed to replace original archive with modified version.")
-                    }
+                    return@IOChannel tempFile.renameTo(archiveFile)
                 },
                 setName = {
                     throw UnsupportedOperationException("Renaming archive entries is not yet supported.")
