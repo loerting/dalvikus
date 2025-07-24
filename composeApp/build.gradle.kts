@@ -38,6 +38,7 @@ kotlin {
             implementation(libs.jadxSmaliInput)
             implementation(libs.antlr4)
             implementation(libs.apksig)
+            implementation(libs.ddmlib)
 
         }
 

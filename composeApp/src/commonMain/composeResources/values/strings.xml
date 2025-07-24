@@ -49,6 +49,7 @@
     <string name="settings_save_automatically">Save editor changes automatically</string>
     <string name="settings_keystore_path">Keystore file path for signing</string>
     <string name="settings_keystore_alias">Key alias for signing</string>
+    <string name="settings_adb_path">Installation path of Android Debug Bridge (adb)</string>
 
     <string name="tooltip_deploy_title">Deploy application</string>
     <string name="tooltip_deploy_message">Sign and deploy the last selected Android archive using adb. (%1$s)</string>
@@ -61,8 +62,10 @@
     <string name="signature_settings_info">First set the keystore file and key alias in the settings, then enter the passwords for the keystore file and the key alias to sign the application.</string>
     <string name="signature_keystore_password">Password for keystore file "%1$s"</string>
     <string name="signature_key_password">Password for key alias "%1$s"</string>
-    <string name="error_signing_apk">Error signing "%1$s": %2$s.</string>
-    <string name="apk_signed_successfully">"%1$s" signed successfully.</string>
+    <string name="fab_create_keystore">Create keystore with keytool</string>
+
+    <string name="snack_failed">Error performing action:</string>
+    <string name="snack_success">Successfully completed action.</string>
 
     <string name="deploy">Deploy</string>
     <string name="deploy_last_selected">Deploy last selected</string>
@@ -79,5 +82,7 @@
     <string name="select_file">Select file</string>
 
     <string name="fab_load_file">Load file</string>
+
+    <string name="error_password_min_length">Password must be at least 6 characters</string>
 
 </resources>

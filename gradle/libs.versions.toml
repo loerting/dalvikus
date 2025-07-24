@@ -12,6 +12,7 @@ smali = "3.0.9"
 jadx = "1.5.2"
 antlr4 = "4.13.2"
 apksig = "8.12.0-alpha09"
+ddmlib = "31.13.0-alpha01"
 
 [libraries]
 
@@ -29,6 +30,7 @@ jadx = { module = "io.github.skylot:jadx-core", version.ref = "jadx" }
 jadxSmaliInput = { module = "io.github.skylot:jadx-smali-input", version.ref = "jadx" }
 antlr4 = { module = "org.antlr:antlr4", version.ref = "antlr4" }
 apksig = { module = "com.android.tools.build:apksig", version.ref = "apksig" }
+ddmlib = { module = "com.android.tools.ddms:ddmlib", version.ref = "ddmlib" }
 
 [plugins]
 

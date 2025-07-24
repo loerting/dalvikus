@@ -1,5 +1,6 @@
 package me.lkl.dalvikus.settings
 
+import co.touchlab.kermit.Logger
 import com.android.tools.smali.dexlib2.Opcodes
 import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
@@ -63,9 +64,45 @@ class DalvikusSettings() {
             key = "key_alias",
             category = SettingsCategory.SIGNING,
             nameRes = Res.string.settings_keystore_alias,
-            defaultValue = "dalvikus"
+            defaultValue = "dalvikus",
+            regex = "^[a-zA-Z0-9_\\-]+$",
+        ),
+        FileSetting(
+            key = "adb_path",
+            category = SettingsCategory.SIGNING,
+            nameRes = Res.string.settings_adb_path,
+            defaultPath = getDefaultAdbInstallation().absolutePath,
         ),
     )
+
+    private fun getDefaultAdbInstallation(): File {
+        val os = System.getProperty("os.name").lowercase()
+        val sdkPath = System.getenv("ANDROID_HOME")
+            ?: System.getenv("ANDROID_SDK_ROOT")
+
+        if (sdkPath != null) {
+            val adbFromEnv = File(sdkPath, "platform-tools${File.separator}adb${if (os.contains("win")) ".exe" else ""}")
+            if (adbFromEnv.exists() && adbFromEnv.canExecute()) {
+                return adbFromEnv
+            }
+            Logger.w("Found ANDROID_HOME or ANDROID_SDK_ROOT environment variable, but ADB not found at $adbFromEnv. Falling back to common locations.")
+        } else {
+            Logger.w("ANDROID_HOME or ANDROID_SDK_ROOT environment variable not set. Falling back to common locations.")
+        }
+
+        val fallbackAdb = when {
+            os.contains("win") -> File(System.getenv("ProgramFiles") ?: "C:\\Program Files", "Android\\platform-tools\\adb.exe")
+            os.contains("mac") || os.contains("darwin") -> File("/usr/local/bin/adb")
+            else -> File("/usr/bin/adb")
+        }
+
+        if (fallbackAdb.exists() && fallbackAdb.canExecute()) {
+            return fallbackAdb
+        }
+
+        Logger.e("No valid ADB installation found. Please set ANDROID_HOME or ANDROID_SDK_ROOT environment variable or specify ADB path in settings.")
+        return File("")
+    }
 
     init {
         loadAll()

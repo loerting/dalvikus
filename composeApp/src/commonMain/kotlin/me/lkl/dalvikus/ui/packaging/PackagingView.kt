@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.Draw
 import androidx.compose.material.icons.outlined.InstallMobile
@@ -14,10 +15,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import co.touchlab.kermit.Logger
 import com.android.apksig.ApkVerifier
 import dalvikus.composeapp.generated.resources.*
 import kotlinx.coroutines.launch
@@ -27,6 +27,8 @@ import me.lkl.dalvikus.tree.archive.ArchiveTreeNode
 import me.lkl.dalvikus.ui.uiTreeRoot
 import me.lkl.dalvikus.ui.util.CardTitleWithDivider
 import me.lkl.dalvikus.ui.util.DefaultCard
+import me.lkl.dalvikus.ui.util.PasswordField
+import me.lkl.dalvikus.ui.util.toOneLiner
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
 
@@ -40,54 +42,78 @@ fun PackagingView() {
     val keyPassword = remember { mutableStateOf("") }
 
     val packagingViewModel = remember { PackagingViewModel() }
-    Column(Modifier.fillMaxSize()) {
-        DefaultCard {
-            Column {
-                CardTitleWithDivider(
-                    title = stringResource(Res.string.signature_settings_title),
-                    icon = Icons.Outlined.Key
+    val scope = rememberCoroutineScope()
+
+    Scaffold(
+        containerColor = Color.Transparent,
+        floatingActionButton = {
+            if (keystoreFile.exists() || keystorePassword.value.length < 6 || keyPassword.value.length < 6) return@Scaffold
+            ExtendedFloatingActionButton(
+                onClick = {
+                    packagingViewModel.openConsoleCreateKeystore(
+                        scope,
+                        keystorePassword.value,
+                        keyPassword.value
+                    )
+                },
+                icon = {
+                    Icon(Icons.Default.Key, contentDescription = stringResource(Res.string.fab_create_keystore))
+                },
+                text = {
+                    Text(stringResource(Res.string.fab_create_keystore))
+                },
+
                 )
-                Column(Modifier.padding(16.dp)) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier.fillMaxSize().padding(innerPadding)
+        ) {
+            DefaultCard {
+                Column {
+                    CardTitleWithDivider(
+                        title = stringResource(Res.string.signature_settings_title),
+                        icon = Icons.Outlined.Key
+                    )
+                    Column(Modifier.padding(16.dp)) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                stringResource(Res.string.signature_settings_info),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            stringResource(Res.string.signature_settings_info),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                            textAlign = TextAlign.Center
+                            stringResource(Res.string.signature_keystore_password, keystoreFile.name),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        PasswordField(
+                            password = keystorePassword.value,
+                            onPasswordChange = { keystorePassword.value = it },
+                            isError = keystorePassword.value.length < 6,
+                            errorMessage = stringResource(Res.string.error_password_min_length)
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Text(
+                            stringResource(Res.string.signature_key_password, keyAlias),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        PasswordField(
+                            password = keyPassword.value,
+                            onPasswordChange = { keyPassword.value = it },
+                            isError = keyPassword.value.length < 6,
+                            errorMessage = stringResource(Res.string.error_password_min_length)
                         )
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        stringResource(Res.string.signature_keystore_password, keystoreFile.name),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    OutlinedTextField(
-                        value = keystorePassword.value,
-                        onValueChange = { keystorePassword.value = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        visualTransformation = PasswordVisualTransformation()
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text(
-                        stringResource(Res.string.signature_key_password, keyAlias),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    OutlinedTextField(
-                        value = keyPassword.value,
-                        onValueChange = { keyPassword.value = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        visualTransformation = PasswordVisualTransformation()
-                    )
                 }
-
             }
-        }
 
-        SignInfoCards(keystoreFile, keystorePassword, keyAlias, keyPassword, packagingViewModel)
+            SignInfoCards(keystoreFile, keystorePassword, keyAlias, keyPassword, packagingViewModel)
+        }
     }
 }
 
@@ -107,34 +133,12 @@ private fun SignInfoCards(
             )
         }.map { it as ArchiveTreeNode }
     }
-    val currentlySigning = remember { mutableStateOf<ArchiveTreeNode?>(null) }
+    val loadingApk = remember { mutableStateOf<ArchiveTreeNode?>(null) }
+    val failureMessage = stringResource(Res.string.snack_failed)
+    val successMessage = stringResource(Res.string.snack_success)
     val dismiss = stringResource(Res.string.dismiss)
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(currentlySigning.value) {
-        val apk = currentlySigning.value ?: return@LaunchedEffect
-        packagingViewModel.signApk(
-            keystoreFile = keystoreFile,
-            keystorePassword = keystorePassword.value.toCharArray(),
-            keyAlias = keyAlias,
-            keyPassword = keyPassword.value.toCharArray(),
-            apk = apk.file,
-            outputApk = apk.file, // overwrite; make sure that's intended
-            onError = { throwable ->
-                currentlySigning.value = null
-                scope.launch {
-                    snackbarHostStateDelegate?.showSnackbar(
-                        message = throwable.message ?: "Error signing APK",
-                        actionLabel = dismiss,
-                        duration = SnackbarDuration.Short
-                    )
-                }
-            },
-            onSuccess = {
-                currentlySigning.value = null
-            }
-        )
-    }
 
     val listState = rememberLazyListState()
 
@@ -172,18 +176,48 @@ private fun SignInfoCards(
                                     text = apk.name,
                                     style = MaterialTheme.typography.bodyLarge
                                 )
-                                SignatureStatus(packagingViewModel, apk, currentlySigning)
+                                SignatureStatus(packagingViewModel, apk, loadingApk)
                             }
-                            if (currentlySigning.value == apk) {
+                            if (loadingApk.value == apk) {
                                 CircularProgressIndicator(
-                                    modifier = Modifier.size(24.dp),
-                                    strokeWidth = 2.dp,
+                                    modifier = Modifier.size(32.dp),
+                                    strokeWidth = 3.dp,
                                     color = MaterialTheme.colorScheme.primary
                                 )
                             } else {
                                 IconButton({
-                                    currentlySigning.value = apk
-
+                                    loadingApk.value = apk
+                                    scope.launch {
+                                        packagingViewModel.signApk(
+                                            keystoreFile = keystoreFile,
+                                            keystorePassword = keystorePassword.value.toCharArray(),
+                                            keyAlias = keyAlias,
+                                            keyPassword = keyPassword.value.toCharArray(),
+                                            apk = apk.file,
+                                            outputApk = apk.file,
+                                            onError = { throwable ->
+                                                loadingApk.value = null
+                                                scope.launch {
+                                                    snackbarHostStateDelegate?.showSnackbar(
+                                                        // TODO find a better way of formatting stringResource later.
+                                                        message = failureMessage + " " + throwable.toOneLiner(),
+                                                        actionLabel = dismiss,
+                                                        duration = SnackbarDuration.Short
+                                                    )
+                                                }
+                                            },
+                                            onSuccess = {
+                                                loadingApk.value = null
+                                                scope.launch {
+                                                    snackbarHostStateDelegate?.showSnackbar(
+                                                        message = successMessage,
+                                                        actionLabel = dismiss,
+                                                        duration = SnackbarDuration.Short
+                                                    )
+                                                }
+                                            }
+                                        )
+                                    }
                                 }) {
                                     Icon(
                                         imageVector = Icons.Outlined.Draw,
@@ -191,11 +225,37 @@ private fun SignInfoCards(
                                     )
                                 }
                                 IconButton({
-                                    currentlySigning.value = apk
+                                    loadingApk.value = apk
+                                    scope.launch {
+                                        packagingViewModel.deployApk(
+                                            apk = apk.file,
+                                            onError = { throwable ->
+                                                loadingApk.value = null
+                                                scope.launch {
+                                                    snackbarHostStateDelegate?.showSnackbar(
+                                                        // TODO find a better way of formatting stringResource later.
+                                                        message = failureMessage + " " + throwable.toOneLiner(),
+                                                        actionLabel = dismiss,
+                                                        duration = SnackbarDuration.Short
+                                                    )
+                                                }
+                                            },
+                                            onSuccess = {
+                                                loadingApk.value = null
+                                                scope.launch {
+                                                    snackbarHostStateDelegate?.showSnackbar(
+                                                        message = successMessage,
+                                                        actionLabel = dismiss,
+                                                        duration = SnackbarDuration.Short
+                                                    )
+                                                }
+                                            }
+                                        )
+                                    }
                                 }) {
                                     Icon(
                                         imageVector = Icons.Outlined.InstallMobile,
-                                        contentDescription = stringResource(Res.string.sign_and_deploy)
+                                        contentDescription = stringResource(Res.string.deploy)
                                     )
                                 }
                             }
@@ -220,12 +280,12 @@ private fun SignInfoCards(
 fun SignatureStatus(
     packagingViewModel: PackagingViewModel,
     apk: ArchiveTreeNode,
-    apkToSign: MutableState<ArchiveTreeNode?>
+    loadingApk: MutableState<ArchiveTreeNode?>
 ) {
     var signatureState by remember(apk) { mutableStateOf<ApkVerifier.Result?>(null) }
 
-    LaunchedEffect(apk, apkToSign) {
-        if (apkToSign.value != null) return@LaunchedEffect // some apk is being signed.
+    LaunchedEffect(apk, loadingApk) {
+        if (loadingApk.value != null) return@LaunchedEffect // some apk is being signed.
         signatureState = null
         signatureState = packagingViewModel.checkSignature(apk.file)
     }

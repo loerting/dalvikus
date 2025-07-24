@@ -221,7 +221,7 @@ class FileSetting(
     category: SettingsCategory,
     nameRes: StringResource,
     defaultPath: String,
-    val extensions: List<String>
+    val extensions: List<String>? = null
 ) : Setting<String>(key, category, nameRes, defaultPath) {
 
     override fun save(settings: Settings) {
@@ -235,7 +235,7 @@ class FileSetting(
     fun isValid(): Boolean {
         if (value.isBlank()) return false
         val file = File(value)
-        return file.exists() && !file.isDirectory && file.extension.lowercase() in extensions
+        return file.exists() && !file.isDirectory && (extensions == null || file.extension.lowercase() in extensions)
     }
 
     @Composable
@@ -246,7 +246,7 @@ class FileSetting(
             FileSelectorDialog(
                 title = stringResource(Res.string.dialog_select_keystore_title),
                 message = stringResource(Res.string.dialog_select_keystore_message),
-                filePredicate = { it is FileTreeNode && !it.file.isDirectory && it.file.extension.lowercase() in extensions },
+                filePredicate = { it is FileTreeNode && !it.file.isDirectory && (extensions == null || it.file.extension.lowercase() in extensions) },
                 onDismissRequest = {
                     showFilePicker = false
                 }) { node ->
@@ -282,8 +282,12 @@ class StringSetting(
     key: String,
     category: SettingsCategory,
     nameRes: StringResource,
-    defaultValue: String
+    defaultValue: String,
+    regex: String
 ) : Setting<String>(key, category, nameRes, defaultValue) {
+
+    private val pattern = Regex(regex)
+    var errorMessage: String? = null
 
     override fun save(settings: Settings) {
         settings.putString(key, value)
@@ -295,11 +299,28 @@ class StringSetting(
 
     @Composable
     override fun Editor() {
-        OutlinedTextField(
-            value = value,
-            onValueChange = { value = it },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
+        Column {
+            OutlinedTextField(
+                value = value,
+                onValueChange = {
+                    if (pattern.matches(it)) {
+                        value = it
+                        errorMessage = null
+                    } else {
+                        errorMessage = "Invalid input format"
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                isError = errorMessage != null
+            )
+            if (errorMessage != null) {
+                Text(
+                    text = errorMessage!!,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+        }
     }
 }
