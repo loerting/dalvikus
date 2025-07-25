@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.tabManager
 import me.lkl.dalvikus.tabs.TabElement
+import me.lkl.dalvikus.tree.getPathHistory
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,8 +55,8 @@ fun TabView(
                                         title = { Text(stringResource(Res.string.tooltip_tab_title)) }
                                     ) {
                                         Text(
-                                            tab.tabSource?.getSourceDescription()
-                                                ?: stringResource(Res.string.unknown_source)
+                                            tab.treeNode?.getPathHistory()
+                                                ?: stringResource(Res.string.unknown_source),
                                         )
                                     }
                                 },

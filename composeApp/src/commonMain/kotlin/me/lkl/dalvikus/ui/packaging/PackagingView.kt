@@ -23,7 +23,7 @@ import dalvikus.composeapp.generated.resources.*
 import kotlinx.coroutines.launch
 import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.snackbarHostStateDelegate
-import me.lkl.dalvikus.tree.archive.ArchiveTreeNode
+import me.lkl.dalvikus.tree.archive.ZipNode
 import me.lkl.dalvikus.ui.uiTreeRoot
 import me.lkl.dalvikus.ui.util.CollapseCard
 import me.lkl.dalvikus.ui.util.DefaultCard
@@ -117,15 +117,13 @@ private fun SignInfoCards(
 ) {
     val keystoreInfo = packagingViewModel.getKeystoreInfo()
 
-    val apks = remember(uiTreeRoot.children) {
-        uiTreeRoot.children.filter {
-            it is ArchiveTreeNode && it.file.extension.equals(
-                "apk",
-                ignoreCase = true
-            )
-        }.map { it as ArchiveTreeNode }
-    }
-    val loadingApk = remember { mutableStateOf<ArchiveTreeNode?>(null) }
+    val treeRootChildren by uiTreeRoot.childrenFlow.collectAsState()
+    val apks =
+        treeRootChildren
+            .filter { it is ZipNode && it.name.endsWith("apk", ignoreCase = true) }
+            .map { it as ZipNode }
+
+    val loadingApk = remember { mutableStateOf<ZipNode?>(null) }
     val failureMessage = stringResource(Res.string.snack_failed)
     val successMessage = stringResource(Res.string.snack_success)
     val dismiss = stringResource(Res.string.dismiss)
@@ -182,8 +180,8 @@ private fun SignInfoCards(
                                     scope.launch {
                                         packagingViewModel.signApk(
                                             keystoreInfo = keystoreInfo,
-                                            apk = apk.file,
-                                            outputApk = apk.file,
+                                            apk = apk.zipFile,
+                                            outputApk = apk.zipFile,
                                             onError = { throwable ->
                                                 loadingApk.value = null
                                                 scope.launch {
@@ -217,7 +215,7 @@ private fun SignInfoCards(
                                     loadingApk.value = apk
                                     scope.launch {
                                         packagingViewModel.deployApk(
-                                            apk = apk.file,
+                                            apk = apk.zipFile,
                                             onError = { throwable ->
                                                 loadingApk.value = null
                                                 scope.launch {
@@ -268,15 +266,15 @@ private fun SignInfoCards(
 @Composable
 fun SignatureStatus(
     packagingViewModel: PackagingViewModel,
-    apk: ArchiveTreeNode,
-    loadingApk: MutableState<ArchiveTreeNode?>
+    apk: ZipNode,
+    loadingApk: MutableState<ZipNode?>
 ) {
     var signatureState by remember(apk) { mutableStateOf<ApkVerifier.Result?>(null) }
 
     LaunchedEffect(apk, loadingApk) {
         if (loadingApk.value != null) return@LaunchedEffect // some apk is being signed.
         signatureState = null
-        signatureState = packagingViewModel.checkSignature(apk.file)
+        signatureState = packagingViewModel.checkSignature(apk.zipFile)
     }
 
     if (signatureState != null) {

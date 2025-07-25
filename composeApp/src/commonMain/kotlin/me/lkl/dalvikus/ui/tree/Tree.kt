@@ -3,6 +3,7 @@ package me.lkl.dalvikus.ui.tree
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -26,54 +27,74 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.lkl.dalvikus.io.archiveExtensions
 import me.lkl.dalvikus.theme.*
-import me.lkl.dalvikus.tree.TreeElement
-import me.lkl.dalvikus.tree.root.TreeRoot
+import me.lkl.dalvikus.tree.ContainerNode
+import me.lkl.dalvikus.tree.Node
+import me.lkl.dalvikus.tree.root.HiddenRoot
+import me.lkl.dalvikus.ui.editableFiles
 
 @Composable
 fun TreeView(
-    root: TreeRoot,
+    root: HiddenRoot,
     modifier: Modifier = Modifier,
-    onFileSelected: ((TreeElement) -> Unit)? = null,
-    selectedElement: TreeElement? = null
+    onFileSelected: ((Node) -> Unit)? = null,
+    selectedElement: Node? = null
 ) {
-    val childrenCache = remember { mutableMapOf<TreeElement, List<TreeElement>>() }
-    val expandedState = remember { mutableStateMapOf<TreeElement, Boolean>() }
     val coroutineScope = rememberCoroutineScope()
-    fun getVisibleNodes(): List<Pair<TreeElement, Int>> {
-        val result = mutableListOf<Pair<TreeElement, Int>>()
-        fun visit(node: TreeElement, indent: Int) {
-            result.add(node to indent)
-            if (expandedState[node] == true) {
-                childrenCache[node]?.forEach { child ->
-                    visit(child, indent + if (node.isRoot) 0 else 1)
+    val scrollState = rememberLazyListState()
+
+    val expandedState = remember { mutableStateMapOf<Node, Boolean>() }
+    val rootChildren by root.childrenFlow.collectAsState()
+
+    val visibleNodes by remember(rootChildren, expandedState) {
+        derivedStateOf {
+            val result = mutableListOf<Pair<Node, Int>>()
+
+            fun visit(node: Node, indent: Int) {
+                result.add(node to indent)
+
+                val isExpanded = expandedState[node] == true
+                if (node is ContainerNode && isExpanded) {
+                    val children = node.childrenFlow.value
+                    children.forEach { child ->
+                        visit(child, indent + if (node.isRoot) 0 else 1)
+                    }
                 }
             }
-        }
 
-        root.children.forEach {
-            visit(it, 0)
+            rootChildren.forEach { visit(it, 0) }
+
+            result
         }
-        return result
     }
 
-    val scrollState = rememberLazyListState()
 
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn(
             state = scrollState,
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(top = 8.dp, bottom = 8.dp)
+            contentPadding = PaddingValues(vertical = 8.dp)
         ) {
-            val visibleNodes = getVisibleNodes()
-            itemsIndexed(
-                items = visibleNodes,
-            ) { _, (node, indent) ->
-                TreeRow(node, indent, expandedState, childrenCache, coroutineScope, onFileSelected, selectedElement)
+            items(visibleNodes) { (node, indent) ->
+                TreeRow(
+                    node = node,
+                    indent = indent,
+                    isExpanded = expandedState[node] == true,
+                    onToggleExpand = { shouldExpand ->
+                        coroutineScope.launch {
+                            if (node is ContainerNode) {
+                                if (shouldExpand) {
+                                    node.loadChildren()
+                                }
+                                expandedState[node] = shouldExpand
+                            }
+                        }
+                    },
+                    onClick = { onFileSelected?.invoke(node) },
+                    selected = (node == selectedElement)
+                )
             }
         }
-
 
         VerticalScrollbar(
             adapter = rememberScrollbarAdapter(scrollState),
@@ -85,68 +106,51 @@ fun TreeView(
 
 @Composable
 private fun TreeRow(
-    node: TreeElement,
+    node: Node,
     indent: Int,
-    expandedState: SnapshotStateMap<TreeElement, Boolean>,
-    childrenCache: MutableMap<TreeElement, List<TreeElement>>,
-    coroutineScope: CoroutineScope,
-    onFileSelected: ((TreeElement) -> Unit)?,
-    selectedElement: TreeElement?
+    isExpanded: Boolean,
+    onToggleExpand: (Boolean) -> Unit,
+    onClick: () -> Unit,
+    selected: Boolean
 ) {
+    val isContainer = node is ContainerNode
     var loading by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
             .requiredHeight(48.dp)
-            .background(if (selectedElement == node) MaterialTheme.colorScheme.primary.copy(alpha = 0.25f) else Color.Transparent)
             .fillMaxWidth()
-            .clickable(enabled = !loading) {
-                onFileSelected?.invoke(node)
-                if (node.isContainer && node.isClickable) {
-                    val currentlyExpanded = expandedState[node] ?: false
-                    if (!currentlyExpanded) {
-                        if (childrenCache[node] == null) {
-                            loading = true
-                            coroutineScope.launch {
-                                val children = withContext(Dispatchers.IO) { node.getChildren() }
-                                childrenCache[node] = children
-                                expandedState[node] = true
-                                loading = false
-                            }
-                        } else {
-                            expandedState[node] = true
-                        }
-                    } else {
-                        expandedState[node] = false
-                        node.onCollapse()
-                        childrenCache.remove(node)
-                    }
+            .background(
+                if (selected)
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
+                else
+                    Color.Transparent
+            )
+            .clickable {
+                onClick()
+                if (isContainer) {
+                    loading = true
+                    onToggleExpand(!isExpanded)
+                    loading = false
                 }
             }
             .padding(start = (4 + indent * 16).dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         when {
-            loading -> {
-                Spacer(modifier = Modifier.size(4.dp))
-                CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
-                    strokeWidth = 3.dp,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
+            loading -> CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                strokeWidth = 3.dp,
+                color = MaterialTheme.colorScheme.primary
+            )
 
-            node.isContainer -> {
-                Icon(
-                    imageVector = if (expandedState[node] == true) Icons.Outlined.ExpandMore else Icons.Outlined.ChevronRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
+            isContainer -> Icon(
+                imageVector = if (isExpanded) Icons.Outlined.ExpandMore else Icons.Outlined.ChevronRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface
+            )
 
-            else -> {
-                Spacer(modifier = Modifier.size(24.dp))
-            }
+            else -> Spacer(modifier = Modifier.size(24.dp))
         }
 
         Spacer(modifier = Modifier.width(4.dp))
@@ -154,7 +158,7 @@ private fun TreeRow(
         Icon(
             imageVector = node.icon,
             contentDescription = node.name,
-            tint = node.getColor()
+            tint = node.color ?: MaterialTheme.colorScheme.onSurface,
         )
 
         Spacer(modifier = Modifier.width(8.dp))
@@ -163,12 +167,13 @@ private fun TreeRow(
             text = node.name,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.bodyLarge,
-            color = node.getColor()
+            color = node.color ?: MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.weight(1f)
         )
     }
 }
+
 
 fun IconForFileExtension(fileName: String): ImageVector {
     val extension = fileName.substringAfterLast('.', "").lowercase()
@@ -179,25 +184,23 @@ fun IconForFileExtension(fileName: String): ImageVector {
         "mp3", "wav", "ogg", "flac" -> Icons.Outlined.MusicNote
         "mp4", "avi", "mov", "mkv", "webm" -> Icons.Outlined.Movie
         "pdf" -> Icons.Outlined.PictureAsPdf
-        in archiveExtensions -> Icons.Filled.FolderZip
+        "zip", "jar" -> Icons.Filled.FolderZip
         "doc", "docx" -> Icons.AutoMirrored.Outlined.Article
         "xls", "xlsx" -> Icons.Outlined.TableChart
         "ppt", "pptx" -> Icons.Outlined.Slideshow
         "html", "xml", "json", "yaml", "yml" -> Icons.Outlined.Code
-        "apk", "dex" -> Icons.Filled.Android
+        "apk", "apks", "aab", "xapk", "dex", "odex" -> Icons.Filled.Android
         else -> Icons.Outlined.Description
     }
 }
 
-@Composable
-fun ColorForFileExtension(fileName: String): Color {
+fun ColorForFileExtension(fileName: String): Color? {
     val extension = fileName.substringAfterLast('.', "").lowercase()
 
     return when (extension) {
         "apk", "dex" -> AndroidGreen
         "zip", "rar", "7z", "tar", "gz" -> ArchiveGray
         "html", "xml", "json", "yaml", "yml" -> CodeBlue
-        "txt", "md", "log" -> MaterialTheme.colorScheme.onSurface
         "jpg", "jpeg", "png", "gif", "bmp", "webp", "svg" -> ImagePurple
         "mp3", "wav", "flac", "aac", "ogg" -> AudioTeal
         "mp4", "avi", "mkv", "mov", "webm" -> VideoRed
@@ -205,6 +208,6 @@ fun ColorForFileExtension(fileName: String): Color {
         "doc", "docx" -> WordBlue
         "xls", "xlsx" -> ExcelGreen
         "ppt", "pptx" -> PowerPointOrange
-        else -> MaterialTheme.colorScheme.onSurface
+        else -> null
     }
 }

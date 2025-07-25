@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.russhwolf.settings.Settings
 import dalvikus.composeapp.generated.resources.*
-import me.lkl.dalvikus.tree.file.FileTreeNode
+import me.lkl.dalvikus.tree.filesystem.FileSystemFileNode
 import me.lkl.dalvikus.ui.tree.FileSelectorDialog
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -246,11 +246,11 @@ class FileSetting(
             FileSelectorDialog(
                 title = stringResource(Res.string.dialog_select_keystore_title),
                 message = stringResource(Res.string.dialog_select_keystore_message),
-                filePredicate = { it is FileTreeNode && !it.file.isDirectory && (extensions == null || it.file.extension.lowercase() in extensions) },
+                filePredicate = { it is FileSystemFileNode && (extensions == null || it.file.extension.lowercase() in extensions) },
                 onDismissRequest = {
                     showFilePicker = false
                 }) { node ->
-                if (node !is FileTreeNode) return@FileSelectorDialog
+                if (node !is FileSystemFileNode) return@FileSelectorDialog
                 value = node.file.absolutePath
                 showFilePicker = false
             }

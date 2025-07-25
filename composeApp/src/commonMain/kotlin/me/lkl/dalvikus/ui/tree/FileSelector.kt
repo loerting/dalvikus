@@ -14,9 +14,10 @@ import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.cancel
 import dalvikus.composeapp.generated.resources.select
-import me.lkl.dalvikus.tree.file.FileTreeNode
-import me.lkl.dalvikus.tree.TreeElement
-import me.lkl.dalvikus.tree.root.TreeRoot
+import me.lkl.dalvikus.tree.Node
+import me.lkl.dalvikus.tree.filesystem.FileSystemFileNode
+import me.lkl.dalvikus.tree.filesystem.FileSystemFolderNode
+import me.lkl.dalvikus.tree.root.HiddenRoot
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
 
@@ -24,15 +25,15 @@ import java.io.File
 fun FileSelectorDialog(
     title: String,
     message: String? = null,
-    filePredicate: (TreeElement) -> Boolean = { it is FileTreeNode && !it.file.isDirectory },
+    filePredicate: (Node) -> Boolean = { it is FileSystemFileNode },
     onDismissRequest: () -> Unit,
-    onFileSelected: (TreeElement) -> Unit,
+    onFileSelected: (Node) -> Unit,
 ) {
     var selectedFile by remember {
-        mutableStateOf<TreeElement?>(null)
+        mutableStateOf<Node?>(null)
     }
     var treeRoot by remember {
-        mutableStateOf(TreeRoot(FileTreeNode(File(System.getProperty("user.home")), null)))
+        mutableStateOf(HiddenRoot(FileSystemFolderNode("Home directory", File(System.getProperty("user.home")), null)))
     }
 
     AlertDialog(

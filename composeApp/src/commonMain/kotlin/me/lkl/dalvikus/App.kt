@@ -23,7 +23,7 @@ import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.tabs.WelcomeTab
 import me.lkl.dalvikus.theme.AppTheme
 import me.lkl.dalvikus.theme.LocalThemeIsDark
-import me.lkl.dalvikus.tree.archive.ArchiveTreeNode
+import me.lkl.dalvikus.tree.archive.ZipNode
 import me.lkl.dalvikus.ui.LeftPanelContent
 import me.lkl.dalvikus.ui.RightPanelContent
 import me.lkl.dalvikus.ui.nav.NavItem
@@ -244,8 +244,8 @@ fun TopBar() {
                 scope.launch {
                     packagingViewModel.signApk(
                         keystoreInfo = packagingViewModel.getKeystoreInfo(),
-                        apk = node.file,
-                        outputApk = node.file,
+                        apk = node.zipFile,
+                        outputApk = node.zipFile,
                         onError = { throwable ->
                             scope.launch {
                                 snackbarHostStateDelegate?.showSnackbar(
@@ -259,7 +259,7 @@ fun TopBar() {
                         onSuccess = {
                             scope.launch {
                                 packagingViewModel.deployApk(
-                                    apk = node.file,
+                                    apk = node.zipFile,
                                     onError = { throwable ->
                                         scope.launch {
                                             snackbarHostStateDelegate?.showSnackbar(
@@ -299,11 +299,12 @@ fun TopBar() {
 @Composable
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview
-fun DeployButton(deploy: (ArchiveTreeNode) -> Unit) {
+fun DeployButton(deploy: (ZipNode) -> Unit) {
+    val treeRootChildren by uiTreeRoot.childrenFlow.collectAsState()
     val apks =
-        uiTreeRoot.children
-            .filter { it is ArchiveTreeNode && it.file.extension.equals("apk", ignoreCase = true) }
-            .map { it as ArchiveTreeNode }
+        treeRootChildren
+            .filter { it is ZipNode && it.name.endsWith("apk", ignoreCase = true) }
+            .map { it as ZipNode }
     var checked by remember { mutableStateOf(false) }
     IconButton(
         onClick = { checked = !checked },

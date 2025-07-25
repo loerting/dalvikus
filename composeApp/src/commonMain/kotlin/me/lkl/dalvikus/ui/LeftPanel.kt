@@ -16,12 +16,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.tabManager
-import me.lkl.dalvikus.tree.file.FileTreeNode
-import me.lkl.dalvikus.tree.TreeElement
-import me.lkl.dalvikus.tree.archive.ArchiveTreeNode
-import me.lkl.dalvikus.tree.dex.DexFileTreeNode
-import me.lkl.dalvikus.tree.root.TreeRoot
+import me.lkl.dalvikus.tree.FileNode
+import me.lkl.dalvikus.tree.Node
+import me.lkl.dalvikus.tree.archive.ZipNode
+import me.lkl.dalvikus.tree.backing.FileBacking
+import me.lkl.dalvikus.tree.dex.DexFileNode
+import me.lkl.dalvikus.tree.filesystem.FileSystemFileNode
+import me.lkl.dalvikus.tree.root.HiddenRoot
 import me.lkl.dalvikus.ui.tree.FileSelectorDialog
 import me.lkl.dalvikus.ui.tree.TreeView
 import org.jetbrains.compose.resources.stringResource
@@ -31,6 +36,7 @@ val editableFiles = listOf("apk", "apks", "aab", "jar", "zip", "xapk", "dex", "o
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun LeftPanelContent() {
+    val scope = rememberCoroutineScope()
     var showAddDialog by remember { mutableStateOf(false) }
     val searchBarState = rememberSearchBarState()
     val searchQuery = remember { mutableStateOf("") }
@@ -39,20 +45,25 @@ internal fun LeftPanelContent() {
         FileSelectorDialog(
             title = stringResource(Res.string.dialog_select_android_archive_title),
             message = stringResource(Res.string.dialog_select_android_archive_message),
-            filePredicate = { it is FileTreeNode && !it.file.isDirectory && it.file.extension in editableFiles },
+            filePredicate = { it is FileSystemFileNode && !it.file.isDirectory && it.file.extension in editableFiles },
             onDismissRequest = {
                 showAddDialog = false
             }) { node ->
-            if (node !is FileTreeNode) return@FileSelectorDialog
+            if (node !is FileSystemFileNode) return@FileSelectorDialog
             when (node.file.extension.lowercase()) {
-                "apk", "apks", "aab", "jar", "zip", "xapk" -> uiTreeRoot.children.add(
-                    ArchiveTreeNode(
+                "apk", "apks", "aab", "jar", "zip", "xapk" -> uiTreeRoot.addChild(
+                    ZipNode(
+                        node.name,
                         node.file,
                         uiTreeRoot
                     )
                 )
 
-                "dex", "odex" -> uiTreeRoot.children.add(DexFileTreeNode(node.file, uiTreeRoot))
+                "dex", "odex" -> uiTreeRoot.addChild(DexFileNode(
+                    node.name,
+                    FileBacking(node.file),
+                    uiTreeRoot
+                ))
                 else -> throw AssertionError("Unsupported file type: ${node.file.extension} not in $editableFiles")
             }
             showAddDialog = false
@@ -118,12 +129,13 @@ internal fun LeftPanelContent() {
             TreeView(
                 uiTreeRoot,
                 onFileSelected = { node ->
-                    if (!node.isClickable) return@TreeView
                     currentSelection = node
 
-                    if (!node.isContainer) {
-                        val newTab = node.createTab()
-                        tabManager.addOrSelectTab(newTab)
+                    if (node is FileNode) {
+                        scope.launch {
+                            val newTab = node.createTab()
+                            tabManager.addOrSelectTab(newTab)
+                        }
                     }
                 }, selectedElement = currentSelection
             )
@@ -131,5 +143,5 @@ internal fun LeftPanelContent() {
     }
 }
 
-internal val uiTreeRoot: TreeRoot = TreeRoot()
-internal var currentSelection by mutableStateOf<TreeElement?>(null)
+internal val uiTreeRoot: HiddenRoot = HiddenRoot()
+internal var currentSelection by mutableStateOf<Node?>(null)
