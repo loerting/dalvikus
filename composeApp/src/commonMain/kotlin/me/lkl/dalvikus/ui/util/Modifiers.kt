@@ -4,17 +4,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.layout
 
-fun Modifier.onSaveShortcut(
+fun Modifier.onCtrlShortcut(
     enabled: Boolean = true,
-    onSave: () -> Unit
+    onPressed: () -> Unit,
+    key: Key
 ): Modifier = this.then(
     if (enabled) Modifier.onPreviewKeyEvent { event ->
         if (
             event.type == KeyEventType.KeyDown &&
             (event.isCtrlPressed || event.isMetaPressed) &&
-            event.key == Key.S
+            event.key == key
         ) {
-            onSave()
+            onPressed()
             true // consume event
         } else {
             false // pass event down
