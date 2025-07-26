@@ -4,24 +4,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.layout
 
-fun Modifier.onCtrlShortcut(
+fun Modifier.handleFocusedCtrlShortcuts(
     enabled: Boolean = true,
-    onPressed: () -> Unit,
-    key: Key
+    keyActionMap: Map<Key, () -> Unit>
 ): Modifier = this.then(
-    if (enabled) Modifier.onPreviewKeyEvent { event ->
-        if (
-            event.type == KeyEventType.KeyDown &&
-            (event.isCtrlPressed || event.isMetaPressed) &&
-            event.key == key
-        ) {
-            onPressed()
-            true // consume event
-        } else {
-            false // pass event down
-        }
-    } else Modifier
+    if (enabled) Modifier.onPreviewKeyEvent(ctrlShortcuts(keyActionMap)) else Modifier
 )
+
+fun ctrlShortcuts(
+    keyActionMap: Map<Key, () -> Unit>
+): (KeyEvent) -> Boolean = { event ->
+    if (
+        event.type == KeyEventType.KeyDown &&
+        (event.isCtrlPressed || event.isMetaPressed)
+    ) {
+        keyActionMap[event.key]?.let {
+            it.invoke()
+            true
+        }
+    }
+    false
+}
 
 
 fun Modifier.withoutWidthConstraints() = layout { measurable, constraints ->

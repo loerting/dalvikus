@@ -16,9 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.tabManager
 import me.lkl.dalvikus.tree.FileNode
 import me.lkl.dalvikus.tree.Node
@@ -33,21 +31,22 @@ import org.jetbrains.compose.resources.stringResource
 
 val editableFiles = listOf("apk", "apks", "aab", "jar", "zip", "xapk", "dex", "odex")
 
+var showTreeAddFileDialog by mutableStateOf(false)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun LeftPanelContent() {
     val scope = rememberCoroutineScope()
-    var showAddDialog by remember { mutableStateOf(false) }
     val searchBarState = rememberSearchBarState()
     val searchQuery = remember { mutableStateOf("") }
 
-    if (showAddDialog) {
+    if (showTreeAddFileDialog) {
         FileSelectorDialog(
             title = stringResource(Res.string.dialog_select_android_archive_title),
             message = stringResource(Res.string.dialog_select_android_archive_message),
             filePredicate = { it is FileSystemFileNode && !it.file.isDirectory && it.file.extension in editableFiles },
             onDismissRequest = {
-                showAddDialog = false
+                showTreeAddFileDialog = false
             }) { node ->
             if (node !is FileSystemFileNode) return@FileSelectorDialog
             when (node.file.extension.lowercase()) {
@@ -66,7 +65,7 @@ internal fun LeftPanelContent() {
                 ))
                 else -> throw AssertionError("Unsupported file type: ${node.file.extension} not in $editableFiles")
             }
-            showAddDialog = false
+            showTreeAddFileDialog = false
         }
     }
 
@@ -112,7 +111,7 @@ internal fun LeftPanelContent() {
 
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = { showAddDialog = true },
+                onClick = { showTreeAddFileDialog = true },
                 icon = {
                     Icon(Icons.Default.FolderOpen, contentDescription = stringResource(Res.string.fab_load_file))
                 },

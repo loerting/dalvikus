@@ -21,8 +21,8 @@ import kotlinx.coroutines.delay
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.theme.JetBrainsMono
 import me.lkl.dalvikus.ui.editor.highlight.defaultCodeHighlightColors
-import me.lkl.dalvikus.ui.util.onCtrlShortcut
-import me.lkl.dalvikus.ui.util.shortcutSave
+import me.lkl.dalvikus.ui.util.handleFocusedCtrlShortcuts
+import me.lkl.dalvikus.settings.shortcutSave
 
 @Composable
 fun EditorScreen(editable: TabElement) {
@@ -102,9 +102,9 @@ fun EditorScreen(editable: TabElement) {
                         },
                         modifier = Modifier
                             .fillMaxSize()
-                            .onCtrlShortcut(enabled = viewModel.isEditable(), {
-                                viewModel.saveCode(coroutine)
-                            }, shortcutSave),
+                            .handleFocusedCtrlShortcuts(enabled = viewModel.isEditable(),
+                                mapOf(shortcutSave to { viewModel.saveCode(coroutine) })),
+
                         textStyle = TextStyle(
                             fontFamily = JetBrainsMono(),
                             fontSize = viewModel.fontSize,

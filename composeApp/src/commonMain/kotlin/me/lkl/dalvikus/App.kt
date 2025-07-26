@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -28,8 +29,11 @@ import me.lkl.dalvikus.ui.LeftPanelContent
 import me.lkl.dalvikus.ui.RightPanelContent
 import me.lkl.dalvikus.ui.nav.NavItem
 import me.lkl.dalvikus.ui.packagingViewModel
+import me.lkl.dalvikus.ui.showTreeAddFileDialog
 import me.lkl.dalvikus.ui.tabs.TabManager
 import me.lkl.dalvikus.ui.uiTreeRoot
+import me.lkl.dalvikus.settings.shortcutToggleEditorDecompiler
+import me.lkl.dalvikus.settings.shortcutTreeAdd
 import me.lkl.dalvikus.ui.util.toOneLiner
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
@@ -328,3 +332,14 @@ fun DeployButton(deploy: (ZipNode) -> Unit) {
         }
     }
 }
+
+val keyActionMap: Map<Key, () -> Unit> = mapOf(
+    shortcutToggleEditorDecompiler to {
+        selectedNavItem = when(selectedNavItem) {
+            "Editor" -> "Decompiler"
+            "Decompiler" -> "Editor"
+            else -> selectedNavItem
+        }
+    },
+    shortcutTreeAdd to { showTreeAddFileDialog = true }
+)
