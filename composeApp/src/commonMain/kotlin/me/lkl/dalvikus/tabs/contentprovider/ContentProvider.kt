@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
 abstract class ContentProvider {
     abstract val editableContent: Boolean
     protected val _contentFlow = MutableStateFlow<ByteArray>(ByteArray(0))
-    val contentFlow: StateFlow<ByteArray> = _contentFlow.asStateFlow()
+    open val contentFlow: StateFlow<ByteArray> = _contentFlow.asStateFlow()
 
     abstract suspend fun loadContent()
 

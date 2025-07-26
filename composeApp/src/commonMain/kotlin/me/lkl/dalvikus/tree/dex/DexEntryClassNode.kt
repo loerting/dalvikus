@@ -57,7 +57,7 @@ class DexEntryClassNode(
         return SmaliTab(
             classDef = getClassDef(),
             tabId = fullPath,
-            contentProvider = this
+            dexEntryClassNode = this
         )
     }
 }

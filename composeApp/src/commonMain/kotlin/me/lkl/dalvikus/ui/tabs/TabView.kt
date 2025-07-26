@@ -15,14 +15,11 @@ import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.tabManager
 import me.lkl.dalvikus.tabs.TabElement
-import me.lkl.dalvikus.tree.FileNode
-import me.lkl.dalvikus.tree.getPathHistory
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabView(
-    selectedNavItem: String
 ) {
     val pendingCloseTab = remember { mutableStateOf<TabElement?>(null) }
     val showCloseDialog = remember { mutableStateOf(false) }
@@ -94,7 +91,7 @@ fun TabView(
         }
 
         if (tabManager.tabs.isNotEmpty()) {
-            TabContentRenderer(selectedNavItem, tab = tabManager.currentTab)
+            TabContentRenderer(tab = tabManager.currentTab)
         }
     }
 }

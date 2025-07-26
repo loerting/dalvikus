@@ -107,13 +107,12 @@ internal val tabManager: TabManager by lazy {
     )
 }
 
+var selectedNavItem by mutableStateOf("Editor")
+
 @OptIn(ExperimentalSplitPaneApi::class)
 @Composable
 internal fun Content() {
     val splitPaneState = rememberSplitPaneState(0.25f)
-
-
-    var selectedNavItem by remember { mutableStateOf("Editor") }
 
     val navItems = listOf(
         NavItem("Editor", Icons.Default.Edit, Res.string.nav_editor),
@@ -181,7 +180,7 @@ internal fun Content() {
             }
 
             second(minSize = 400.dp) {
-                RightPanelContent(selectedNavItem)
+                RightPanelContent()
             }
         }
     }

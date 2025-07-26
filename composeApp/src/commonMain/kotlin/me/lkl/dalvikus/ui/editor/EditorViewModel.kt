@@ -29,6 +29,7 @@ class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHigh
         withContext(Dispatchers.IO) {
             tab.contentProvider.loadContent()
             internalContent = tab.contentProvider.contentFlow.value.decodeToString()
+
             isLoaded = true
             refreshHighlight()
         }

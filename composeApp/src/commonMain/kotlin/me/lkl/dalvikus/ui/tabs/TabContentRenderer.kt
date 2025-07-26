@@ -2,12 +2,10 @@ package me.lkl.dalvikus.ui.tabs
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.outlined.AutoFixHigh
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -26,26 +24,13 @@ import java.net.URI
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TabContentRenderer(selectedNavItem: String, tab: TabElement) {
+fun TabContentRenderer(tab: TabElement) {
     when (tab) {
         is WelcomeTab -> WelcomeView()
 
-        is CodeTab -> {
-            if (selectedNavItem == "Decompiler") {
-                UnavailableFeature()
-            } else {
-                EditorScreen(tab)
-            }
-        }
+        is CodeTab -> EditorScreen(tab)
 
-        is SmaliTab -> {
-            if (selectedNavItem == "Decompiler") {
-                // TODO fix decompiler
-                EditorScreen(tab)
-            } else {
-                EditorScreen(tab)
-            }
-        }
+        is SmaliTab -> EditorScreen(tab)
 
         else -> {
             Icon(
@@ -111,27 +96,6 @@ fun WelcomeView() {
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun UnavailableFeature() {
-    Box(Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(
-                imageVector = Icons.Default.Block, // or Icons.Default.Construction
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.25f),
-                modifier = Modifier.size(64.dp)
-            )
-            Spacer(Modifier.height(16.dp))
-            Text(
-                stringResource(Res.string.wrong_mode),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                textAlign = TextAlign.Center
-            )
         }
     }
 }
