@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.Adb
 import com.android.tools.smali.dexlib2.Opcodes
 import com.android.tools.smali.dexlib2.dexbacked.DexBackedDexFile
 import com.android.tools.smali.dexlib2.iface.ClassDef
+import com.android.tools.smali.dexlib2.writer.builder.DexBuilder
 import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.tree.Node
@@ -56,7 +57,9 @@ class DexFileNode(
     }
 
     private fun rebuildDex(): ByteArray {
-        TODO("Not yet implemented")
+        val apiLevel = dalvikusSettings["api_level"] as Int
+        val dexBuilder = DexBuilder(Opcodes.forApi(apiLevel))
+        TODO()
         /**
          *                 val apiLevel = dalvikusSettings["api_level"] as Int
          *                 val lexer = smaliFlexLexer(content.reader(), apiLevel)

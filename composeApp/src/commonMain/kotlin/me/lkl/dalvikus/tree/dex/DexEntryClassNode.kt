@@ -21,8 +21,7 @@ class DexEntryClassNode(
 ) : FileNode() {
 
     override val icon = Icons.Outlined.DataObject
-    override val editableContent = false
-    override val changesWithChildren = false
+    override val editableContent = true
 
     suspend fun getClassDef(): ClassDef = root.readEntry(fullPath)
 
@@ -42,7 +41,7 @@ class DexEntryClassNode(
         }
     }
 
-    override suspend fun writeContent(newContent: ByteArray) {
+    override suspend fun writeContent(smaliText: ByteArray) {
         TODO("Not yet implemented")
     }
 
@@ -50,11 +49,15 @@ class DexEntryClassNode(
         parent?.notifyChanged()
     }
 
+    override fun getFileType(): String {
+        return "smali"
+    }
+
     override suspend fun createTab(): TabElement {
         return SmaliTab(
             classDef = getClassDef(),
             tabId = fullPath,
-            treeNode = this
+            contentProvider = this
         )
     }
 }

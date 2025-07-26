@@ -14,7 +14,6 @@ class ZipEntryFileNode(
 ) : FileNode() {
 
     override val icon = IconForFileExtension(name)
-    override val changesWithChildren = false
     override val editableContent = true
 
     override suspend fun getContent(): ByteArray {
@@ -31,7 +30,7 @@ class ZipEntryFileNode(
             tabName = name,
             tabId = fullPath,
             tabIcon = icon,
-            treeNode = this
+            contentProvider = this
         )
     }
 }

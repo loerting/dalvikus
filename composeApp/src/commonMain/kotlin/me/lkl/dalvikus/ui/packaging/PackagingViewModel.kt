@@ -193,7 +193,7 @@ class PackagingViewModel() {
                     throw Exception("Failed to install APK on device ${device.serialNumber}: ${e.message}", e)
                 }
             }
-            // TODO launch the app on all devices. this requires the package name.
+            // TODO launch the app (on all devices). this requires the package name.
 
             onSuccess()
         } catch (e: Exception) {

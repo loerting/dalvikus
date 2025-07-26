@@ -10,30 +10,34 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.dalvikusSettings
+import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
 import me.lkl.dalvikus.ui.editor.highlight.highlightCode
 
-class EditorViewModel(private val code: Code, val highlightColors: CodeHighlightColors) {
+class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHighlightColors) {
     var isLoaded by mutableStateOf(false)
         private set
 
-    var highlightedText by mutableStateOf(AnnotatedString(code.code))
+    var highlightedText by mutableStateOf(AnnotatedString(tab.contentProvider.contentFlow.value.decodeToString()))
         private set
 
     val fontSize = (dalvikusSettings["font_size"] as Int).sp
 
+    var internalContent by mutableStateOf("")
+
     suspend fun loadCode() {
         withContext(Dispatchers.IO) {
-            code.loadCode()
+            tab.contentProvider.loadContent()
+            internalContent = tab.contentProvider.contentFlow.value.decodeToString()
+            isLoaded = true
+            refreshHighlight()
         }
-        isLoaded = true
-        refreshHighlight()
     }
 
     suspend fun refreshHighlight() {
         highlightedText = withContext(Dispatchers.Default) {
-            highlightCode(code, highlightColors)
-        }
+                highlightCode(internalContent, tab.contentProvider.getFileType(), highlightColors)
+            }
     }
 
     fun onCodeChanged(oldText: String, newText: String, coroutineScope: CoroutineScope) {
@@ -55,12 +59,12 @@ class EditorViewModel(private val code: Code, val highlightColors: CodeHighlight
         }
 
         mimicOldHighlight(newText, diffIndex, newSuffixStart, oldSuffixStart, insertedText)
-        code.updateCode(newText)
+        internalContent = newText
 
-        if (dalvikusSettings["save_automatically"] && code.isEditable) {
+        if (dalvikusSettings["save_automatically"]) {
             saveCode(coroutineScope)
         } else {
-            code.hasUnsavedChanges = true
+            tab.hasUnsavedChanges.value = true
         }
     }
 
@@ -98,11 +102,12 @@ class EditorViewModel(private val code: Code, val highlightColors: CodeHighlight
     }
 
     fun saveCode(coroutineScope: CoroutineScope) {
+        if(!isLoaded) throw IllegalArgumentException("code not initialized.")
         coroutineScope.launch {
-            code.saveCode()
+            tab.contentProvider.updateContent(internalContent.toByteArray())
+            tab.hasUnsavedChanges.value = false
         }
     }
 
-    fun getCode() = code.code
-    fun isEditable() = code.isEditable
+    fun isEditable() = tab.contentProvider.editableContent
 }

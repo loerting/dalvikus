@@ -18,18 +18,20 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.theme.JetBrainsMono
 import me.lkl.dalvikus.ui.editor.highlight.defaultCodeHighlightColors
 import me.lkl.dalvikus.ui.util.onSaveShortcut
 
 @Composable
-fun EditorScreen(editable: Code) {
+fun EditorScreen(editable: TabElement) {
     val highlightColors = defaultCodeHighlightColors()
     val viewModel = remember(editable) { EditorViewModel(editable, highlightColors) }
     val coroutine = rememberCoroutineScope()
 
     var firstLoad by remember(editable) { mutableStateOf(true) }
-    LaunchedEffect(editable.code) {
+
+    LaunchedEffect(editable) {
         if (firstLoad) {
             viewModel.loadCode()
             firstLoad = false
@@ -37,7 +39,7 @@ fun EditorScreen(editable: Code) {
     }
 
     // Highlight code on every code content change
-    LaunchedEffect(editable.code) {
+    LaunchedEffect(viewModel.internalContent) {
         // delay to wait until user finished typing.
         delay(200)
         if (viewModel.isLoaded) {
@@ -62,7 +64,7 @@ fun EditorScreen(editable: Code) {
         Row(Modifier.fillMaxSize()) {
 
             LineNumberColumn(
-                code = viewModel.getCode(),
+                code = viewModel.internalContent,
                 scrollState = vertState,
                 fontSize = viewModel.fontSize
             )
@@ -88,14 +90,14 @@ fun EditorScreen(editable: Code) {
                         .padding(8.dp)
                 ) {
                     BasicTextField(
-                        value = viewModel.getCode(),
+                        value = viewModel.internalContent,
                         readOnly = !viewModel.isEditable(),
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.None,
                             keyboardType = KeyboardType.Ascii
                         ),
                         onValueChange = { newText ->
-                            viewModel.onCodeChanged(editable.code, newText, coroutine)
+                            viewModel.onCodeChanged(viewModel.internalContent, newText, coroutine)
                         },
                         modifier = Modifier
                             .fillMaxSize()

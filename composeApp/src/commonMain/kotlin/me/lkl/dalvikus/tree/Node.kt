@@ -5,16 +5,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import me.lkl.dalvikus.tabs.contentprovider.ContentProvider
 import me.lkl.dalvikus.tabs.TabElement
+import me.lkl.dalvikus.tree.root.HiddenRoot
 import me.lkl.dalvikus.ui.tree.ColorForFileExtension
 
 sealed interface Node {
     val name: String
     val icon: ImageVector // path or identifier
     val parent: ContainerNode?
-    val changesWithChildren: Boolean
     val editableContent: Boolean
-
 
     val isRoot: Boolean
         get() = parent == null
@@ -28,6 +28,7 @@ sealed interface Node {
 abstract class ContainerNode : Node {
     protected val _childrenFlow = MutableStateFlow<List<Node>>(emptyList())
     val childrenFlow: StateFlow<List<Node>> = _childrenFlow.asStateFlow()
+    abstract val changesWithChildren: Boolean
 
     protected abstract suspend fun loadChildrenInternal(): List<Node>
 
@@ -42,7 +43,6 @@ abstract class ContainerNode : Node {
         onChildChanged(new)
     }
 
-    // TODO call this when appropriate
     protected open suspend fun onChildChanged(child: Node) {
         // Default behavior: propagate upward
         if (changesWithChildren) {
@@ -59,15 +59,12 @@ abstract class ContainerNode : Node {
     protected abstract suspend fun rebuild()
 }
 
-abstract class FileNode : Node {
-    private val _contentFlow = MutableStateFlow<ByteArray>(ByteArray(0))
-    val contentFlow: StateFlow<ByteArray> = _contentFlow.asStateFlow()
-
-    suspend fun loadContent() {
+abstract class FileNode : Node, ContentProvider() {
+    override suspend fun loadContent() {
         _contentFlow.value = getContent()
     }
 
-    suspend fun updateContent(newContent: ByteArray) {
+    override suspend fun updateContent(newContent: ByteArray) {
         if (!editableContent) {
             throw UnsupportedOperationException("This file is not editable")
         }
@@ -81,6 +78,14 @@ abstract class FileNode : Node {
 
     override suspend fun notifyChanged() {
         parent?.notifyChanged()
+    }
+
+    override fun getFileType(): String {
+        return name.substringAfterLast(".").lowercase()
+    }
+
+    override fun getSourcePath(): String? {
+        return this.getPathHistory()
     }
 
     abstract suspend fun createTab(): TabElement
@@ -136,7 +141,7 @@ fun List<Node>.sortedTree(): List<Node> {
 fun Node.getPathHistory(): String {
     val path = mutableListOf<String>()
     var current: Node? = this
-    while (current != null) {
+    while (current != null && current !is HiddenRoot) {
         path.add(current.name)
         current = current.parent
     }

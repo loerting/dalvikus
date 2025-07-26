@@ -14,13 +14,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
-import me.lkl.dalvikus.decompiler.Decompiler
 import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.tabs.CodeTab
 import me.lkl.dalvikus.tabs.SmaliTab
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tabs.WelcomeTab
-import me.lkl.dalvikus.ui.editor.Code
 import me.lkl.dalvikus.ui.editor.EditorScreen
 import org.jetbrains.compose.resources.stringResource
 import java.awt.Desktop
@@ -36,20 +34,16 @@ fun TabContentRenderer(selectedNavItem: String, tab: TabElement) {
             if (selectedNavItem == "Decompiler") {
                 UnavailableFeature()
             } else {
-                val fileExtension = tab.tabName().substringAfterLast(".", "").lowercase()
-                val code = remember(tab) { Code(tab, tab.makeIOChannel(), fileExtension) }
-                EditorScreen(code)
+                EditorScreen(tab)
             }
         }
 
         is SmaliTab -> {
-
             if (selectedNavItem == "Decompiler") {
-                val code = remember(tab) { Code(tab, Decompiler.provideInput(tab.classDef), "java") }
-                EditorScreen(code)
+                // TODO fix decompiler
+                EditorScreen(tab)
             } else {
-                val code = remember(tab) { Code(tab, tab.makeIOChannel(), "smali") }
-                EditorScreen(code)
+                EditorScreen(tab)
             }
         }
 

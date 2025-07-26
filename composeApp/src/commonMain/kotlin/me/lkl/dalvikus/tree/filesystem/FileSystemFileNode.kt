@@ -15,7 +15,6 @@ class FileSystemFileNode(
 ) : FileNode() {
 
     override val icon: ImageVector = IconForFileExtension(name)
-    override val changesWithChildren: Boolean = false
     override val editableContent: Boolean = true
 
     override suspend fun getContent(): ByteArray {
@@ -31,7 +30,7 @@ class FileSystemFileNode(
             tabName = name,
             tabId = file.absolutePath,
             tabIcon = icon,
-            treeNode = this
+            contentProvider = this
         )
     }
 }
