@@ -35,14 +35,8 @@ import me.lkl.dalvikus.ui.tabs.TabManager
 import me.lkl.dalvikus.ui.uiTreeRoot
 import me.lkl.dalvikus.settings.shortcutToggleEditorDecompiler
 import me.lkl.dalvikus.settings.shortcutTreeAdd
-import me.lkl.dalvikus.ui.snackbar.snackbarCopyText
-import me.lkl.dalvikus.ui.snackbar.showSnackbarError
-import me.lkl.dalvikus.ui.snackbar.showSnackbarSuccess
-import me.lkl.dalvikus.ui.snackbar.snackbarClipboardManager
-import me.lkl.dalvikus.ui.snackbar.snackbarHostState
-import me.lkl.dalvikus.ui.snackbar.snackbarOperationFailedText
-import me.lkl.dalvikus.ui.snackbar.snackbarOperationSuccessText
-import me.lkl.dalvikus.ui.util.toOneLiner
+import me.lkl.dalvikus.ui.snackbar.SnackbarManager
+import me.lkl.dalvikus.ui.snackbar.SnackbarResources
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
 import org.jetbrains.compose.splitpane.HorizontalSplitPane
@@ -57,13 +51,10 @@ internal fun App(
     showExitDialog: MutableState<Boolean>,
     onExitConfirmed: () -> Unit
 ) = AppTheme {
-    snackbarCopyText = stringResource(Res.string.copy)
-    snackbarOperationFailedText = stringResource(Res.string.snack_failed)
-    snackbarOperationSuccessText = stringResource(Res.string.snack_success)
-    snackbarClipboardManager = LocalClipboard.current
+    InitializeSnackbar()
     Scaffold(
         topBar = { TopBar() },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+        snackbarHost = { SnackbarHost(hostState = snackbarManager!!.snackbarHostState) }
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -107,6 +98,25 @@ internal fun App(
         )
     }
 }
+
+@Composable
+fun InitializeSnackbar() {
+    if(snackbarManager != null) return
+    val coroutineScope = rememberCoroutineScope()
+    val clipboard = LocalClipboard.current
+
+    val resources = SnackbarResources(
+        copy = stringResource(Res.string.copy),
+        snackFailed = stringResource(Res.string.snack_failed),
+        snackSuccess = stringResource(Res.string.snack_success),
+        snackAssembleError = stringResource(Res.string.snack_assemble_error),
+    )
+
+    snackbarManager = SnackbarManager(SnackbarHostState(), clipboard, coroutineScope, resources)
+}
+
+internal var snackbarManager: SnackbarManager? = null
+    private set
 
 internal val dalvikusSettings: DalvikusSettings by lazy {
     DalvikusSettings()
@@ -252,13 +262,13 @@ fun TopBar() {
                         keystoreInfo = packagingViewModel.getKeystoreInfo(),
                         apk = node.zipFile,
                         outputApk = node.zipFile,
-                        onError = ::showSnackbarError,
+                        onError = { snackbarManager?.showError(it) },
                         onSuccess = {
                             scope.launch {
                                 packagingViewModel.deployApk(
                                     apk = node.zipFile,
-                                    onError = ::showSnackbarError,
-                                    onSuccess = ::showSnackbarSuccess
+                                    onError = { snackbarManager?.showError(it) },
+                                    onSuccess = { snackbarManager?.showSuccess() },
                                 )
                             }
                         }

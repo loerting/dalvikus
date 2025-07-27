@@ -22,15 +22,12 @@ import com.android.apksig.ApkVerifier
 import dalvikus.composeapp.generated.resources.*
 import kotlinx.coroutines.launch
 import me.lkl.dalvikus.dalvikusSettings
-import me.lkl.dalvikus.ui.snackbar.snackbarHostState
+import me.lkl.dalvikus.snackbarManager
 import me.lkl.dalvikus.tree.archive.ZipNode
-import me.lkl.dalvikus.ui.snackbar.showSnackbarError
-import me.lkl.dalvikus.ui.snackbar.showSnackbarSuccess
 import me.lkl.dalvikus.ui.uiTreeRoot
 import me.lkl.dalvikus.ui.util.CollapseCard
 import me.lkl.dalvikus.ui.util.DefaultCard
 import me.lkl.dalvikus.ui.util.PasswordField
-import me.lkl.dalvikus.ui.util.toOneLiner
 import org.jetbrains.compose.resources.stringResource
 import settingPadHor
 import settingPadVer
@@ -183,11 +180,11 @@ private fun SignInfoCards(
                                             outputApk = apk.zipFile,
                                             onError = { throwable ->
                                                 loadingApk.value = null
-                                                showSnackbarError(throwable)
+                                                snackbarManager?.showError(throwable)
                                             },
                                             onSuccess = {
                                                 loadingApk.value = null
-                                                showSnackbarSuccess()
+                                                snackbarManager?.showSuccess()
                                             }
                                         )
                                     }
@@ -204,11 +201,11 @@ private fun SignInfoCards(
                                             apk = apk.zipFile,
                                             onError = { throwable ->
                                                 loadingApk.value = null
-                                                showSnackbarError(throwable)
+                                                snackbarManager?.showError(throwable)
                                             },
                                             onSuccess = {
                                                 loadingApk.value = null
-                                                showSnackbarSuccess()
+                                                snackbarManager?.showSuccess()
                                             }
                                         )
                                     }

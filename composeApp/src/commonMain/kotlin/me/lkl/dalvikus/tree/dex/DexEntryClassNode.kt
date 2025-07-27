@@ -13,6 +13,7 @@ import com.android.tools.smali.smali.smaliFlexLexer
 import com.android.tools.smali.smali.smaliParser
 import com.android.tools.smali.smali.smaliTreeWalker
 import me.lkl.dalvikus.dalvikusSettings
+import me.lkl.dalvikus.snackbarManager
 import me.lkl.dalvikus.tabs.SmaliTab
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.ContainerNode
@@ -69,6 +70,7 @@ class DexEntryClassNode(
                         "Lexer errors: ${lexer.numberOfSyntaxErrors}, " +
                         "Parser errors: ${parser.numberOfSyntaxErrors}"
             }
+            snackbarManager?.showAssembleError(lexer.numberOfSyntaxErrors, parser.numberOfSyntaxErrors)
             return
         }
 
@@ -86,7 +88,6 @@ class DexEntryClassNode(
         dexGen.setDexBuilder(dexBuilder)
         val classDef = dexGen.smali_file()
 
-        println(classDef.javaClass.name)
         root.updateEntry(path = fullPath, newClassDef = classDef)
     }
 

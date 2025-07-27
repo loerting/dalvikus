@@ -5,57 +5,62 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.Clipboard
-import androidx.compose.ui.platform.LocalClipboard
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import me.lkl.dalvikus.ui.util.toOneLiner
-import org.jetbrains.skiko.ClipboardManager
 import java.awt.datatransfer.StringSelection
 import java.io.PrintWriter
 import java.io.StringWriter
 
-internal val snackbarHostState: SnackbarHostState = SnackbarHostState()
+class SnackbarManager(
+    val snackbarHostState: SnackbarHostState,
+    private val clipboardManager: Clipboard,
+    private val coroutineScope: CoroutineScope,
+    private val snackbarResources: SnackbarResources
+) {
 
-/**
- * Initialized in App.kt
- */
-internal lateinit var snackbarCoroutineScope: CoroutineScope
-internal lateinit var snackbarCopyText: String
-internal lateinit var snackbarOperationFailedText: String
-internal lateinit var snackbarOperationSuccessText: String
-internal lateinit var snackbarClipboardManager: Clipboard
+    fun showError(throwable: Throwable) {
+        coroutineScope.launch {
+            val message = snackbarResources.snackFailed.format(throwable.toOneLiner())
+            val result = snackbarHostState.showSnackbar(
+                message = message,
+                actionLabel = snackbarResources.copy,
+                duration = SnackbarDuration.Long,
+                withDismissAction = true
+            )
+            if (result == SnackbarResult.ActionPerformed) {
+                val fullStackTrace = StringWriter().also { throwable.printStackTrace(PrintWriter(it)) }.toString()
+                clipboardManager.setClipEntry(ClipEntry(StringSelection(fullStackTrace)))
+            }
+        }
+    }
 
-fun showSnackbarError(throwable: Throwable) {
-    snackbarCoroutineScope.launch {
-        val result = snackbarHostState.showSnackbar(
-            // TODO find a better way of formatting stringResource later.
-            message = snackbarOperationFailedText + " " + throwable.toOneLiner(),
-            actionLabel = snackbarCopyText,
-            duration = SnackbarDuration.Long,
-            withDismissAction = true
-        )
-        if (result == SnackbarResult.ActionPerformed) {
-            val sw = StringWriter()
-            val pw = PrintWriter(sw)
-            throwable.printStackTrace(pw)
-            val fullStackTrace = sw.toString()
-            snackbarClipboardManager.setClipEntry(ClipEntry(StringSelection(fullStackTrace)))
+    fun showMessage(message: String) {
+        coroutineScope.launch {
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Short,
+                withDismissAction = true
+            )
+        }
+    }
+
+    fun showSuccess() = showMessage(snackbarResources.snackSuccess)
+    fun showAssembleError(lexerErrors: Int, parserErrors: Int) {
+        coroutineScope.launch {
+            val message = snackbarResources.snackAssembleError.format(lexerErrors, parserErrors)
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Short,
+                withDismissAction = true
+            )
         }
     }
 }
 
-fun showSnackbarMessage(string: String) {
-    snackbarCoroutineScope.launch {
-        snackbarHostState.showSnackbar(
-            message = string,
-            duration = SnackbarDuration.Short,
-            withDismissAction = true
-        )
-    }
-}
-
-fun showSnackbarSuccess() {
-    showSnackbarMessage(snackbarOperationSuccessText)
-}
+data class SnackbarResources(
+    val copy: String,
+    val snackFailed: String,
+    val snackSuccess: String,
+    val snackAssembleError: String,
+)

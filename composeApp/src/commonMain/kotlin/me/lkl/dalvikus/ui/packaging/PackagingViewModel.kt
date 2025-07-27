@@ -18,9 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.dalvikusSettings
-import me.lkl.dalvikus.ui.snackbar.showSnackbarError
-import me.lkl.dalvikus.ui.snackbar.showSnackbarMessage
-import me.lkl.dalvikus.ui.snackbar.snackbarHostState
+import me.lkl.dalvikus.snackbarManager
 import java.io.File
 import java.security.KeyStore
 import java.security.PrivateKey
@@ -138,10 +136,10 @@ class PackagingViewModel() {
             }
 
             Logger.i("Keytool process exited with code $exitCode")
-            showSnackbarMessage(output)
+            snackbarManager?.showMessage(output)
         } catch (e: Exception) {
             Logger.e("Failed to run keytool", e)
-            showSnackbarError(e)
+            snackbarManager?.showError(e)
         }
     }
 

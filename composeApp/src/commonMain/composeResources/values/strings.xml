@@ -62,8 +62,10 @@
     <string name="signature_key_password">Password for key alias "%1$s"</string>
     <string name="fab_create_keystore">Create keystore with keytool</string>
 
-    <string name="snack_failed">Error performing operation:</string>
+    <string name="snack_failed">Error performing operation: %1$s</string>
     <string name="snack_success">Successfully completed operation.</string>
+    <string name="snack_assemble_error">Unable to assemble due to %1$s lexer and %2$s parser errors.</string>
+
 
     <string name="deploy">Deploy</string>
     <string name="sign_deploy_app">Sign and deploy %1$s via adb.</string>
