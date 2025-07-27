@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -84,7 +85,11 @@ fun TreeView(
                         coroutineScope.launch {
                             if (node is ContainerNode) {
                                 if (shouldExpand) {
-                                    node.loadChildren()
+                                    try {
+                                        node.loadChildren()
+                                    } catch(ex: Exception) {
+                                        Logger.e("Failed to load file", ex)
+                                    }
                                 }
                                 expandedState[node] = shouldExpand
                             }

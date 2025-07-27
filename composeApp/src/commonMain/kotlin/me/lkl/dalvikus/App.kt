@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -34,6 +35,13 @@ import me.lkl.dalvikus.ui.tabs.TabManager
 import me.lkl.dalvikus.ui.uiTreeRoot
 import me.lkl.dalvikus.settings.shortcutToggleEditorDecompiler
 import me.lkl.dalvikus.settings.shortcutTreeAdd
+import me.lkl.dalvikus.ui.snackbar.snackbarCopyText
+import me.lkl.dalvikus.ui.snackbar.showSnackbarError
+import me.lkl.dalvikus.ui.snackbar.showSnackbarSuccess
+import me.lkl.dalvikus.ui.snackbar.snackbarClipboardManager
+import me.lkl.dalvikus.ui.snackbar.snackbarHostState
+import me.lkl.dalvikus.ui.snackbar.snackbarOperationFailedText
+import me.lkl.dalvikus.ui.snackbar.snackbarOperationSuccessText
 import me.lkl.dalvikus.ui.util.toOneLiner
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
@@ -42,10 +50,6 @@ import org.jetbrains.compose.splitpane.rememberSplitPaneState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
-
-internal var snackbarHostStateDelegate: SnackbarHostState? = null
-    private set
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
@@ -53,8 +57,10 @@ internal fun App(
     showExitDialog: MutableState<Boolean>,
     onExitConfirmed: () -> Unit
 ) = AppTheme {
-    val snackbarHostState = remember { SnackbarHostState() }
-    snackbarHostStateDelegate = snackbarHostState
+    snackbarCopyText = stringResource(Res.string.copy)
+    snackbarOperationFailedText = stringResource(Res.string.snack_failed)
+    snackbarOperationSuccessText = stringResource(Res.string.snack_success)
+    snackbarClipboardManager = LocalClipboard.current
     Scaffold(
         topBar = { TopBar() },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
@@ -240,48 +246,19 @@ fun TopBar() {
             }
         },
         actions = {
-            val failureMessage = stringResource(Res.string.snack_failed)
-            val successMessage = stringResource(Res.string.snack_success)
-            val dismiss = stringResource(Res.string.dismiss)
             DeployButton { node ->
                 scope.launch {
                     packagingViewModel.signApk(
                         keystoreInfo = packagingViewModel.getKeystoreInfo(),
                         apk = node.zipFile,
                         outputApk = node.zipFile,
-                        onError = { throwable ->
-                            scope.launch {
-                                snackbarHostStateDelegate?.showSnackbar(
-                                    // TODO find a better way of formatting stringResource later.
-                                    message = failureMessage + " " + throwable.toOneLiner(),
-                                    actionLabel = dismiss,
-                                    duration = SnackbarDuration.Short
-                                )
-                            }
-                        },
+                        onError = ::showSnackbarError,
                         onSuccess = {
                             scope.launch {
                                 packagingViewModel.deployApk(
                                     apk = node.zipFile,
-                                    onError = { throwable ->
-                                        scope.launch {
-                                            snackbarHostStateDelegate?.showSnackbar(
-                                                // TODO find a better way of formatting stringResource later.
-                                                message = failureMessage + " " + throwable.toOneLiner(),
-                                                actionLabel = dismiss,
-                                                duration = SnackbarDuration.Short
-                                            )
-                                        }
-                                    },
-                                    onSuccess = {
-                                        scope.launch {
-                                            snackbarHostStateDelegate?.showSnackbar(
-                                                message = successMessage,
-                                                actionLabel = dismiss,
-                                                duration = SnackbarDuration.Short
-                                            )
-                                        }
-                                    }
+                                    onError = ::showSnackbarError,
+                                    onSuccess = ::showSnackbarSuccess
                                 )
                             }
                         }

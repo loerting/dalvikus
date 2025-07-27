@@ -22,8 +22,10 @@ import com.android.apksig.ApkVerifier
 import dalvikus.composeapp.generated.resources.*
 import kotlinx.coroutines.launch
 import me.lkl.dalvikus.dalvikusSettings
-import me.lkl.dalvikus.snackbarHostStateDelegate
+import me.lkl.dalvikus.ui.snackbar.snackbarHostState
 import me.lkl.dalvikus.tree.archive.ZipNode
+import me.lkl.dalvikus.ui.snackbar.showSnackbarError
+import me.lkl.dalvikus.ui.snackbar.showSnackbarSuccess
 import me.lkl.dalvikus.ui.uiTreeRoot
 import me.lkl.dalvikus.ui.util.CollapseCard
 import me.lkl.dalvikus.ui.util.DefaultCard
@@ -124,9 +126,6 @@ private fun SignInfoCards(
             .map { it as ZipNode }
 
     val loadingApk = remember { mutableStateOf<ZipNode?>(null) }
-    val failureMessage = stringResource(Res.string.snack_failed)
-    val successMessage = stringResource(Res.string.snack_success)
-    val dismiss = stringResource(Res.string.dismiss)
     val scope = rememberCoroutineScope()
 
 
@@ -184,24 +183,11 @@ private fun SignInfoCards(
                                             outputApk = apk.zipFile,
                                             onError = { throwable ->
                                                 loadingApk.value = null
-                                                scope.launch {
-                                                    snackbarHostStateDelegate?.showSnackbar(
-                                                        // TODO find a better way of formatting stringResource later.
-                                                        message = failureMessage + " " + throwable.toOneLiner(),
-                                                        actionLabel = dismiss,
-                                                        duration = SnackbarDuration.Short
-                                                    )
-                                                }
+                                                showSnackbarError(throwable)
                                             },
                                             onSuccess = {
                                                 loadingApk.value = null
-                                                scope.launch {
-                                                    snackbarHostStateDelegate?.showSnackbar(
-                                                        message = successMessage,
-                                                        actionLabel = dismiss,
-                                                        duration = SnackbarDuration.Short
-                                                    )
-                                                }
+                                                showSnackbarSuccess()
                                             }
                                         )
                                     }
@@ -218,24 +204,11 @@ private fun SignInfoCards(
                                             apk = apk.zipFile,
                                             onError = { throwable ->
                                                 loadingApk.value = null
-                                                scope.launch {
-                                                    snackbarHostStateDelegate?.showSnackbar(
-                                                        // TODO find a better way of formatting stringResource later.
-                                                        message = failureMessage + " " + throwable.toOneLiner(),
-                                                        actionLabel = dismiss,
-                                                        duration = SnackbarDuration.Short
-                                                    )
-                                                }
+                                                showSnackbarError(throwable)
                                             },
                                             onSuccess = {
                                                 loadingApk.value = null
-                                                scope.launch {
-                                                    snackbarHostStateDelegate?.showSnackbar(
-                                                        message = successMessage,
-                                                        actionLabel = dismiss,
-                                                        duration = SnackbarDuration.Short
-                                                    )
-                                                }
+                                                showSnackbarSuccess()
                                             }
                                         )
                                     }

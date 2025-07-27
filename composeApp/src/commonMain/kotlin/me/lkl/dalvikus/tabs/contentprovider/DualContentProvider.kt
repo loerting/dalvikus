@@ -14,6 +14,13 @@ open class DualContentProvider(val contentProvider: ContentProvider, val content
             contentProvider2.loadContent()
     }
 
+    override suspend fun updateContent(newContent: ByteArray) {
+        if(firstContentProvider)
+            contentProvider.updateContent(newContent)
+        else
+            contentProvider2.updateContent(newContent)
+    }
+
     override fun getFileType(): String = if(firstContentProvider) contentProvider.getFileType() else contentProvider2.getFileType()
 
     override fun getSourcePath(): String? = if(firstContentProvider) contentProvider.getSourcePath() else contentProvider2.getSourcePath()

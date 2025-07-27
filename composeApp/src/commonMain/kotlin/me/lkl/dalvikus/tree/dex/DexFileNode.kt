@@ -57,51 +57,8 @@ class DexFileNode(
     }
 
     private fun rebuildDex(): ByteArray {
-        val apiLevel = dalvikusSettings["api_level"] as Int
-        val dexBuilder = DexBuilder(Opcodes.forApi(apiLevel))
-        TODO()
-        /**
-         *                 val apiLevel = dalvikusSettings["api_level"] as Int
-         *                 val lexer = smaliFlexLexer(content.reader(), apiLevel)
-         *                 val tokens = CommonTokenStream(lexer)
-         *
-         *                 val parser = smaliParser(tokens)
-         *                 parser.setVerboseErrors(true)
-         *                 parser.setAllowOdex(true)
-         *                 parser.setApiLevel(apiLevel)
-         *
-         *                 val result = parser.smali_file()
-         *
-         *                 if (parser.numberOfSyntaxErrors > 0 || lexer.numberOfSyntaxErrors > 0) {
-         *                     Logger.e("SmaliIOChannel") {
-         *                         "Failed to parse smali content. " +
-         *                                 "Lexer errors: ${lexer.numberOfSyntaxErrors}, " +
-         *                                 "Parser errors: ${parser.numberOfSyntaxErrors}"
-         *                     }
-         *                     return@IOChannel false
-         *                 }
-         *
-         *                 val t: CommonTree = result.getTree()
-         *
-         *                 val treeStream = CommonTreeNodeStream(t)
-         *                 treeStream.tokenStream = tokens
-         *
-         *                 val dexGen = smaliTreeWalker(treeStream)
-         *                 dexGen.setApiLevel(apiLevel)
-         *
-         *                 dexGen.setVerboseErrors(true)
-         *                 val dexBuilder = DexBuilder(Opcodes.forApi(apiLevel))
-         *
-         *                 dexGen.setDexBuilder(dexBuilder)
-         *                 val classDef = dexGen.smali_file()
-         *
-         *                 print(classDef.javaClass.name)
-         *
-         *
-         *                 // TODO use the smaliFile or the dexBuilder to write back to the DEX file
-         *
-         *                 return@IOChannel true
-         */
+       //  TODO
+        return ByteArray(0)
     }
 
     suspend fun readEntry(path: String): ClassDef {
