@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import me.lkl.dalvikus.theme.JetBrainsMono
@@ -17,11 +18,13 @@ import me.lkl.dalvikus.theme.JetBrainsMono
 
 @Composable
 fun LineNumberColumn(
-    code: String,
+    code: TextLayoutResult?,
     scrollState: ScrollState,
     fontSize: TextUnit,
 ) {
-    val lines = code.lines().size
+    // wait until the code is loaded
+    if(code == null) return
+    val lines = code.lineCount
     val lineHeightDp = with(LocalDensity.current) { fontSize.toDp() * 1.5f }
     val maxNumDigits = lines.toString().length
 

@@ -1,9 +1,12 @@
 package me.lkl.dalvikus.ui.editor
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Code
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,12 +26,12 @@ class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHigh
 
     val fontSize = (dalvikusSettings["font_size"] as Int).sp
 
-    var internalContent by mutableStateOf("")
+    var internalContent by mutableStateOf(TextFieldValue())
 
     suspend fun loadCode() {
         withContext(Dispatchers.IO) {
             tab.contentProvider.loadContent()
-            internalContent = tab.contentProvider.contentFlow.value.decodeToString()
+            internalContent = internalContent.copy(text = tab.contentProvider.contentFlow.value.decodeToString())
 
             isLoaded = true
             refreshHighlight()
@@ -37,11 +40,14 @@ class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHigh
 
     suspend fun refreshHighlight() {
         highlightedText = withContext(Dispatchers.Default) {
-                highlightCode(internalContent, tab.contentProvider.getFileType(), highlightColors)
+                highlightCode(internalContent.text, tab.contentProvider.getFileType(), highlightColors)
             }
     }
 
-    fun onCodeChanged(oldText: String, newText: String, coroutineScope: CoroutineScope) {
+    fun onCodeChanged(newTextFieldValue: TextFieldValue, coroutineScope: CoroutineScope) {
+        val oldText = internalContent.text
+        val newText = newTextFieldValue.text
+
         val diffIndex = newText.commonPrefixWith(oldText).length
 
         val newTextSuffix = newText.substring(diffIndex)
@@ -60,7 +66,9 @@ class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHigh
         }
 
         mimicOldHighlight(newText, diffIndex, newSuffixStart, oldSuffixStart, insertedText)
-        internalContent = newText
+        // Update the internal content with the new text
+        internalContent = newTextFieldValue.copy(text = newText)
+
 
         if (dalvikusSettings["save_automatically"]) {
             saveCode(coroutineScope)
@@ -105,10 +113,32 @@ class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHigh
     fun saveCode(coroutineScope: CoroutineScope) {
         if(!isLoaded) throw IllegalArgumentException("code not initialized.")
         coroutineScope.launch {
-            tab.contentProvider.updateContent(internalContent.toByteArray())
+            tab.contentProvider.updateContent(internalContent.text.toByteArray())
             tab.hasUnsavedChanges.value = false
         }
     }
 
     fun isEditable() = tab.contentProvider.editableContent
+    fun getSuggestions(): List<AssistSuggestion> {
+        if (!isLoaded) return emptyList()
+
+        return listOf(
+            AssistSuggestion("invoke-virtual", "Invoke a virtual method", Icons.Outlined.Code),
+            AssistSuggestion("invoke-direct", "Invoke a direct method", Icons.Outlined.Code),
+            AssistSuggestion("invoke-static", "Invoke a static method", Icons.Outlined.Code),
+            AssistSuggestion("invoke-interface", "Invoke an interface method", Icons.Outlined.Code),
+        )
+    }
+
+    fun insertAtCaret(text: String) {
+        if (!isLoaded) return
+
+        val currentText = internalContent.text
+        val selectionStart = internalContent.selection.start
+        val selectionEnd = internalContent.selection.end
+
+        val newText = currentText.substring(0, selectionStart) + text + currentText.substring(selectionEnd)
+
+        internalContent = internalContent.copy(text = newText)
+    }
 }

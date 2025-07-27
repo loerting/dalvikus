@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -58,6 +59,15 @@ fun EditorScreen(editable: TabElement) {
         return
     }
 
+    var lastLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
+
+    val textStyle = TextStyle(
+        fontFamily = JetBrainsMono(),
+        fontSize = viewModel.fontSize,
+        lineHeight = viewModel.fontSize * 1.5f,
+        color = MaterialTheme.colorScheme.onSurface
+    )
+
     val vertState = rememberScrollState()
     val horState = rememberScrollState()
 
@@ -65,7 +75,7 @@ fun EditorScreen(editable: TabElement) {
         Row(Modifier.fillMaxSize()) {
 
             LineNumberColumn(
-                code = viewModel.internalContent,
+                lastLayoutResult,
                 scrollState = vertState,
                 fontSize = viewModel.fontSize
             )
@@ -98,19 +108,19 @@ fun EditorScreen(editable: TabElement) {
                             keyboardType = KeyboardType.Ascii
                         ),
                         onValueChange = { newText ->
-                            viewModel.onCodeChanged(viewModel.internalContent, newText, coroutine)
+                            viewModel.onCodeChanged(newText, coroutine)
                         },
                         modifier = Modifier
                             .fillMaxSize()
                             .handleFocusedCtrlShortcuts(enabled = viewModel.isEditable(),
                                 mapOf(shortcutSave to { viewModel.saveCode(coroutine) })),
 
-                        textStyle = TextStyle(
-                            fontFamily = JetBrainsMono(),
-                            fontSize = viewModel.fontSize,
-                            lineHeight = viewModel.fontSize * 1.5f,
+                        textStyle = textStyle.copy(
                             color = Color.Black.copy(alpha = 0.0f)
                         ),
+                        onTextLayout = {
+                            lastLayoutResult = it
+                        },
                         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                         decorationBox = { inner ->
                             Box(
@@ -124,16 +134,16 @@ fun EditorScreen(editable: TabElement) {
                                     softWrap = false,
                                     overflow = TextOverflow.Clip,
                                     modifier = Modifier.matchParentSize(),
-                                    style = TextStyle(
-                                        fontFamily = JetBrainsMono(),
-                                        fontSize = viewModel.fontSize,
-                                        lineHeight = viewModel.fontSize * 1.5f,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
+                                    style = textStyle
                                 )
                                 inner()
                             }
                         }
+                    )
+                    AssistPopup(
+                        viewModel = viewModel,
+                        lastLayoutResult = lastLayoutResult,
+                        textStyle = textStyle,
                     )
                 }
 
