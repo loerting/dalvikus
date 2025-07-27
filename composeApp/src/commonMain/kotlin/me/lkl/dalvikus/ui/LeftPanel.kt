@@ -1,13 +1,23 @@
 package me.lkl.dalvikus.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Password
+import androidx.compose.material.icons.outlined.TextFields
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,10 +26,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import me.lkl.dalvikus.tabManager
-import me.lkl.dalvikus.tree.FileNode
-import me.lkl.dalvikus.tree.Node
+import me.lkl.dalvikus.tree.*
 import me.lkl.dalvikus.tree.archive.ZipNode
 import me.lkl.dalvikus.tree.backing.FileBacking
 import me.lkl.dalvikus.tree.dex.DexFileNode
@@ -32,14 +42,12 @@ import org.jetbrains.compose.resources.stringResource
 val editableFiles = listOf("apk", "apks", "aab", "jar", "zip", "xapk", "dex", "odex")
 
 var showTreeAddFileDialog by mutableStateOf(false)
+internal val uiTreeRoot: HiddenRoot = HiddenRoot()
+internal var currentSelection by mutableStateOf<Node?>(null)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun LeftPanelContent() {
-    val scope = rememberCoroutineScope()
-    val searchBarState = rememberSearchBarState()
-    val searchQuery = remember { mutableStateOf("") }
-
     if (showTreeAddFileDialog) {
         FileSelectorDialog(
             title = stringResource(Res.string.dialog_select_android_archive_title),
@@ -58,48 +66,88 @@ internal fun LeftPanelContent() {
                     )
                 )
 
-                "dex", "odex" -> uiTreeRoot.addChild(DexFileNode(
-                    node.name,
-                    FileBacking(node.file),
-                    uiTreeRoot
-                ))
+                "dex", "odex" -> uiTreeRoot.addChild(
+                    DexFileNode(
+                        node.name,
+                        FileBacking(node.file),
+                        uiTreeRoot
+                    )
+                )
+
                 else -> throw AssertionError("Unsupported file type: ${node.file.extension} not in $editableFiles")
             }
             showTreeAddFileDialog = false
         }
     }
 
+    val scope = rememberCoroutineScope()
+    val searchBarState = rememberSearchBarState()
+    val searchFieldState = rememberTextFieldState()
+    var searchOptions by remember { mutableStateOf(SearchOptions()) }
+    var scrollAndExpandSelection = remember { mutableStateOf(false) }
+
+    val searchField =
+        @Composable {
+            SearchBarDefaults.InputField(
+                searchBarState = searchBarState,
+                textFieldState = searchFieldState,
+                onSearch = {
+                    scope.launch { searchBarState.animateToCollapsed() }
+                },
+                placeholder = {
+                    Text(
+                        stringResource(Res.string.tree_search_placeholder),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                leadingIcon = {
+                    if (searchBarState.currentValue == SearchBarValue.Expanded) {
+                        IconButton(
+                            onClick = { scope.launch { searchBarState.animateToCollapsed() } }
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Default.ArrowBack,
+                                contentDescription = "Back",
+                            )
+                        }
+
+                    } else {
+                        Icon(Icons.Default.Search, contentDescription = null)
+                    }
+                },
+                trailingIcon = {
+                    Row {
+                        if (searchFieldState.text.isNotEmpty()) {
+                            IconToggleButton(
+                                checked = searchOptions.useRegex,
+                                onCheckedChange = { searchOptions = searchOptions.copy(useRegex = it) }) {
+                                // TODO find a better icon for regex.
+                                Icon(Icons.Outlined.Password, contentDescription = "Regular expression")
+                            }
+                            IconToggleButton(
+                                checked = searchOptions.caseSensitive,
+                                onCheckedChange = { searchOptions = searchOptions.copy(caseSensitive = it) }) {
+                                // TODO find a better icon for case sensitivity.
+                                Icon(Icons.Outlined.TextFields, contentDescription = "Case sensitive")
+                            }
+                            IconButton(onClick = {
+                                searchFieldState.setTextAndPlaceCursorAtEnd("")
+                            }) {
+                                Icon(Icons.Default.Clear, contentDescription = "Clear")
+                            }
+                        }
+                    }
+                }
+            )
+        }
+
     Scaffold(
         containerColor = Color.Transparent,
         topBar = {
             TopSearchBar(
                 state = searchBarState,
-                inputField = {
-                    TextField(
-                        value = searchQuery.value,
-                        onValueChange = { searchQuery.value = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = {
-                            Text(
-                                stringResource(Res.string.tree_search_placeholder),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        },
-                        singleLine = true,
-                        leadingIcon = {
-                            Icon(Icons.Default.Search, contentDescription = "Search")
-                        },
-                        trailingIcon = {
-                            if (searchQuery.value.isNotEmpty()) {
-                                IconButton(onClick = { searchQuery.value = "" }) {
-                                    Icon(Icons.Default.Clear, contentDescription = "Clear")
-                                }
-                            }
-                        },
-                        colors = TextFieldDefaults.colors()
-                    )
-                },
+                inputField = searchField,
                 shape = RoundedCornerShape(16.dp),
                 tonalElevation = 4.dp,
                 shadowElevation = 0.dp,
@@ -107,6 +155,18 @@ internal fun LeftPanelContent() {
                 modifier = Modifier.fillMaxWidth(),
                 scrollBehavior = null
             )
+            ExpandedFullScreenSearchBar(state = searchBarState, inputField = searchField) {
+                SearchResults(
+                    searchFieldState,
+                    searchOptions,
+                    onResultClick = { result ->
+                        currentSelection = result
+                        scrollAndExpandSelection.value = true
+                        searchFieldState.setTextAndPlaceCursorAtEnd("")
+                        scope.launch { searchBarState.animateToCollapsed() }
+                    }
+                )
+            }
         },
 
         floatingActionButton = {
@@ -136,11 +196,58 @@ internal fun LeftPanelContent() {
                             tabManager.addOrSelectTab(newTab)
                         }
                     }
-                }, selectedElement = currentSelection
+                },
+                selectedElement = currentSelection,
+                scrollAndExpandSelection = scrollAndExpandSelection
             )
         }
     }
 }
 
-internal val uiTreeRoot: HiddenRoot = HiddenRoot()
-internal var currentSelection by mutableStateOf<Node?>(null)
+@Composable
+private fun SearchResults(
+    searchFieldState: TextFieldState,
+    searchOptions: SearchOptions,
+    onResultClick: (Node) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val query = searchFieldState.text
+    val scope = rememberCoroutineScope()
+    var results by remember { mutableStateOf<List<TreeSearchResult>>(emptyList()) }
+
+    // Trigger search when query changes
+    LaunchedEffect(query, searchOptions) {
+        results = emptyList()
+        if (query.isNotBlank()) {
+            searchTreeBFS(uiTreeRoot, query as String, searchOptions)
+                .take(100)
+                .collect { match ->
+                    results = results + match
+                }
+        }
+    }
+
+    Column(modifier.verticalScroll(rememberScrollState())) {
+        for (result in results) {
+            val node = result.node
+            ListItem(
+                headlineContent = { Text(node.name) },
+                supportingContent = { Text(node.getPathHistory()) },
+                leadingContent = { Icon(node.icon, contentDescription = null) },
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                modifier = Modifier
+                    .clickable { onResultClick(node) }
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+            )
+        }
+
+        if (results.isEmpty() && query.isNotBlank()) {
+            Text(
+                "No results found",
+                modifier = Modifier.padding(16.dp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}

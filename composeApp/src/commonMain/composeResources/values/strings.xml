@@ -8,9 +8,7 @@
     <string name="app_dalvik_button">Dalvik reference</string>
     <string name="app_gpl_button">GPLv3 license</string>
 
-
-
-    <string name="tree_search_placeholder">Search tree element...</string>
+    <string name="tree_search_placeholder">Search tree...</string>
 
     <string name="welcome_tab_name">Welcome!</string>
     <string name="welcome_tab_description">TODO</string>

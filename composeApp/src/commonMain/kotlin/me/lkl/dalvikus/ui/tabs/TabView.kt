@@ -68,22 +68,24 @@ fun TabView(
                             }
 
                             Spacer(modifier = Modifier.width(4.dp))
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(16.dp)
-                                    .clickable {
-                                        if (tabManager.tabs.size > 1) {
-                                            if (unsaved) {
-                                                pendingCloseTab.value = tab
-                                                showCloseDialog.value = true
-                                            } else {
-                                                tabManager.closeTab(tab)
+                            if(tabManager.tabs.size > 1) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(16.dp)
+                                        .clickable {
+                                            if (tabManager.tabs.size > 1) {
+                                                if (unsaved) {
+                                                    pendingCloseTab.value = tab
+                                                    showCloseDialog.value = true
+                                                } else {
+                                                    tabManager.closeTab(tab)
+                                                }
                                             }
                                         }
-                                    }
-                            )
+                                )
+                            }
                         }
                     }
                 )

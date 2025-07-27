@@ -3,6 +3,7 @@ package me.lkl.dalvikus.ui.snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.Clipboard
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -11,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import me.lkl.dalvikus.ui.util.toOneLiner
 import org.jetbrains.skiko.ClipboardManager
+import java.awt.datatransfer.StringSelection
 import java.io.PrintWriter
 import java.io.StringWriter
 
@@ -39,7 +41,7 @@ fun showSnackbarError(throwable: Throwable) {
             val pw = PrintWriter(sw)
             throwable.printStackTrace(pw)
             val fullStackTrace = sw.toString()
-            snackbarClipboardManager.setClipEntry(TextClipboardEntry(fullStackTrace))
+            snackbarClipboardManager.setClipEntry(ClipEntry(StringSelection(fullStackTrace)))
         }
     }
 }

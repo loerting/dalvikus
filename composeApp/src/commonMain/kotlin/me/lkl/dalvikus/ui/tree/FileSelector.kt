@@ -50,8 +50,8 @@ fun FileSelectorDialog(
                 Box(modifier = Modifier.size(500.dp, 400.dp)) {
                     TreeView(
                         root = treeRoot,
+                        onFileSelected = { selectedFile = it },
                         selectedElement = selectedFile,
-                        onFileSelected = { selectedFile = it }
                     )
                 }
             }

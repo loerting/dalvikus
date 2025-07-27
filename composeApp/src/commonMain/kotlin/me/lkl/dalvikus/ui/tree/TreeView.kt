@@ -4,7 +4,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Article
@@ -16,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,22 +22,19 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import co.touchlab.kermit.Logger
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.theme.*
 import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.tree.Node
 import me.lkl.dalvikus.tree.root.HiddenRoot
-import me.lkl.dalvikus.ui.editableFiles
 
 @Composable
 fun TreeView(
     root: HiddenRoot,
     modifier: Modifier = Modifier,
     onFileSelected: ((Node) -> Unit)? = null,
-    selectedElement: Node? = null
+    selectedElement: Node? = null,
+    scrollAndExpandSelection: MutableState<Boolean> = mutableStateOf(false)
 ) {
     val coroutineScope = rememberCoroutineScope()
     val scrollState = rememberLazyListState()
@@ -69,6 +64,22 @@ fun TreeView(
         }
     }
 
+    LaunchedEffect(scrollAndExpandSelection.value, selectedElement, visibleNodes) {
+        if (scrollAndExpandSelection.value) {
+            selectedElement?.let { selected ->
+                var parent: Node? = selected
+                while (parent != null) {
+                    expandedState[parent] = true
+                    parent = parent.parent
+                }
+                val index = visibleNodes.indexOfFirst { it.first == selected }
+                if (index >= 0) {
+                    scrollState.animateScrollToItem(index)
+                }
+            }
+            scrollAndExpandSelection.value = false
+        }
+    }
 
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn(
