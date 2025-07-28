@@ -1,7 +1,5 @@
 package me.lkl.dalvikus.ui.editor
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Code
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -119,16 +117,6 @@ class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHigh
     }
 
     fun isEditable() = tab.contentProvider.editableContent
-    fun getSuggestions(): List<AssistSuggestion> {
-        if (!isLoaded) return emptyList()
-
-        return listOf(
-            AssistSuggestion("invoke-virtual", "Invoke a virtual method", Icons.Outlined.Code),
-            AssistSuggestion("invoke-direct", "Invoke a direct method", Icons.Outlined.Code),
-            AssistSuggestion("invoke-static", "Invoke a static method", Icons.Outlined.Code),
-            AssistSuggestion("invoke-interface", "Invoke an interface method", Icons.Outlined.Code),
-        )
-    }
 
     fun insertAtCaret(text: String) {
         if (!isLoaded) return
@@ -141,4 +129,6 @@ class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHigh
 
         internalContent = internalContent.copy(text = newText)
     }
+
+    fun getFileType(): String = tab.contentProvider.getFileType()
 }

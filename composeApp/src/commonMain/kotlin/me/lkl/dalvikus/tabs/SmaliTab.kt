@@ -36,7 +36,8 @@ class SmaliTab(
         return when(dalvikusSettings["decompiler_implementation"] as String) {
             "jadx" -> JADXDecompiler()
             // TODO implement other decompilers
-            else -> throw IllegalArgumentException("Selected ecompiler not implemented yet")
+            // TODO implement LLM decompiler https://huggingface.co/collections/MoxStone/smalillm-68550b87817dfb046f790cdf
+            else -> throw IllegalArgumentException("Selected decompiler not implemented yet")
         }
     }
 

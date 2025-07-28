@@ -17,6 +17,7 @@ data class CodeHighlightColors(
     val quaternary: Color,
     val quinary: Color,
     val senary: Color,
+    val septenary: Color,
     val error: Color
 )
 
@@ -30,6 +31,7 @@ fun defaultCodeHighlightColors(): CodeHighlightColors {
         quaternary = Color(0xFF7B6FB2),
         quinary = Color(0xFF9EAD6F),
         senary = Color(0xFFBD875B),
+        septenary = Color(0xFF5BAEA0),
         error = MaterialTheme.colorScheme.error
     )
 }

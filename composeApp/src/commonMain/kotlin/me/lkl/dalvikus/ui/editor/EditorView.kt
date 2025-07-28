@@ -24,6 +24,7 @@ import me.lkl.dalvikus.theme.JetBrainsMono
 import me.lkl.dalvikus.ui.editor.highlight.defaultCodeHighlightColors
 import me.lkl.dalvikus.ui.util.handleFocusedCtrlShortcuts
 import me.lkl.dalvikus.settings.shortcutSave
+import me.lkl.dalvikus.ui.editor.suggestions.AssistPopup
 
 @Composable
 fun EditorScreen(editable: TabElement) {
@@ -144,6 +145,7 @@ fun EditorScreen(editable: TabElement) {
                         viewModel = viewModel,
                         lastLayoutResult = lastLayoutResult,
                         textStyle = textStyle,
+                        highlightColors = highlightColors
                     )
                 }
 

@@ -69,7 +69,7 @@ private fun getSmaliTokenName(tokenType: Int): String? {
         ?.name
 }
 
-private fun getSmaliTokenStyle(tokenType: Int, colors: CodeHighlightColors): SpanStyle? {
+fun getSmaliTokenStyle(tokenType: Int, colors: CodeHighlightColors): SpanStyle? {
     val tokenName = getSmaliTokenName(tokenType) ?: return null
 
     val color = when {
@@ -78,6 +78,7 @@ private fun getSmaliTokenStyle(tokenType: Int, colors: CodeHighlightColors): Spa
         tokenName.endsWith("_LITERAL") -> colors.tertiary
         tokenName == "CLASS_DESCRIPTOR" || tokenName == "PRIMITIVE_TYPE" || tokenName == "ARRAY_TYPE_PREFIX" -> colors.quaternary
         tokenName == "SIMPLE_NAME" -> colors.quinary
+        tokenName == "ACCESS_SPEC" -> colors.septenary
         tokenName.startsWith("INSTRUCTION_") -> colors.senary
         tokenName in listOf("COLON", "COMMA", "OPEN_PAREN", "CLOSE_PAREN") -> colors.onSurface.copy(alpha = 0.7f)
         tokenName == "LINE_COMMENT" -> colors.onSurface.copy(alpha = 0.5f)
