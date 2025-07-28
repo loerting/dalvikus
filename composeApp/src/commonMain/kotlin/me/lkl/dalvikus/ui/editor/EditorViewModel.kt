@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
@@ -25,6 +26,7 @@ class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHigh
     val fontSize = (dalvikusSettings["font_size"] as Int).sp
 
     var internalContent by mutableStateOf(TextFieldValue())
+        private set
 
     suspend fun loadCode() {
         withContext(Dispatchers.IO) {
@@ -42,7 +44,7 @@ class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHigh
             }
     }
 
-    fun onCodeChanged(newTextFieldValue: TextFieldValue, coroutineScope: CoroutineScope) {
+    fun changeContent(newTextFieldValue: TextFieldValue, coroutineScope: CoroutineScope) {
         val oldText = internalContent.text
         val newText = newTextFieldValue.text
 
@@ -131,4 +133,13 @@ class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHigh
     }
 
     fun getFileType(): String = tab.contentProvider.getFileType()
+    fun replaceTextAndMoveCaret(startIndex: Int, stopIndex: Int, text: String, coroutineScope: CoroutineScope) {
+        if (!isLoaded) return
+
+        val currentText = internalContent.text
+        val newText = currentText.substring(0, startIndex) + text + currentText.substring(stopIndex + 1)
+
+        val newTextFieldValue = internalContent.copy(text = newText, selection = TextRange(startIndex + text.length, startIndex + text.length))
+        changeContent(newTextFieldValue, coroutineScope)
+    }
 }

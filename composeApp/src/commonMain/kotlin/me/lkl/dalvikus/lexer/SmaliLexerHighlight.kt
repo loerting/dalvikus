@@ -22,10 +22,18 @@ fun highlightSmaliCode(code: String, colors: CodeHighlightColors): AnnotatedStri
 
     val parser = object : smaliParser(tokens) {
         override fun reportError(e: RecognitionException?) {
-            super.reportError(e)
-            val offending = e?.token
-            if (offending is CommonToken) {
-                errorTokens[offending] = getErrorMessage(e, tokenNames)
+            try {
+                super.reportError(e)
+                val offending = e?.token
+                if (offending is CommonToken) {
+                    errorTokens[offending] = getErrorMessage(e, tokenNames)
+                }
+            } catch (ex: Exception) {
+                // ignore any exceptions during error reporting
+                val offending = e?.token
+                if (offending is CommonToken) {
+                    errorTokens[offending] = "Unknown error"
+                }
             }
         }
     }

@@ -11,16 +11,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.key.*
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -30,63 +30,64 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import me.lkl.dalvikus.ui.editor.EditorViewModel
+import me.lkl.dalvikus.ui.editor.LayoutSnapshot
 import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
+
+data class AssistPopupState(
+    val selectedIndex: Int = 0,
+    val popupDismissed: Boolean = true,
+    val currentSuggestions: List<AssistSuggestion> = emptyList(),
+    val onEnter: (AssistPopupState) -> Unit = {}
+)
 
 @Composable
 fun AssistPopup(
+    assistPopupState: MutableState<AssistPopupState>,
     viewModel: EditorViewModel,
-    lastLayoutResult: TextLayoutResult?,
+    lastLayoutSnapshot: LayoutSnapshot?,
     textStyle: TextStyle,
-    highlightColors: CodeHighlightColors
+    highlightColors: CodeHighlightColors,
+    onDismissRequest: () -> Unit
 ) {
-    if (lastLayoutResult == null || !viewModel.isLoaded) return
+    if (lastLayoutSnapshot == null || !viewModel.isLoaded) return
     if (viewModel.getFileType() != "smali") return
 
-    var popupDismissed by remember { mutableStateOf(false) }
-
-    LaunchedEffect(viewModel.internalContent) {
-        popupDismissed = false
-    }
-
-    if (popupDismissed) return
+    if (assistPopupState.value.popupDismissed) return
 
     val density = LocalDensity.current
-    val cursorIndex = viewModel.internalContent.selection.start
+    val cursorIndex = lastLayoutSnapshot.textFieldValue.selection.start
 
-    if (cursorIndex == 0) return // Not optimal, but prevents the popup to appear when user didn't click text yet.
-    val cursorRect = lastLayoutResult.getCursorRect(cursorIndex)
+    if (cursorIndex == 0) return
+    val cursorRect = lastLayoutSnapshot.layout.getCursorRect(cursorIndex)
     if (cursorRect == Rect.Zero) return
-
-    val codeSuggester = CodeSuggester(cursorIndex, viewModel.internalContent.text, highlightColors)
+    // add a \n as a little hack to ensure the token text on the last line is not empty
+    val codeSuggester = CodeSuggester(cursorIndex, lastLayoutSnapshot.textFieldValue.text + "\n", highlightColors)
     val suggestions = codeSuggester.suggestNext()
-    if (suggestions.isEmpty()) return
 
+    val coroutineScope = rememberCoroutineScope()
 
-    val selectedIndex = remember { mutableStateOf(0) }
-
-    val listKeyModifier = Modifier.onPreviewKeyEvent { event ->
-        when (event.type) {
-            KeyEventType.KeyDown if event.key == Key.DirectionDown -> {
-                selectedIndex.value = (selectedIndex.value + 1) % suggestions.size
-                true
-            }
-
-            KeyEventType.KeyDown if event.key == Key.DirectionUp -> {
-                selectedIndex.value = (selectedIndex.value - 1 + suggestions.size) % suggestions.size
-                true
-            }
-
-            KeyEventType.KeyDown if event.key == Key.Enter -> {
-                viewModel.insertAtCaret(suggestions[selectedIndex.value].text)
-                true
-            }
-
-            else -> false
+    assistPopupState.value = assistPopupState.value.copy(currentSuggestions = suggestions, onEnter = {
+        if (it.selectedIndex < suggestions.size) {
+            val suggestion = suggestions[it.selectedIndex]
+            viewModel.replaceTextAndMoveCaret(
+                codeSuggester.currentToken.startIndex,
+                codeSuggester.currentToken.stopIndex,
+                suggestion.text,
+                coroutineScope
+            )
         }
-    }
+    })
 
+    if (suggestions.isEmpty()) {
+        assistPopupState.value = assistPopupState.value.copy(popupDismissed = true)
+        return
+    }
+    val selectedIndex = assistPopupState.value.selectedIndex.coerceIn(0, suggestions.size - 1)
     val cursorOffset = cursorIndex - codeSuggester.currentToken.startIndex
-    if (cursorOffset < 0 || cursorOffset > codeSuggester.currentToken.text.length) return
+    if (cursorOffset < 0 || cursorOffset > codeSuggester.currentToken.text.length) {
+        assistPopupState.value = assistPopupState.value.copy(popupDismissed = true)
+        return
+    }
     val negativeOffset = getTextWidth(codeSuggester.currentToken.text.substring(0, cursorOffset), textStyle)
 
     Popup(
@@ -103,14 +104,11 @@ fun AssistPopup(
             dismissOnBackPress = true,
             dismissOnClickOutside = true
         ),
-        onDismissRequest = {
-            popupDismissed = true
-        },
+        onDismissRequest = onDismissRequest
     ) {
         Surface(
             modifier = Modifier
-                .size(400.dp, 200.dp)
-                .then(listKeyModifier),
+                .size(400.dp, 200.dp),
             shadowElevation = 2.dp,
             shape = RoundedCornerShape(4.dp)
         ) {
@@ -119,7 +117,7 @@ fun AssistPopup(
                     .background(MaterialTheme.colorScheme.surface)
             ) {
                 itemsIndexed(suggestions) { index, suggestion ->
-                    val isSelected = index == selectedIndex.value
+                    val isSelected = index == selectedIndex
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()

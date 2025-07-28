@@ -434,6 +434,8 @@ class CodeSuggester(
                 smaliParser.ACCESS_SPEC, highlightColors
             )
             if (surroundingToken.type in listOf(
+                    smaliParser.CLASS_DIRECTIVE,
+                    smaliParser.FIELD_DIRECTIVE,
                     smaliParser.METHOD_DIRECTIVE,
                     smaliParser.ACCESS_SPEC
                 )
