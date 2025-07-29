@@ -1,3 +1,7 @@
+<a href="https://github.com/loerting/dalvikus">
+    <img src="docs/logo.svg" title="dalvikus" align="right" height="60" />
+</a>
+
 # dalvikus
 
 [![GitHub release](https://img.shields.io/github/v/release/loerting/dalvikus?style=flat-square)](https://github.com/loerting/dalvikus/releases)  
@@ -17,12 +21,12 @@ Designed for developers and researchers who want to inspect, edit, and rebuild A
 
 <table>
   <tr>
-    <td align="center"><img src="docs/screenshots/smali_editor.png" width="400"/><br/><sub>Main Screen</sub></td>
-    <td align="center"><img src="docs/screenshots/dark_theme.png" width="400"/><br/><sub>Smali Editor</sub></td>
+    <td align="center"><img src="docs/screenshots/smali_editor.png" width="400"/><br/><sub>Smali editor with code completion.</sub></td>
+    <td align="center"><img src="docs/screenshots/dark_theme.png" width="400"/><br/><sub>Comfortable dark theme and readable error messages.</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/screenshots/decompiler.png" width="400"/><br/><sub>Resource Editor</sub></td>
-    <td align="center"><img src="docs/screenshots/sign_and_deploy.png" width="400"/><br/><sub>ADB Runner</sub></td>
+    <td align="center"><img src="docs/screenshots/decompiler.png" width="400"/><br/><sub>Seamless live decompiler integration.</sub></td>
+    <td align="center"><img src="docs/screenshots/sign_and_deploy.png" width="400"/><br/><sub>Sign and deploy edited applications directly.</sub></td>
   </tr>
 </table>
 
@@ -32,12 +36,10 @@ Designed for developers and researchers who want to inspect, edit, and rebuild A
 - Rich smali language editor with **syntax highlighting**
 - Assist popup for **code completion** while typing
 - Light and dark themes for comfortable editing
-- Support for **multiple decompilers** to analyze bytecode
-- Integrated app signing utility supporting **version 1 to version 4 signatures** for re-signing modified APKs
-- Built-in **ADB run bridge** to deploy and start apps on connected devices directly
+- Support for **multiple decompilers** to analyze dalvik code
+- Integrated app signing using **apksig** for re-signing modified APKs
+- Built-in **ADB runner** to deploy and start apps on connected devices directly
 - Powerful search tools: **tree view, string constants, method and field references**
-
----
 
 ## Getting Started
 
