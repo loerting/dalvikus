@@ -1,5 +1,5 @@
 <a href="https://github.com/loerting/dalvikus">
-    <img src="docs/logo.svg" title="dalvikus" align="right" height="150" width="150" />
+    <img src="docs/logo.svg" title="dalvikus" align="right" height="60" width="60" />
 </a>
 
 # dalvikus
