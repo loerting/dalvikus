@@ -43,9 +43,10 @@ import java.io.File
 val editableFiles = listOf("apk", "apks", "aab", "jar", "zip", "xapk", "dex", "odex")
 
 var showTreeAddFileDialog by mutableStateOf(false)
+
 // TODO remove before pushing
-internal val uiTreeRoot: HiddenRoot = HiddenRoot(ZipNode("org.bandev.buddhaquotes_1014.apk",
-    File("/home/admin/Downloads/org.bandev.buddhaquotes_1014.apk"), null))
+internal val uiTreeRoot: HiddenRoot = HiddenRoot(
+)
 internal var currentSelection by mutableStateOf<Node?>(null)
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -145,6 +146,7 @@ internal fun LeftPanelContent() {
             )
         }
 
+    // TODO drag-and-drop support for files
     Scaffold(
         containerColor = Color.Transparent,
         topBar = {
@@ -215,7 +217,6 @@ private fun SearchResults(
     modifier: Modifier = Modifier
 ) {
     val query = searchFieldState.text
-    val scope = rememberCoroutineScope()
     var results by remember { mutableStateOf<List<TreeSearchResult>>(emptyList()) }
 
     // Trigger search when query changes
@@ -233,10 +234,39 @@ private fun SearchResults(
     Column(modifier.verticalScroll(rememberScrollState())) {
         for (result in results) {
             val node = result.node
+            val type = stringResource(
+                when (result.type) {
+                    TreeSearchResultType.TREE_NODE -> Res.string.tree_search_result_type_node
+                    TreeSearchResultType.STRING_VALUE -> Res.string.tree_search_result_type_string
+                    TreeSearchResultType.REFERENCE -> Res.string.tree_search_result_type_reference
+                }
+            )
             ListItem(
-                headlineContent = { Text(node.name) },
-                supportingContent = { Text(node.getPathHistory()) },
-                leadingContent = { Icon(node.icon, contentDescription = null) },
+                headlineContent = {
+                    Text(
+                        result.snippet,
+                        color = when (result.type) {
+                            TreeSearchResultType.TREE_NODE -> MaterialTheme.colorScheme.onSurface
+                            TreeSearchResultType.STRING_VALUE -> MaterialTheme.colorScheme.primary
+                            TreeSearchResultType.REFERENCE -> MaterialTheme.colorScheme.secondary
+                        },
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                trailingContent = {
+                    Text(
+                        type,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                overlineContent = { Text(result.path,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                                  },
+                leadingContent = { Icon(result.icon, contentDescription = null) },
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                 modifier = Modifier
                     .clickable { onResultClick(node) }
@@ -247,7 +277,7 @@ private fun SearchResults(
 
         if (results.isEmpty() && query.isNotBlank()) {
             Text(
-                "No results found",
+                stringResource(Res.string.tree_search_no_results, query),
                 modifier = Modifier.padding(16.dp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

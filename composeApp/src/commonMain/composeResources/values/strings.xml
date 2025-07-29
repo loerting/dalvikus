@@ -88,4 +88,9 @@
     <string name="error_password_min_length">Password must be at least 6 characters</string>
 
     <string name="editor_cannot_open">The file is either too large or not a valid ASCII file. Please use a different editor to open it.</string>
+
+    <string name="tree_search_no_results">No results found</string>
+    <string name="tree_search_result_type_node">Tree node</string>
+    <string name="tree_search_result_type_string">String constant</string>
+    <string name="tree_search_result_type_reference">Method or field reference</string>
 </resources>
