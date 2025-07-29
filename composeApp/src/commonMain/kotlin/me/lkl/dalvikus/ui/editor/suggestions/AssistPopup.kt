@@ -115,7 +115,8 @@ fun AssistPopup(
     ) {
         Surface(
             modifier = Modifier
-                .size(400.dp, 200.dp),
+                .heightIn(min = 0.dp, max = 200.dp)
+                .widthIn(max = 400.dp),
             shadowElevation = 2.dp,
             shape = RoundedCornerShape(4.dp)
         ) {

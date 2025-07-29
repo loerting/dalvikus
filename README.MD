@@ -1,20 +1,30 @@
-# Dalvikus
+# dalvikus
 
 [![GitHub release](https://img.shields.io/github/v/release/loerting/dalvikus?style=flat-square)](https://github.com/loerting/dalvikus/releases)  
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0.html)  
 [![Kotlin](https://img.shields.io/badge/Kotlin-Compose%20Multiplatform-7F52FF?style=flat-square&logo=kotlin)](https://kotlinlang.org)
 
----
 
-## What is Dalvikus?
+## What is dalvikus?
 
 **Dalvikus** is a modern Android reverse engineering and modification toolkit built with [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/).  
 Designed for developers and researchers who want to inspect, edit, and rebuild Android apps seamlessly.
 
-> [!Ethical reminder]
+> [!NOTE]
 > With great power comes great responsibility. Dalvikus is intended **ONLY** for ethical purposes.
 
----
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/smali_editor.png" width="400"/><br/><sub>Main Screen</sub></td>
+    <td align="center"><img src="docs/screenshots/dark_theme.png" width="400"/><br/><sub>Smali Editor</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/decompiler.png" width="400"/><br/><sub>Resource Editor</sub></td>
+    <td align="center"><img src="docs/screenshots/sign_and_deploy.png" width="400"/><br/><sub>ADB Runner</sub></td>
+  </tr>
+</table>
 
 ## Features
 
