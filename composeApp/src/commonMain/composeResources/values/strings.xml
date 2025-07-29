@@ -59,7 +59,6 @@
     <string name="unknown_source">Unknown source</string>
 
     <string name="signature_settings_title">Keystore configuration</string>
-    <string name="signature_settings_info">First set the keystore file and key alias in the settings, then enter the passwords for the keystore file and the key alias to sign the application. Install Java's "keytool" for signing and "adb" for deploying.</string>
     <string name="signature_keystore_password">Password for keystore file "%1$s"</string>
     <string name="signature_key_password">Password for key alias "%1$s"</string>
     <string name="fab_create_keystore">Create keystore with keytool</string>
