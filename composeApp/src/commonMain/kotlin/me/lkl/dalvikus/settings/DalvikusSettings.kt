@@ -7,6 +7,7 @@ import com.russhwolf.settings.Settings
 import dalvikus.composeapp.generated.resources.*
 import jadx.core.Jadx
 import org.benf.cfr.reader.util.CfrVersionInfo
+import org.jetbrains.java.decompiler.main.Fernflower
 import java.io.File
 import java.net.URI
 import java.util.prefs.Preferences
@@ -46,7 +47,11 @@ class DalvikusSettings() {
             category = SettingsCategory.DECOMPILER,
             nameRes = Res.string.settings_decompiler_implementation,
             "jadx",
-            options = listOf(Pair("jadx", "JADX ${Jadx.getVersion()}"), Pair("cfr", "CFR ${CfrVersionInfo.VERSION_INFO}"))
+            options = listOf(
+                Pair("jadx", "JADX ${Jadx.getVersion()}"),
+                Pair("cfr", "CFR ${CfrVersionInfo.VERSION_INFO}"),
+                Pair("vineflower", "Vineflower") // TODO find a way to get Fernflower version
+            )
         ),
         BooleanSetting(
             key = "decompiler_verbose",

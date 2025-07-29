@@ -38,6 +38,7 @@ kotlin {
             implementation(libs.jadx)
             implementation(libs.jadxSmaliInput)
             implementation(libs.cfr)
+            implementation(libs.vineflower)
 
             implementation(libs.antlr4)
             implementation(libs.apksig)

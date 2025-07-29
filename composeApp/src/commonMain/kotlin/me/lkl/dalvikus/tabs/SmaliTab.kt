@@ -15,6 +15,7 @@ import me.lkl.dalvikus.decompiler.CFRDecompiler
 import me.lkl.dalvikus.decompiler.Decompiler
 import me.lkl.dalvikus.decompiler.DecompilerContentProvider
 import me.lkl.dalvikus.decompiler.JADXDecompiler
+import me.lkl.dalvikus.decompiler.VineflowerDecompiler
 import me.lkl.dalvikus.selectedNavItem
 import me.lkl.dalvikus.tabs.contentprovider.ContentProvider
 import me.lkl.dalvikus.tabs.contentprovider.DualContentProvider
@@ -37,6 +38,7 @@ class SmaliTab(
         return when(dalvikusSettings["decompiler_implementation"] as String) {
             "jadx" -> JADXDecompiler()
             "cfr" -> CFRDecompiler()
+            "vineflower" -> VineflowerDecompiler()
             // TODO implement LLM decompiler https://huggingface.co/collections/MoxStone/smalillm-68550b87817dfb046f790cdf
             else -> throw IllegalArgumentException("Selected decompiler not implemented yet")
         }
