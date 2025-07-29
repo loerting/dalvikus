@@ -19,7 +19,9 @@
     <string name="dialog_select_android_archive_title">Select Android Archive</string>
     <string name="dialog_select_android_archive_message">Please select an Android archive (APK, AAB, ZIP) to open.</string>
 
-    <string name="dialog_select_keystore_title">Select Keystore</string>
+    <string name="dialog_select_file">Select a file</string>
+
+    <string name="dialog_select_adb">Please select your ADB installation</string>
     <string name="dialog_select_keystore_message">Please select a keystore file (JKS) to sign the application.</string>
 
     <string name="unsaved_changes_title">Unsaved changes</string>

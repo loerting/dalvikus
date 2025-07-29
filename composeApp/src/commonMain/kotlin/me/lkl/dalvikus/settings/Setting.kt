@@ -220,8 +220,9 @@ class FileSetting(
     key: String,
     category: SettingsCategory,
     nameRes: StringResource,
+    val dialogRes: StringResource,
     defaultPath: String,
-    val extensions: List<String>? = null
+    val extensions: List<String>? = null,
 ) : Setting<String>(key, category, nameRes, defaultPath) {
 
     override fun save(settings: Settings) {
@@ -244,8 +245,8 @@ class FileSetting(
 
         if (showFilePicker) {
             FileSelectorDialog(
-                title = stringResource(Res.string.dialog_select_keystore_title),
-                message = stringResource(Res.string.dialog_select_keystore_message),
+                title = stringResource(Res.string.dialog_select_file),
+                message = stringResource(dialogRes),
                 filePredicate = { it is FileSystemFileNode && (extensions == null || it.file.extension.lowercase() in extensions) },
                 onDismissRequest = {
                     showFilePicker = false
