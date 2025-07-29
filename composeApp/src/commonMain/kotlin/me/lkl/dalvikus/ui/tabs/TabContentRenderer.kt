@@ -18,6 +18,7 @@ import me.lkl.dalvikus.tabs.SmaliTab
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tabs.WelcomeTab
 import me.lkl.dalvikus.ui.editor.EditorScreen
+import me.lkl.dalvikus.ui.editor.maxEditorFileSize
 import org.jetbrains.compose.resources.stringResource
 import java.awt.Desktop
 import java.net.URI
@@ -28,7 +29,19 @@ fun TabContentRenderer(tab: TabElement) {
     when (tab) {
         is WelcomeTab -> WelcomeView()
 
-        is CodeTab -> EditorScreen(tab)
+        is CodeTab -> {
+            if(tab.contentProvider.getSizeEstimate() > maxEditorFileSize || !tab.contentProvider.isEditableTextually()) {
+                Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
+                    Text(
+                        stringResource(Res.string.editor_cannot_open),
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            } else {
+                EditorScreen(tab)
+            }
+        }
 
         is SmaliTab -> EditorScreen(tab)
 

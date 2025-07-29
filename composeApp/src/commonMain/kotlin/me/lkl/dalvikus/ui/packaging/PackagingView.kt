@@ -25,9 +25,9 @@ import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.snackbarManager
 import me.lkl.dalvikus.tree.archive.ZipNode
 import me.lkl.dalvikus.ui.uiTreeRoot
-import me.lkl.dalvikus.ui.util.CollapseCard
-import me.lkl.dalvikus.ui.util.DefaultCard
-import me.lkl.dalvikus.ui.util.PasswordField
+import me.lkl.dalvikus.util.CollapseCard
+import me.lkl.dalvikus.util.DefaultCard
+import me.lkl.dalvikus.util.PasswordField
 import org.jetbrains.compose.resources.stringResource
 import settingPadHor
 import settingPadVer

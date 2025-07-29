@@ -6,6 +6,7 @@ import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.tree.FileNode
 import me.lkl.dalvikus.ui.tree.IconForFileExtension
+import me.lkl.dalvikus.util.guessIfEditableTextually
 import java.io.File
 
 class FileSystemFileNode(
@@ -32,5 +33,13 @@ class FileSystemFileNode(
             tabIcon = icon,
             contentProvider = this
         )
+    }
+
+    override fun getSizeEstimate(): Long {
+        return file.length()
+    }
+
+    override fun isEditableTextually(): Boolean {
+        return guessIfEditableTextually(file.inputStream())
     }
 }

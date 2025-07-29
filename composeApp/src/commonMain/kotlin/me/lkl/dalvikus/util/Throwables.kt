@@ -1,4 +1,4 @@
-package me.lkl.dalvikus.ui.util
+package me.lkl.dalvikus.util
 
 fun Throwable.toOneLiner(maxLength: Int = 100): String {
     return this.message?.let { message ->

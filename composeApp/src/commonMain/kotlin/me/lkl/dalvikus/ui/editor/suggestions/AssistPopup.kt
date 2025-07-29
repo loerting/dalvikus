@@ -31,7 +31,7 @@ import androidx.compose.ui.window.PopupProperties
 import me.lkl.dalvikus.ui.editor.EditorViewModel
 import me.lkl.dalvikus.ui.editor.LayoutSnapshot
 import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
-import me.lkl.dalvikus.ui.util.getTextWidth
+import me.lkl.dalvikus.util.getTextWidth
 
 data class AssistPopupState(
     val selectedIndex: Int = 0,

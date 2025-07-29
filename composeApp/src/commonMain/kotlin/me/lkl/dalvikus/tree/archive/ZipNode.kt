@@ -52,7 +52,7 @@ class ZipNode(
 
     }
 
-    suspend fun readEntry(path: String): ByteArray {
+    fun readEntry(path: String): ByteArray {
         return entries[path] ?: error("Entry not found: $path")
     }
 

@@ -1,4 +1,4 @@
-package me.lkl.dalvikus.ui.util
+package me.lkl.dalvikus.util
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.*

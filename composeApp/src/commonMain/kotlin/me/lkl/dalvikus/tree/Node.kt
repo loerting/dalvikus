@@ -9,6 +9,7 @@ import me.lkl.dalvikus.tabs.contentprovider.ContentProvider
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.root.HiddenRoot
 import me.lkl.dalvikus.ui.tree.ColorForFileExtension
+import me.lkl.dalvikus.util.guessIfEditableTextually
 
 sealed interface Node {
     val name: String
@@ -89,6 +90,10 @@ abstract class FileNode : Node, ContentProvider() {
     }
 
     abstract suspend fun createTab(): TabElement
+
+    abstract fun getSizeEstimate(): Long
+
+    abstract fun isEditableTextually(): Boolean
 }
 
 typealias PathMap<T> = Map<String, T>

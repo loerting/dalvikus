@@ -10,7 +10,7 @@ import me.lkl.dalvikus.selectedNavItem
 import me.lkl.dalvikus.ui.packaging.PackagingView
 import me.lkl.dalvikus.ui.packaging.PackagingViewModel
 import me.lkl.dalvikus.ui.tabs.TabView
-import me.lkl.dalvikus.ui.util.DefaultCard
+import me.lkl.dalvikus.util.DefaultCard
 
 val packagingViewModel = PackagingViewModel()
 

@@ -2,22 +2,16 @@ package me.lkl.dalvikus.ui.editor
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.SaveAs
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopSearchBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,20 +25,20 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
-import dalvikus.composeapp.generated.resources.fab_load_file
 import dalvikus.composeapp.generated.resources.fab_save_and_assemble
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.theme.JetBrainsMono
 import me.lkl.dalvikus.ui.editor.highlight.defaultCodeHighlightColors
-import me.lkl.dalvikus.ui.util.handleFocusedCtrlShortcuts
+import me.lkl.dalvikus.util.handleFocusedCtrlShortcuts
 import me.lkl.dalvikus.settings.shortcutSave
 import me.lkl.dalvikus.ui.editor.suggestions.AssistPopup
 import me.lkl.dalvikus.ui.editor.suggestions.ErrorPopup
 import org.jetbrains.compose.resources.stringResource
 
 data class LayoutSnapshot(val layout: TextLayoutResult, val textFieldValue: TextFieldValue)
+
+const val maxEditorFileSize = 128 * 1024 // 128 KiB
 
 @Composable
 fun EditorScreen(editable: TabElement) {

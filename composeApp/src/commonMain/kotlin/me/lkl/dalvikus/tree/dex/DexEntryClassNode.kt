@@ -105,4 +105,12 @@ class DexEntryClassNode(
             dexEntryClassNode = this
         )
     }
+
+    override fun getSizeEstimate(): Long {
+        return 64 * 1024 // 64 kB
+    }
+
+    override fun isEditableTextually(): Boolean {
+        return true // Smali files are always editable textually
+    }
 }

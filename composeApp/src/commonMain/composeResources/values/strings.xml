@@ -85,4 +85,5 @@
 
     <string name="error_password_min_length">Password must be at least 6 characters</string>
 
+    <string name="editor_cannot_open">The file is either too large or not a valid ASCII file. Please use a different editor to open it.</string>
 </resources>

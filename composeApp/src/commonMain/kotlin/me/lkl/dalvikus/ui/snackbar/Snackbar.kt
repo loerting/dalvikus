@@ -7,7 +7,7 @@ import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.Clipboard
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import me.lkl.dalvikus.ui.util.toOneLiner
+import me.lkl.dalvikus.util.toOneLiner
 import java.awt.datatransfer.StringSelection
 import java.io.PrintWriter
 import java.io.StringWriter

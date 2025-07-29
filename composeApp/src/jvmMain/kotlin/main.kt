@@ -6,7 +6,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import me.lkl.dalvikus.App
 import me.lkl.dalvikus.keyActionMap
-import me.lkl.dalvikus.ui.util.ctrlShortcuts
+import me.lkl.dalvikus.util.ctrlShortcuts
 import java.awt.Dimension
 import javax.swing.UIManager
 

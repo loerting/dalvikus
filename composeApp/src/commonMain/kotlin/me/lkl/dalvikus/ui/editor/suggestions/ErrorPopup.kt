@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -20,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -31,7 +29,7 @@ import androidx.compose.ui.window.PopupProperties
 import kotlinx.coroutines.launch
 import me.lkl.dalvikus.ui.editor.EditorViewModel
 import me.lkl.dalvikus.ui.editor.LayoutSnapshot
-import me.lkl.dalvikus.ui.util.getTextWidth
+import me.lkl.dalvikus.util.getTextWidth
 import java.awt.datatransfer.StringSelection
 
 @Composable

@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.settings.Setting
-import me.lkl.dalvikus.ui.util.CollapseCard
+import me.lkl.dalvikus.util.CollapseCard
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

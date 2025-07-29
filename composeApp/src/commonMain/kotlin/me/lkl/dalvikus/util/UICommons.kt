@@ -1,4 +1,4 @@
-package me.lkl.dalvikus.ui.util
+package me.lkl.dalvikus.util
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically

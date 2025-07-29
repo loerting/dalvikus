@@ -5,6 +5,7 @@ import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.tree.FileNode
 import me.lkl.dalvikus.ui.tree.IconForFileExtension
+import me.lkl.dalvikus.util.guessIfEditableTextually
 
 class ZipEntryFileNode(
     override val name: String,
@@ -32,5 +33,13 @@ class ZipEntryFileNode(
             tabIcon = icon,
             contentProvider = this
         )
+    }
+
+    override fun getSizeEstimate(): Long {
+        return zipRoot.readEntry(fullPath).size.toLong()
+    }
+
+    override fun isEditableTextually(): Boolean {
+        return name.endsWith(".smali") || name.endsWith(".txt") || name.endsWith(".java") || guessIfEditableTextually(zipRoot.readEntry(fullPath).inputStream())
     }
 }
