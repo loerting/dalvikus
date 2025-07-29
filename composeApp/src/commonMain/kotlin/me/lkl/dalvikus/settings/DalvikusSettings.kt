@@ -5,6 +5,8 @@ import com.android.tools.smali.dexlib2.Opcodes
 import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
 import dalvikus.composeapp.generated.resources.*
+import jadx.core.Jadx
+import org.benf.cfr.reader.util.CfrVersionInfo
 import java.io.File
 import java.net.URI
 import java.util.prefs.Preferences
@@ -39,13 +41,12 @@ class DalvikusSettings() {
             min = 1,
             max = 34
         ),
-        // TODO actually implement CFR decompiler.
         StringOptionSetting(
             key = "decompiler_implementation",
             category = SettingsCategory.DECOMPILER,
             nameRes = Res.string.settings_decompiler_implementation,
             "jadx",
-            options = listOf(Pair("jadx", "JADX 1.5.2"), Pair("cfr", "CFR 0.152"))
+            options = listOf(Pair("jadx", "JADX ${Jadx.getVersion()}"), Pair("cfr", "CFR ${CfrVersionInfo.VERSION_INFO}"))
         ),
         BooleanSetting(
             key = "decompiler_verbose",

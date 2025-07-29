@@ -29,17 +29,19 @@ kotlin {
             implementation(libs.materialKolor)
             implementation(libs.kotlinxCoroutinesSwing)
 
-            implementation(libs.commonsCompress)
             implementation(libs.smali)
             implementation(libs.smaliDexlib2)
             implementation(libs.smaliBaksmali)
             implementation(libs.smaliUtil)
+
+            implementation(libs.dex2jarNicoMexis)
             implementation(libs.jadx)
             implementation(libs.jadxSmaliInput)
+            implementation(libs.cfr)
+
             implementation(libs.antlr4)
             implementation(libs.apksig)
             implementation(libs.ddmlib)
-
         }
 
         commonTest.dependencies {

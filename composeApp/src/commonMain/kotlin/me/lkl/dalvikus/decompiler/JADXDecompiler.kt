@@ -1,7 +1,5 @@
 package me.lkl.dalvikus.decompiler
-import com.android.tools.smali.dexlib2.Opcodes
 import com.android.tools.smali.dexlib2.iface.ClassDef
-import com.android.tools.smali.dexlib2.iface.DexFile
 import com.android.tools.smali.dexlib2.writer.io.MemoryDataStore
 import com.android.tools.smali.dexlib2.writer.pool.DexPool
 import jadx.api.CommentsLevel
@@ -9,6 +7,7 @@ import jadx.api.JadxArgs
 import jadx.api.JadxDecompiler
 import jadx.api.impl.NoOpCodeCache
 import me.lkl.dalvikus.dalvikusSettings
+import me.lkl.dalvikus.smali.SoloDexFileWrapper
 import java.io.File
 import java.nio.file.Files
 
@@ -16,16 +15,18 @@ class JADXDecompiler : Decompiler {
     override suspend fun decompile(classDef: ClassDef): String {
         return try {
             // Create a temporary DexFile that contains only this classDef
-            val tempDex = TemporarySoloDexFile(classDef)
+            val tempDex = SoloDexFileWrapper(classDef)
 
             // Write DexFile to memory
-            val dataStore = MemoryDataStore()
-            DexPool.writeTo(dataStore, tempDex)
+            val dataStore = MemoryDataStore().also {
+                DexPool.writeTo(it, tempDex)
+            }
 
             // Write to a temporary file
-            val tempDexFile = File.createTempFile("dalvikus", ".dex")
-            Files.write(tempDexFile.toPath(), dataStore.data)
-
+            val tempDexFile = File.createTempFile("dalvikus", ".dex").apply {
+                writeBytes(dataStore.data)
+                deleteOnExit()
+            }
             // Setup Jadx arguments
             val jadxArgs = JadxArgs().apply {
                 inputFiles = listOf(tempDexFile)
@@ -49,9 +50,3 @@ class JADXDecompiler : Decompiler {
     }
 }
 
-private class TemporarySoloDexFile(
-    private val classDef: ClassDef
-) : DexFile {
-    override fun getClasses(): Set<ClassDef> = setOf(classDef)
-    override fun getOpcodes(): Opcodes = Opcodes.forApi(dalvikusSettings["api_level"] as Int)
-}
