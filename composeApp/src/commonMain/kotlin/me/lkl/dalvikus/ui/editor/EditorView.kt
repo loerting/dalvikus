@@ -32,6 +32,7 @@ import me.lkl.dalvikus.theme.JetBrainsMono
 import me.lkl.dalvikus.ui.editor.highlight.defaultCodeHighlightColors
 import me.lkl.dalvikus.util.handleFocusedCtrlShortcuts
 import me.lkl.dalvikus.settings.shortcutSave
+import me.lkl.dalvikus.theme.LocalThemeIsDark
 import me.lkl.dalvikus.ui.editor.suggestions.AssistPopup
 import me.lkl.dalvikus.ui.editor.suggestions.ErrorPopup
 import org.jetbrains.compose.resources.stringResource
@@ -42,8 +43,15 @@ const val maxEditorFileSize = 128 * 1024 // 128 KiB
 
 @Composable
 fun EditorScreen(editable: TabElement) {
-    val highlightColors = defaultCodeHighlightColors()
-    val viewModel = remember(editable) { EditorViewModel(editable, highlightColors) }
+    val isDarkState: MutableState<Boolean> = LocalThemeIsDark.current
+
+    val viewModel = remember(editable) { EditorViewModel(editable) }
+    viewModel.highlightColors = defaultCodeHighlightColors(isDarkState.value)
+
+    LaunchedEffect(isDarkState.value) {
+        viewModel.refreshHighlight()
+    }
+
     val coroutine = rememberCoroutineScope()
 
     var firstLoad by remember(editable) { mutableStateOf(true) }
@@ -55,7 +63,7 @@ fun EditorScreen(editable: TabElement) {
         }
     }
 
-    // Highlight code on every code content change
+    // Highlight code on every code content change.
     LaunchedEffect(viewModel.internalContent) {
         // delay to wait until user finished typing.
         delay(200)
@@ -63,6 +71,7 @@ fun EditorScreen(editable: TabElement) {
             viewModel.refreshHighlight()
         }
     }
+
 
     if (!viewModel.isLoaded) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -180,7 +189,7 @@ fun EditorScreen(editable: TabElement) {
                         viewModel = viewModel,
                         lastLayoutSnapshot = lastLayoutSnapshot,
                         textStyle = textStyle,
-                        highlightColors = highlightColors
+                        highlightColors = viewModel.highlightColors
                     )
                     viewModel.highlightedText.getStringAnnotations(
                         tag = "error",

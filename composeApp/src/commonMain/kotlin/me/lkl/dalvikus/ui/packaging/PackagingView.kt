@@ -46,6 +46,7 @@ fun PackagingView(packagingViewModel: PackagingViewModel) {
         containerColor = Color.Transparent,
         floatingActionButton = {
             if (keystoreInfo.isValid()) return@Scaffold
+            if (!keystoreInfo.passwordsFilled()) return@Scaffold
             ExtendedFloatingActionButton(
                 onClick = {
                     packagingViewModel.openConsoleCreateKeystore(
@@ -60,7 +61,6 @@ fun PackagingView(packagingViewModel: PackagingViewModel) {
                 text = {
                     Text(stringResource(Res.string.fab_create_keystore))
                 },
-
                 )
         }
     ) { innerPadding ->
@@ -70,7 +70,7 @@ fun PackagingView(packagingViewModel: PackagingViewModel) {
             CollapseCard(
                 title = stringResource(Res.string.signature_settings_title),
                 icon = Icons.Outlined.Key,
-                defaultState = true
+                defaultState = false
             ) {
                 Column {
                     SettingRow(dalvikusSettings.getSetting("keystore_file"))

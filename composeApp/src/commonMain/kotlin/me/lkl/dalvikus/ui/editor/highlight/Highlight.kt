@@ -22,7 +22,7 @@ data class CodeHighlightColors(
 )
 
 @Composable
-fun defaultCodeHighlightColors(): CodeHighlightColors {
+fun defaultCodeHighlightColors(darkTheme: Boolean): CodeHighlightColors {
     return CodeHighlightColors(
         onSurface = MaterialTheme.colorScheme.onSurface,
         primary = MaterialTheme.colorScheme.primary,

@@ -217,12 +217,15 @@ data class KeystoreInfo(
 ) {
     @Composable
     fun isValid(): Boolean {
+        return keystoreFile.exists() && keystoreFile.canRead() &&
+                keyAlias.isNotBlank() && passwordsFilled()
+    }
+
+    @Composable
+    fun passwordsFilled(): Boolean {
         val keystorePassword by keystorePassword.collectAsState()
         val keyPassword by keyPassword.collectAsState()
 
-        return keystoreFile.exists() && keystoreFile.canRead() &&
-                keyAlias.isNotBlank() &&
-                keystorePassword.length >= 6 &&
-                keyPassword.length >= 6
+        return keystorePassword.length >= 6 && keyPassword.length >= 6
     }
 }

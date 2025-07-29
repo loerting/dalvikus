@@ -26,9 +26,11 @@ import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
 import me.lkl.dalvikus.ui.editor.highlight.highlightCode
 import me.lkl.dalvikus.ui.editor.suggestions.AssistPopupState
 
-class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHighlightColors) {
+class EditorViewModel(private val tab: TabElement) {
     var isLoaded by mutableStateOf(false)
         private set
+
+    lateinit var highlightColors: CodeHighlightColors
 
     var highlightedText by mutableStateOf(AnnotatedString(tab.contentProvider.contentFlow.value.decodeToString()))
         private set
@@ -93,7 +95,7 @@ class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHigh
             }
     }
 
-    fun changeContent(newTextFieldValue: TextFieldValue, coroutineScope: CoroutineScope) {
+    fun changeContent(newTextFieldValue: TextFieldValue, coroutineScope: CoroutineScope, checkNewline: Boolean = true) {
         val oldText = internalContent.text
         val newText = newTextFieldValue.text
 
@@ -110,8 +112,25 @@ class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHigh
         val insertedText = newText.substring(diffIndex, safeNewSuffixStart)
 
         val isNewlineInserted = insertedText == "\n"
-        if (isNewlineInserted) {
-            // TODO implement new line indentation
+
+        if (checkNewline && isNewlineInserted) {
+            val caretPosition = newTextFieldValue.selection.start
+            if(caretPosition > 0) {
+                val beforeNewline = newText.substring(0, caretPosition - 1)
+                val currentLineStart = beforeNewline.lastIndexOf('\n') + 1
+                val currentLine = beforeNewline.substring(currentLineStart)
+                val leadingIndent = currentLine.takeWhile { it == ' ' || it == '\t' }
+
+                val updatedText = newText.substring(0, caretPosition) + leadingIndent + newText.substring(caretPosition)
+                val updatedSelection = TextRange(caretPosition + leadingIndent.length)
+
+                changeContent(
+                    newTextFieldValue.copy(text = updatedText, selection = updatedSelection),
+                    coroutineScope,
+                    checkNewline = false
+                )
+                return
+            }
         }
 
         mimicOldHighlight(newText, diffIndex, newSuffixStart, oldSuffixStart, insertedText)

@@ -27,7 +27,7 @@ class ErrorHandlingSmaliParser(
     }
 
     fun getShortErrorMessage(e: RecognitionException): String {
-        fun tokenName(id: Int): String = if (id == Token.EOF) "end of input" else tokenNames[id] ?: "<unknown>"
+        fun tokenName(id: Int): String = if (id == Token.EOF) "<eof>" else tokenNames[id] ?: "<unknown>"
         val tokenText = e.token?.text ?: "<unknown>"
 
         return when (e) {
