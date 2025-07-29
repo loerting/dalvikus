@@ -10,9 +10,9 @@ import com.android.tools.smali.dexlib2.Opcodes
 import com.android.tools.smali.dexlib2.iface.ClassDef
 import com.android.tools.smali.dexlib2.writer.builder.DexBuilder
 import com.android.tools.smali.smali.smaliFlexLexer
-import com.android.tools.smali.smali.smaliParser
 import com.android.tools.smali.smali.smaliTreeWalker
 import me.lkl.dalvikus.dalvikusSettings
+import me.lkl.dalvikus.smali.ErrorHandlingSmaliParser
 import me.lkl.dalvikus.snackbarManager
 import me.lkl.dalvikus.tabs.SmaliTab
 import me.lkl.dalvikus.tabs.TabElement
@@ -57,20 +57,19 @@ class DexEntryClassNode(
         val lexer = smaliFlexLexer(newContent.inputStream().reader(), apiLevel)
         val tokens = CommonTokenStream(lexer)
 
-        val parser = smaliParser(tokens)
+        val parser = ErrorHandlingSmaliParser(tokens)
         parser.setVerboseErrors(true)
         parser.setAllowOdex(true)
         parser.setApiLevel(apiLevel)
 
         val result = parser.smali_file()
 
-        if (parser.numberOfSyntaxErrors > 0 || lexer.numberOfSyntaxErrors > 0) {
-            Logger.e("SmaliIOChannel") {
-                "Failed to parse smali content. " +
+        if (parser.errorLines.isNotEmpty()) {
+            Logger.e("Failed to parse smali content for assembly. " +
                         "Lexer errors: ${lexer.numberOfSyntaxErrors}, " +
-                        "Parser errors: ${parser.numberOfSyntaxErrors}"
-            }
-            snackbarManager?.showAssembleError(lexer.numberOfSyntaxErrors, parser.numberOfSyntaxErrors)
+                        "Parser errors: ${parser.numberOfSyntaxErrors}")
+
+            snackbarManager?.showAssembleError(parser.errorLines)
             return
         }
 

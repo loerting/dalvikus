@@ -9,69 +9,17 @@ import androidx.compose.ui.text.style.TextDecoration
 import com.android.tools.smali.smali.smaliFlexLexer
 import com.android.tools.smali.smali.smaliParser
 import me.lkl.dalvikus.dalvikusSettings
+import me.lkl.dalvikus.smali.ErrorHandlingSmaliParser
 import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
 import org.antlr.runtime.*
 
-fun getShortErrorMessage(e: RecognitionException, tokenNames: Array<String?>): String {
-    fun tokenName(id: Int): String = if (id == Token.EOF) "end of input" else tokenNames[id] ?: "<unknown>"
-    val tokenText = e.token?.text ?: "<unknown>"
-
-    return when (e) {
-        is UnwantedTokenException -> {
-            val expected = tokenName(e.expecting)
-            "Unexpected '$tokenText', expected $expected"
-        }
-        is MissingTokenException -> {
-            val expected = tokenName(e.expecting)
-            "Missing $expected before '$tokenText'"
-        }
-        is MismatchedTokenException -> {
-            val expected = tokenName(e.expecting)
-            "Expected $expected but found '$tokenText'"
-        }
-        is MismatchedTreeNodeException -> {
-            val expected = tokenName(e.expecting)
-            "Wrong tree node '${e.node}', expected $expected"
-        }
-        is NoViableAltException -> {
-            "Cannot parse '$tokenText'"
-        }
-        is EarlyExitException -> {
-            "Incomplete input after '$tokenText'"
-        }
-        is MismatchedSetException -> {
-            "Unexpected '$tokenText'"
-        }
-        is FailedPredicateException -> {
-            "Rule '${e.ruleName}' failed: ${e.predicateText}"
-        }
-        else -> e.message ?: "Unknown error at '$tokenText'"
-    }
-}
 
 fun highlightSmaliCode(code: String, colors: CodeHighlightColors): AnnotatedString {
     val apiLevel = dalvikusSettings["api_level"] as Int
     val lexer = smaliFlexLexer(code.reader(), apiLevel)
-    val errorTokens = mutableMapOf<CommonToken, String>()
     val tokens = CommonTokenStream(lexer)
 
-    val parser = object : smaliParser(tokens) {
-        override fun reportError(e: RecognitionException?) {
-            try {
-                super.reportError(e)
-                val offending = e?.token
-                if (offending is CommonToken) {
-                    errorTokens[offending] = getShortErrorMessage(e, tokenNames)
-                }
-            } catch (ex: Exception) {
-                // ignore any exceptions during error reporting
-                val offending = e?.token
-                if (offending is CommonToken) {
-                    errorTokens[offending] = "Unknown error"
-                }
-            }
-        }
-    }
+    val parser = ErrorHandlingSmaliParser(tokens)
 
     parser.setVerboseErrors(true)
     parser.setAllowOdex(true)
@@ -88,8 +36,8 @@ fun highlightSmaliCode(code: String, colors: CodeHighlightColors): AnnotatedStri
             val start = token.startIndex
             val end = token.stopIndex + 1
 
-            if (token in errorTokens) {
-                addStringAnnotation("error", errorTokens[token]!!, start, end)
+            if (token in parser.errorTokens) {
+                addStringAnnotation("error", parser.errorTokens[token]!!, start, end)
                 addStyle(
                     SpanStyle(
                         color = colors.error,

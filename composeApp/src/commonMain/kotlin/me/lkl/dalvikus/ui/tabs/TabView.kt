@@ -34,7 +34,7 @@ fun TabView(
             edgePadding = 0.dp,
         ) {
             tabManager.tabs.forEachIndexed { index, tab ->
-                val tooltipState = rememberTooltipState(isPersistent = true)
+                val tooltipState = rememberTooltipState(isPersistent = false)
                 Tab(
                     selected = tabManager.selectedTabIndex == index,
                     onClick = { tabManager.selectTab(index) },

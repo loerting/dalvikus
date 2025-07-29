@@ -64,8 +64,7 @@
 
     <string name="snack_failed">Error performing operation: %1$s</string>
     <string name="snack_success">Successfully completed operation.</string>
-    <string name="snack_assemble_error">Unable to assemble due to %1$s lexer and %2$s parser errors.</string>
-
+    <string name="snack_assemble_error">Unable to assemble due to error(s) in line(s) %1$s</string>
 
     <string name="deploy">Deploy</string>
     <string name="sign_deploy_app">Sign and deploy %1$s via adb.</string>
@@ -82,6 +81,7 @@
     <string name="select_file">Select file</string>
 
     <string name="fab_load_file">Load file</string>
+    <string name="fab_save_and_assemble">Save and assemble</string>
 
     <string name="error_password_min_length">Password must be at least 6 characters</string>
 

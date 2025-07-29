@@ -46,9 +46,9 @@ class SnackbarManager(
     }
 
     fun showSuccess() = showMessage(snackbarResources.snackSuccess)
-    fun showAssembleError(lexerErrors: Int, parserErrors: Int) {
+    fun showAssembleError(errorLines: List<Int>) {
         coroutineScope.launch {
-            val message = snackbarResources.snackAssembleError.format(lexerErrors, parserErrors)
+            val message = snackbarResources.snackAssembleError.format(errorLines.joinToString(", "))
             snackbarHostState.showSnackbar(
                 message = message,
                 duration = SnackbarDuration.Short,

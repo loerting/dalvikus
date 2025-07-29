@@ -129,7 +129,8 @@ class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHigh
         if (dalvikusSettings["save_automatically"]) {
             saveCode(coroutineScope)
         } else {
-            tab.hasUnsavedChanges.value = true
+            if(newText.length != oldText.length)
+                tab.hasUnsavedChanges.value = true
         }
     }
 
@@ -172,6 +173,10 @@ class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHigh
             tab.contentProvider.updateContent(internalContent.text.toByteArray())
             tab.hasUnsavedChanges.value = false
         }
+    }
+
+    fun hasUnsavedChanges(): Boolean {
+        return isLoaded && tab.hasUnsavedChanges.value
     }
 
     fun isEditable() = tab.contentProvider.editableContent
