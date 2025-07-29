@@ -21,8 +21,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -125,4 +127,16 @@ fun PasswordField(
             modifier = Modifier.padding(start = 8.dp, top = 4.dp)
         )
     }
+}
+
+@Composable
+fun getTextWidth(text: String, textStyle: TextStyle): Int {
+    val textMeasurer = rememberTextMeasurer()
+
+    val result = textMeasurer.measure(
+        text = text,
+        style = textStyle
+    )
+
+    return result.size.width
 }

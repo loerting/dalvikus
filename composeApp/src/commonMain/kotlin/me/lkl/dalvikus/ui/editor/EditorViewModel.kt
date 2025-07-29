@@ -2,7 +2,16 @@ package me.lkl.dalvikus.ui.editor
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.isMetaPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -15,6 +24,7 @@ import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
 import me.lkl.dalvikus.ui.editor.highlight.highlightCode
+import me.lkl.dalvikus.ui.editor.suggestions.AssistPopupState
 
 class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHighlightColors) {
     var isLoaded by mutableStateOf(false)
@@ -27,6 +37,45 @@ class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHigh
 
     var internalContent by mutableStateOf(TextFieldValue())
         private set
+
+    val assistPopupState = mutableStateOf(AssistPopupState())
+
+    val popupKeyEvents = Modifier.onPreviewKeyEvent { event ->
+        val apState = assistPopupState.value
+
+        if (event.type != KeyEventType.KeyDown || !isEditable()) return@onPreviewKeyEvent false
+
+        if(apState.popupDismissed) {
+            if((event.isCtrlPressed || event.isMetaPressed) && event.key == Key.Spacebar) {
+                assistPopupState.value = assistPopupState.value.copy(popupDismissed = false)
+                return@onPreviewKeyEvent true
+            }
+            return@onPreviewKeyEvent false
+        }
+
+        return@onPreviewKeyEvent when (event.key) {
+            Key.DirectionDown -> {
+                assistPopupState.value = apState.copy(selectedIndex = apState.selectedIndex + 1)
+                true
+            }
+
+            Key.DirectionUp -> {
+                assistPopupState.value = apState.copy(selectedIndex = apState.selectedIndex - 1)
+                true
+            }
+
+            Key.Enter -> {
+                assistPopupState.value = apState.copy(enterRequest = true)
+                true
+            }
+
+            Key.Escape -> {
+                assistPopupState.value = AssistPopupState()
+                true
+            }
+            else -> false
+        }
+    }
 
     suspend fun loadCode() {
         withContext(Dispatchers.IO) {
@@ -66,6 +115,13 @@ class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHigh
         }
 
         mimicOldHighlight(newText, diffIndex, newSuffixStart, oldSuffixStart, insertedText)
+
+        if(newText.length > oldText.length) {
+            assistPopupState.value = assistPopupState.value.copy(
+                popupDismissed = false,
+                selectedIndex = 0
+            )
+        }
         // Update the internal content with the new text
         internalContent = newTextFieldValue.copy(text = newText)
 
@@ -137,7 +193,7 @@ class EditorViewModel(private val tab: TabElement, val highlightColors: CodeHigh
         if (!isLoaded) return
 
         val currentText = internalContent.text
-        val newText = currentText.substring(0, startIndex) + text + currentText.substring(stopIndex + 1)
+        val newText = currentText.substring(0, startIndex) + text + currentText.substring(stopIndex)
 
         val newTextFieldValue = internalContent.copy(text = newText, selection = TextRange(startIndex + text.length, startIndex + text.length))
         changeContent(newTextFieldValue, coroutineScope)

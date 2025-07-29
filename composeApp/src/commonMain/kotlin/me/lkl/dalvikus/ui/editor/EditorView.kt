@@ -12,11 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -31,7 +26,7 @@ import me.lkl.dalvikus.ui.editor.highlight.defaultCodeHighlightColors
 import me.lkl.dalvikus.ui.util.handleFocusedCtrlShortcuts
 import me.lkl.dalvikus.settings.shortcutSave
 import me.lkl.dalvikus.ui.editor.suggestions.AssistPopup
-import me.lkl.dalvikus.ui.editor.suggestions.AssistPopupState
+import me.lkl.dalvikus.ui.editor.suggestions.ErrorPopup
 
 data class LayoutSnapshot(val layout: TextLayoutResult, val textFieldValue: TextFieldValue)
 
@@ -70,36 +65,6 @@ fun EditorScreen(editable: TabElement) {
     }
 
     var lastLayoutSnapshot by remember { mutableStateOf<LayoutSnapshot?>(null) }
-    val assistPopupState = remember { mutableStateOf(AssistPopupState()) }
-
-    val popupKeyEvents = Modifier.onPreviewKeyEvent { event ->
-        println(assistPopupState)
-        val apState = assistPopupState.value
-        if (event.type != KeyEventType.KeyDown || !viewModel.isEditable() || apState.popupDismissed) return@onPreviewKeyEvent false
-        when (event.key) {
-            Key.DirectionDown -> {
-                assistPopupState.value = apState.copy(selectedIndex = apState.selectedIndex + 1)
-                true
-            }
-
-            Key.DirectionUp -> {
-                assistPopupState.value = apState.copy(selectedIndex = apState.selectedIndex - 1)
-                true
-            }
-
-            Key.Enter -> {
-                assistPopupState.value.onEnter(assistPopupState.value)
-                assistPopupState.value = AssistPopupState()
-                true
-            }
-
-            Key.Escape -> {
-                assistPopupState.value = AssistPopupState()
-                true
-            }
-            else -> false
-        }
-    }
 
     val textStyle = TextStyle(
         fontFamily = JetBrainsMono(),
@@ -108,12 +73,10 @@ fun EditorScreen(editable: TabElement) {
         color = MaterialTheme.colorScheme.onSurface
     )
 
-    // TODO fix highlight bug when scrolled to the right, selecting a leftmost line and typing.
-
     val vertState = rememberScrollState()
     val horState = rememberScrollState()
 
-    Box(modifier = Modifier.fillMaxSize().then(popupKeyEvents)) {
+    Box(modifier = Modifier.fillMaxSize().then(viewModel.popupKeyEvents)) {
         Row(Modifier.fillMaxSize()) {
 
             LineNumberColumn(
@@ -150,12 +113,6 @@ fun EditorScreen(editable: TabElement) {
                             keyboardType = KeyboardType.Ascii
                         ),
                         onValueChange = { newText ->
-                            if(newText.text.length > viewModel.internalContent.text.length) {
-                                assistPopupState.value = assistPopupState.value.copy(
-                                    popupDismissed = false,
-                                    selectedIndex = 0
-                                )
-                            }
                             viewModel.changeContent(newText, coroutine)
                         },
                         modifier = Modifier
@@ -192,15 +149,18 @@ fun EditorScreen(editable: TabElement) {
                         }
                     )
                     AssistPopup(
-                        assistPopupState = assistPopupState,
+                        assistPopupState = viewModel.assistPopupState,
                         viewModel = viewModel,
                         lastLayoutSnapshot = lastLayoutSnapshot,
                         textStyle = textStyle,
                         highlightColors = highlightColors
-                    ) {
-                        assistPopupState.value = assistPopupState.value.copy(
-                            popupDismissed = true,
-                        )
+                    )
+                    viewModel.highlightedText.getStringAnnotations(
+                        tag = "error",
+                        start = viewModel.internalContent.selection.start,
+                        end = viewModel.internalContent.selection.end
+                    ).forEach { annotation ->
+                        ErrorPopup(lastLayoutSnapshot, annotation, viewModel, textStyle)
                     }
                 }
 
@@ -223,3 +183,4 @@ fun EditorScreen(editable: TabElement) {
         }
     }
 }
+

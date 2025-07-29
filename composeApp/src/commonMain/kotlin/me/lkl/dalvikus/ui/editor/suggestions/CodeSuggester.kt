@@ -28,6 +28,8 @@ val outsideMethodDirectives = listOf(
 val insideMethodDirectives = listOf(
     ".method" to "Starts a method declaration block.",
     ".end method" to "Ends a method declaration block.",
+    ".annotation" to "Starts an annotation block.",
+    ".end annotation" to "Ends an annotation block.",
     ".registers" to "Specifies the total number of registers used in the method.",
     ".locals" to "Specifies the number of local registers in the method (debug info).",
     ".param" to "Declares a method parameter name (debug info).",
@@ -342,6 +344,7 @@ class CodeSuggester(
 
     init {
         val lexer = smaliFlexLexer(currentText.reader(), dalvikusSettings["api_level"] as Int)
+        lexer.setSuppressErrors(true)
         val tokens = CommonTokenStream(lexer)
         tokens.fill()
 
@@ -373,8 +376,7 @@ class CodeSuggester(
                 // directive suggestions
                 val directives = if (estimatedMethodRange.isEmpty()) outsideMethodDirectives else insideMethodDirectives
                 directives.forEach { (directive, description) ->
-                    if (directive.startsWith(currentToken.text)) {
-
+                    if (startsWithNotEquals(directive)) {
                         suggestions.add(AssistSuggestion(directive, description, SuggestionType.Directive, spanStyle))
                     }
                 }
@@ -388,7 +390,7 @@ class CodeSuggester(
                     smaliParser.PRIMITIVE_TYPE
                 ).distinctBy { it.text }.forEach { token ->
                     if(token == currentToken) return@forEach
-                    if (token.text.startsWith(currentToken.text)) {
+                    if (startsWithNotEquals(token.text)) {
                         val spanStyle = getSmaliTokenStyle(
                             token.type, highlightColors
                         )
@@ -407,7 +409,7 @@ class CodeSuggester(
                 if (registerCount > 0) {
                     for (i in 0 until registerCount) {
                         val registerName = currentToken.text.substring(0, 1) + i
-                        if (registerName.startsWith(currentToken.text)) {
+                        if (startsWithNotEquals(registerName)) {
                             suggestions.add(
                                 AssistSuggestion(
                                     registerName,
@@ -424,7 +426,7 @@ class CodeSuggester(
                 smaliParser.INSTRUCTION_FORMAT10t, highlightColors
             )
             dalvikOpcodes.forEach { (opcode, description) ->
-                if (opcode.startsWith(currentToken.text)) {
+                if (startsWithNotEquals(opcode)) {
                     suggestions.add(AssistSuggestion(opcode, description, SuggestionType.Instruction, opcodeSpanStyle))
                 }
             }
@@ -442,7 +444,7 @@ class CodeSuggester(
             ) {
                 // method access specifier suggestions
                 accessList.forEach { (access, description) ->
-                    if (access.startsWith(currentToken.text)) {
+                    if (startsWithNotEquals(access)) {
                         suggestions.add(AssistSuggestion(access, description, SuggestionType.Access, spanStyle))
                     }
                 }
@@ -451,6 +453,9 @@ class CodeSuggester(
 
         return suggestions
     }
+
+    private fun startsWithNotEquals(directive: String): Boolean =
+        directive.startsWith(currentToken.text) && !directive.equals(currentToken.text, ignoreCase = true)
 
     private fun findAllTokensOfType(vararg tokenType: Int): List<CommonToken> {
         return tokenList.filterIsInstance<CommonToken>()

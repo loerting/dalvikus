@@ -23,7 +23,6 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -32,12 +31,13 @@ import androidx.compose.ui.window.PopupProperties
 import me.lkl.dalvikus.ui.editor.EditorViewModel
 import me.lkl.dalvikus.ui.editor.LayoutSnapshot
 import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
+import me.lkl.dalvikus.ui.util.getTextWidth
 
 data class AssistPopupState(
     val selectedIndex: Int = 0,
     val popupDismissed: Boolean = true,
     val currentSuggestions: List<AssistSuggestion> = emptyList(),
-    val onEnter: (AssistPopupState) -> Unit = {}
+    val enterRequest: Boolean = false,
 )
 
 @Composable
@@ -46,15 +46,13 @@ fun AssistPopup(
     viewModel: EditorViewModel,
     lastLayoutSnapshot: LayoutSnapshot?,
     textStyle: TextStyle,
-    highlightColors: CodeHighlightColors,
-    onDismissRequest: () -> Unit
+    highlightColors: CodeHighlightColors
 ) {
     if (lastLayoutSnapshot == null || !viewModel.isLoaded) return
     if (viewModel.getFileType() != "smali") return
 
     if (assistPopupState.value.popupDismissed) return
 
-    val density = LocalDensity.current
     val cursorIndex = lastLayoutSnapshot.textFieldValue.selection.start
 
     if (cursorIndex == 0) return
@@ -66,17 +64,22 @@ fun AssistPopup(
 
     val coroutineScope = rememberCoroutineScope()
 
-    assistPopupState.value = assistPopupState.value.copy(currentSuggestions = suggestions, onEnter = {
-        if (it.selectedIndex < suggestions.size) {
-            val suggestion = suggestions[it.selectedIndex]
+    if(assistPopupState.value.enterRequest) {
+        if (assistPopupState.value.selectedIndex < suggestions.size) {
+            val suggestion = suggestions[assistPopupState.value.selectedIndex]
+
             viewModel.replaceTextAndMoveCaret(
                 codeSuggester.currentToken.startIndex,
-                codeSuggester.currentToken.stopIndex,
+                codeSuggester.currentToken.stopIndex + 1,
                 suggestion.text,
                 coroutineScope
             )
         }
-    })
+
+        // reset to default state
+        assistPopupState.value = AssistPopupState()
+        return
+    }
 
     if (suggestions.isEmpty()) {
         assistPopupState.value = assistPopupState.value.copy(popupDismissed = true)
@@ -90,6 +93,8 @@ fun AssistPopup(
     }
     val negativeOffset = getTextWidth(codeSuggester.currentToken.text.substring(0, cursorOffset), textStyle)
 
+
+    val density = LocalDensity.current
     Popup(
         offset = with(density) {
             val iconWidth = 26.dp.roundToPx()
@@ -104,7 +109,9 @@ fun AssistPopup(
             dismissOnBackPress = true,
             dismissOnClickOutside = true
         ),
-        onDismissRequest = onDismissRequest
+        onDismissRequest = {
+            assistPopupState.value = assistPopupState.value.copy(popupDismissed = true)
+        }
     ) {
         Surface(
             modifier = Modifier
@@ -162,18 +169,6 @@ fun AssistPopup(
             }
         }
     }
-}
-
-@Composable
-fun getTextWidth(text: String, textStyle: TextStyle): Int {
-    val textMeasurer = rememberTextMeasurer()
-
-    val result = textMeasurer.measure(
-        text = text,
-        style = textStyle
-    )
-
-    return result.size.width
 }
 
 fun IconForSuggestion(type: SuggestionType): ImageVector {

@@ -38,11 +38,14 @@ import me.lkl.dalvikus.tree.root.HiddenRoot
 import me.lkl.dalvikus.ui.tree.FileSelectorDialog
 import me.lkl.dalvikus.ui.tree.TreeView
 import org.jetbrains.compose.resources.stringResource
+import java.io.File
 
 val editableFiles = listOf("apk", "apks", "aab", "jar", "zip", "xapk", "dex", "odex")
 
 var showTreeAddFileDialog by mutableStateOf(false)
-internal val uiTreeRoot: HiddenRoot = HiddenRoot()
+// TODO remove before pushing
+internal val uiTreeRoot: HiddenRoot = HiddenRoot(ZipNode("org.bandev.buddhaquotes_1014.apk",
+    File("/home/admin/Downloads/org.bandev.buddhaquotes_1014.apk"), null))
 internal var currentSelection by mutableStateOf<Node?>(null)
 
 @OptIn(ExperimentalMaterial3Api::class)
