@@ -39,7 +39,6 @@ class FileSystemFileNode(
         return file.length()
     }
 
-    override fun isEditableTextually(): Boolean {
-        return guessIfEditableTextually(file.inputStream())
-    }
+    override fun isDisplayable(): Boolean = isEditable()
+    override fun isEditable(): Boolean = guessIfEditableTextually(file.inputStream())
 }

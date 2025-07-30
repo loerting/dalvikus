@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AutoFixHigh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -33,56 +34,58 @@ import java.net.URI
 
 @Composable
 fun WelcomeView() {
-    Box(Modifier.Companion.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Companion.Center) {
-        Column(horizontalAlignment = Alignment.Companion.CenterHorizontally) {
-            Icon(
-                imageVector = Icons.Outlined.AutoFixHigh,
-                tint = MaterialTheme.colorScheme.primary,
-                contentDescription = stringResource(Res.string.app_name),
-                modifier = Modifier.Companion.size(48.dp)
-            )
-            Spacer(Modifier.Companion.height(8.dp))
-            Text(
-                stringResource(Res.string.app_name),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Companion.SemiBold,
-                textAlign = TextAlign.Companion.Center
-            )
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)) {
+        Box(Modifier.padding(32.dp), contentAlignment = Alignment.Companion.Center) {
+            Column(horizontalAlignment = Alignment.Companion.CenterHorizontally) {
+                Icon(
+                    imageVector = Icons.Outlined.AutoFixHigh,
+                    tint = MaterialTheme.colorScheme.primary,
+                    contentDescription = stringResource(Res.string.app_name),
+                    modifier = Modifier.Companion.size(48.dp)
+                )
+                Spacer(Modifier.Companion.height(8.dp))
+                Text(
+                    stringResource(Res.string.app_name),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Companion.SemiBold,
+                    textAlign = TextAlign.Companion.Center
+                )
 
-            Spacer(Modifier.Companion.height(48.dp))
-            Text(
-                stringResource(Res.string.app_introduction),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                textAlign = TextAlign.Companion.Justify
-            )
+                Spacer(Modifier.Companion.height(48.dp))
+                Text(
+                    stringResource(Res.string.app_introduction),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    textAlign = TextAlign.Companion.Justify
+                )
 
-            Spacer(Modifier.Companion.height(48.dp))
-            Row {
-                TextButton(onClick = {
-                    Desktop.getDesktop().browse(DalvikusSettings.Companion.getRepoURI())
-                }) {
-                    Text(
-                        stringResource(Res.string.app_github_button),
-                        softWrap = false
-                    )
-                }
-                TextButton(onClick = {
-                    Desktop.getDesktop().browse(URI("https://source.android.com/docs/core/runtime/dalvik-bytecode"))
-                }) {
-                    Text(
-                        stringResource(Res.string.app_dalvik_button),
-                        softWrap = false
-                    )
-                }
-                TextButton(onClick = {
-                    Desktop.getDesktop().browse(URI("https://www.gnu.org/licenses/gpl-3.0.html"))
-                }) {
-                    Text(
-                        stringResource(Res.string.app_gpl_button),
-                        softWrap = false
-                    )
+                Spacer(Modifier.Companion.height(48.dp))
+                Row {
+                    TextButton(onClick = {
+                        Desktop.getDesktop().browse(DalvikusSettings.Companion.getRepoURI())
+                    }) {
+                        Text(
+                            stringResource(Res.string.app_github_button),
+                            softWrap = false
+                        )
+                    }
+                    TextButton(onClick = {
+                        Desktop.getDesktop().browse(URI("https://source.android.com/docs/core/runtime/dalvik-bytecode"))
+                    }) {
+                        Text(
+                            stringResource(Res.string.app_dalvik_button),
+                            softWrap = false
+                        )
+                    }
+                    TextButton(onClick = {
+                        Desktop.getDesktop().browse(URI("https://www.gnu.org/licenses/gpl-3.0.html"))
+                    }) {
+                        Text(
+                            stringResource(Res.string.app_gpl_button),
+                            softWrap = false
+                        )
+                    }
                 }
             }
         }

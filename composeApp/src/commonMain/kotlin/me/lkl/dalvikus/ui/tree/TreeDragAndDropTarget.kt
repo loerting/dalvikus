@@ -13,8 +13,6 @@ class TreeDragAndDropTarget(val unsupportedFileText: String) : DragAndDropTarget
     override fun onDrop(event: DragAndDropEvent): Boolean {
         val flavors = event.awtTransferable.transferDataFlavors
 
-        println(flavors)
-
         for (flavor in flavors) {
             if (flavor.isMimeTypeEqual("application/x-java-file-list")) {
                 val files = event.awtTransferable.getTransferData(flavor) as? List<*>

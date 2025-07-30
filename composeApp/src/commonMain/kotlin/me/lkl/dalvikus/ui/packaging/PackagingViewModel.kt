@@ -8,8 +8,10 @@ import co.touchlab.kermit.Logger
 import com.android.apksig.ApkSigner
 import com.android.apksig.ApkVerifier
 import com.android.apksig.KeyConfig
+import com.android.ddmlib.AdbCommandRejectedException
 import com.android.ddmlib.AndroidDebugBridge
 import com.android.ddmlib.IDevice
+import com.android.ddmlib.InstallException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -156,10 +158,6 @@ class PackagingViewModel() {
             }
             val bridge = AndroidDebugBridge.createBridge(adbLocation.absolutePath, false, 10000, TimeUnit.MILLISECONDS)
 
-            if(!bridge.isConnected) {
-                throw Exception("Failed to connect to Android Debug Bridge. Ensure adb is installed.")
-            }
-
             // Wait up to 10 seconds for devices to appear
             var attempts = 0
             var devices: Array<IDevice> = emptyArray()
@@ -168,6 +166,12 @@ class PackagingViewModel() {
                 if (devices.isNotEmpty()) break
                 delay(500)
                 attempts++
+            }
+
+            snackbarManager?.showMessage("Device(s) found: ${devices.joinToString { it.serialNumber }}")
+
+            if(!bridge.isConnected) {
+                throw Exception("Failed to connect to Android Debug Bridge. Ensure adb is installed.")
             }
 
             if (devices.isEmpty()) {
@@ -179,8 +183,12 @@ class PackagingViewModel() {
                 try {
                     // The second param 'true' means reinstall if app exists
                     device.installPackage(apk.absolutePath, true)
-                } catch (e: Exception) {
-                    throw Exception("Failed to install APK on device ${device.serialNumber}: ${e.message}", e)
+                } catch (ie: InstallException) {
+                    if(ie.cause is AdbCommandRejectedException && !(ie.cause as AdbCommandRejectedException).isDeviceOffline) {
+                        snackbarManager?.showMessage(
+                            "Check for a confirmation dialog on the device and try again."
+                        )
+                    } else throw Exception("Failed to install APK on device ${device.serialNumber}: ${ie.message}", ie.cause ?: ie)
                 }
             }
             // TODO launch the app (on all devices). this requires the package name.

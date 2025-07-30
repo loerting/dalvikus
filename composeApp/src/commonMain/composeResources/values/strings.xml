@@ -65,12 +65,21 @@
     <string name="signature_key_password">Password for key alias "%1$s"</string>
     <string name="fab_create_keystore">Create keystore with keytool</string>
 
+    <string name="signature_validity">Signature validity</string>
+    <string name="signer_title">%1$s Signer(s)</string>
+    <string name="signer_index">Signer %1$d</string>
+    <string name="signer_subject">Subject: %1$s</string>
+    <string name="signer_issuer">Issuer: %1$s</string>
+    <string name="signer_sha256">SHA-256: %1$s</string>
+
+
+
     <string name="snack_failed">Error performing operation: %1$s</string>
     <string name="snack_success">Successfully completed operation.</string>
     <string name="snack_assemble_error">Unable to assemble due to error(s) in line(s) %1$s</string>
 
     <string name="deploy">Deploy</string>
-    <string name="sign_deploy_app">Sign and deploy %1$s via adb.</string>
+    <string name="sign_deploy_app">Sign and deploy %1$s</string>
     <string name="close">Close</string>
     <string name="select">Select</string>
     <string name="cancel">Cancel</string>

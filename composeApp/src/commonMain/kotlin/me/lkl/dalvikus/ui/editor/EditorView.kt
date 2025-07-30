@@ -16,8 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -39,22 +42,23 @@ import me.lkl.dalvikus.tabs.SmaliTab
 import me.lkl.dalvikus.theme.LocalThemeIsDark
 import me.lkl.dalvikus.ui.editor.suggestions.AssistPopup
 import me.lkl.dalvikus.ui.editor.suggestions.ErrorPopup
+import me.lkl.dalvikus.ui.editor.suggestions.HexPopup
 import me.lkl.dalvikus.ui.editor.suggestions.LookupPopup
 import org.jetbrains.compose.resources.stringResource
 
 data class LayoutSnapshot(val layout: TextLayoutResult, val textFieldValue: TextFieldValue)
 
 @Composable
-fun EditorView(editable: TabElement) {
+fun EditorView(tabElement: TabElement) {
 
 
     val isDarkState: MutableState<Boolean> = LocalThemeIsDark.current
 
-    val viewModel = remember(editable) { EditorViewModel(editable) }
+    val viewModel = remember(tabElement) { EditorViewModel(tabElement) }
     viewModel.highlightColors = defaultCodeHighlightColors(isDarkState.value)
 
 
-    if (!viewModel.editable) {
+    if (!viewModel.openable) {
         EditorCannotOpen()
         return
     }
@@ -65,9 +69,9 @@ fun EditorView(editable: TabElement) {
 
     val coroutine = rememberCoroutineScope()
 
-    var firstLoad by remember(editable) { mutableStateOf(true) }
+    var firstLoad by remember(tabElement) { mutableStateOf(true) }
 
-    LaunchedEffect(editable) {
+    LaunchedEffect(tabElement) {
         if (firstLoad) {
             viewModel.loadCode()
             firstLoad = false
@@ -105,8 +109,11 @@ fun EditorView(editable: TabElement) {
 
     val vertState = rememberScrollState()
     val horState = rememberScrollState()
+    val focusRequester = remember { FocusRequester() }
 
-    //Box(modifier = Modifier.fillMaxSize().then(viewModel.popupKeyEvents)) {
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -164,6 +171,7 @@ fun EditorView(editable: TabElement) {
                         },
                         modifier = Modifier
                             .fillMaxSize()
+                            .focusRequester(focusRequester)
                             .handleFocusedCtrlShortcuts(
                                 enabled = viewModel.editable,
                                 mapOf(shortcutSave to { viewModel.saveCode(coroutine) })),
@@ -196,7 +204,7 @@ fun EditorView(editable: TabElement) {
                             }
                         }
                     )
-                    if(editable is SmaliTab) {
+                    if(tabElement is SmaliTab) {
                         AssistPopup(
                             assistPopupState = viewModel.assistPopupState,
                             viewModel = viewModel,
@@ -204,21 +212,21 @@ fun EditorView(editable: TabElement) {
                             textStyle = textStyle,
                             highlightColors = viewModel.highlightColors
                         )
+                        val start = viewModel.internalContent.selection.start
+                        val end = viewModel.internalContent.selection.end
+
                         // these are annotated in the smali highlighter
-                        viewModel.highlightedText.getStringAnnotations(
-                            tag = "error",
-                            start = viewModel.internalContent.selection.start,
-                            end = viewModel.internalContent.selection.end
-                        ).forEach { annotation ->
-                            ErrorPopup(lastLayoutSnapshot, annotation, viewModel, textStyle)
+                        listOf("error", "class", "hex").forEach { tag ->
+                            viewModel.highlightedText.getStringAnnotations(tag, start, end).firstOrNull()?.let {
+                                when (tag) {
+                                    "error" -> ErrorPopup(lastLayoutSnapshot, it, viewModel, textStyle)
+                                    "class" -> LookupPopup(tabElement, lastLayoutSnapshot, it, viewModel, textStyle)
+                                    "hex" -> HexPopup(it, textStyle, lastLayoutSnapshot, viewModel)
+                                }
+                                return@forEach // stops after showing the first popup
+                            }
                         }
-                        viewModel.highlightedText.getStringAnnotations(
-                            tag = "class",
-                            start = viewModel.internalContent.selection.start,
-                            end = viewModel.internalContent.selection.end
-                        ).forEach { annotation ->
-                            LookupPopup(editable, lastLayoutSnapshot, annotation, viewModel, textStyle)
-                        }
+
                     }
                 }
 

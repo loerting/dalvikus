@@ -11,7 +11,7 @@ abstract class ContentProvider {
     abstract suspend fun loadContent()
 
     open suspend fun updateContent(newContent: ByteArray) {
-        if(!isEditableTextually()) throw IllegalArgumentException("ContentProvider is not editable.")
+        if(!isEditable()) throw IllegalArgumentException("ContentProvider is not editable.")
         _contentFlow.value = newContent
     }
 
@@ -20,5 +20,6 @@ abstract class ContentProvider {
     abstract fun getSourcePath(): String?
 
     abstract fun getSizeEstimate(): Long
-    abstract fun isEditableTextually(): Boolean
+    abstract fun isDisplayable(): Boolean
+    abstract fun isEditable(): Boolean
 }

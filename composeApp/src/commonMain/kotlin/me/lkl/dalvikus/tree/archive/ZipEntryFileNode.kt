@@ -39,7 +39,11 @@ class ZipEntryFileNode(
         return zipRoot.readEntry(fullPath).size.toLong()
     }
 
-    override fun isEditableTextually(): Boolean {
+    override fun isDisplayable(): Boolean {
+        return isEditable()
+    }
+
+    override fun isEditable(): Boolean {
         return name.endsWith(".smali") || name.endsWith(".txt") || name.endsWith(".java") || guessIfEditableTextually(zipRoot.readEntry(fullPath).inputStream())
     }
 }

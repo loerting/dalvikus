@@ -38,8 +38,10 @@ class EditorViewModel(private val tab: TabElement) {
 
     val assistPopupState = mutableStateOf(AssistPopupState())
 
-    var editable by
-    mutableStateOf(tab.contentProvider.getSizeEstimate() < maxEditorFileSize && tab.contentProvider.isEditableTextually())
+    val editable by mutableStateOf(tab.contentProvider.isEditable())
+
+    var openable by
+    mutableStateOf(tab.contentProvider.getSizeEstimate() < maxEditorFileSize && tab.contentProvider.isDisplayable())
         private set
 
     val popupKeyEvents = Modifier.onPreviewKeyEvent { event ->
@@ -86,7 +88,7 @@ class EditorViewModel(private val tab: TabElement) {
             internalContent = internalContent.copy(text = tab.contentProvider.contentFlow.value.decodeToString())
 
             if (internalContent.text.lines().size > maxEditorLines) {
-                editable = false
+                openable = false
                 return@withContext
             }
 

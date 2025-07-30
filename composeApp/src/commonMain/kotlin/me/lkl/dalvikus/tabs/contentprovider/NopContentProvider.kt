@@ -7,5 +7,6 @@ class NopContentProvider : ContentProvider() {
     override fun getSourcePath(): String? = null
     override fun getSizeEstimate(): Long = 0L
 
-    override fun isEditableTextually(): Boolean = false
+    override fun isDisplayable(): Boolean = false
+    override fun isEditable(): Boolean = false
 }

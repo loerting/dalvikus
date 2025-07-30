@@ -40,6 +40,14 @@ fun highlightSmaliCode(code: String, colors: CodeHighlightColors): AnnotatedStri
                 val clazz = token.text.removePrefix("L").removeSuffix(";")
                 addStringAnnotation("class", clazz, start, end)
             }
+            else if (token.type in listOf(
+                    smaliParser.INTEGER_LITERAL,
+                    smaliParser.POSITIVE_INTEGER_LITERAL,
+                    smaliParser.SHORT_LITERAL,
+                    smaliParser.LONG_LITERAL,
+                ) && token.text.startsWith("0x") || token.text.startsWith("-0x")) {
+                addStringAnnotation("hex", token.text, start, end)
+            }
 
             if (token in parser.errorTokens) {
                 addStringAnnotation("error", parser.errorTokens[token]!!, start, end)

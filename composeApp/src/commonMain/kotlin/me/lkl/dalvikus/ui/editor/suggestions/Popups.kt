@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.outlined.ArrowCircleRight
@@ -160,5 +161,68 @@ fun LookupPopup(
             lookupText,
             textStyle
         )
+    )
+}
+
+@Composable
+fun HexPopup(
+    annotation: AnnotatedString.Range<String>,
+    textStyle: TextStyle,
+    lastLayoutSnapshot: LayoutSnapshot?,
+    viewModel: EditorViewModel
+) {
+    val rawHex = annotation.item.trim()
+    val isNegative = rawHex.startsWith("-")
+    val cleanedHex = rawHex.removePrefix("-").removePrefix("0x").removePrefix("0X")
+
+    val infoText = try {
+        val unsignedValue = cleanedHex.toBigInteger(16)
+        val signedValue = if (isNegative) -unsignedValue else unsignedValue
+
+        when (cleanedHex.length) {
+            8 -> {
+                // 32-bit — IEEE-754 float
+                val intBits = signedValue.toInt()
+                val floatValue = Float.fromBits(intBits)
+                "$signedValue (base 10) = $floatValue (float)"
+            }
+            16 -> {
+                // 64-bit — IEEE-754 double
+                val longBits = signedValue.toLong()
+                val doubleValue = Double.fromBits(longBits)
+                "$signedValue (base 10) = $doubleValue (double)"
+            }
+            else -> {
+                "$signedValue (base 10)"
+            }
+        }
+    } catch (e: Exception) {
+        "Invalid hex: $rawHex"
+    }
+
+    EditorAnnotationPopup(
+        lastLayoutSnapshot, annotation, viewModel, {
+            Surface(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(1.dp, MaterialTheme.colorScheme.secondary, RoundedCornerShape(4.dp)),
+                shadowElevation = 4.dp,
+                shape = RoundedCornerShape(4.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SelectionContainer {
+                        Text(
+                            text = infoText,
+                            style = textStyle.copy(color = MaterialTheme.colorScheme.secondary),
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                }
+            }
+        },
+        getTextWidth(infoText, textStyle)
     )
 }

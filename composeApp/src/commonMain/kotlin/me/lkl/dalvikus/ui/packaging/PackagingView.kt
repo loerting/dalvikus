@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.outlined.Android
@@ -31,6 +32,8 @@ import me.lkl.dalvikus.util.PasswordField
 import org.jetbrains.compose.resources.stringResource
 import settingPadHor
 import settingPadVer
+import java.security.MessageDigest
+import java.security.cert.X509Certificate
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -125,99 +128,86 @@ private fun SignInfoCards(
     val loadingApk = remember { mutableStateOf<ZipNode?>(null) }
     val scope = rememberCoroutineScope()
 
-
     val listState = rememberLazyListState()
 
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             state = listState
         ) {
             apks.forEach { apk ->
-
                 item {
-                    DefaultCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
+                    CollapseCard(
+                        title = apk.name,
+                        icon = Icons.Outlined.Android,
+                        defaultState = false
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 16.dp, horizontal = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Android,
-                                contentDescription = null,
-                                modifier = Modifier.size(32.dp),
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Column(
-                                modifier = Modifier.weight(1f),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            SignatureStatus(packagingViewModel, apk, loadingApk)
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                                horizontalArrangement = Arrangement.End
                             ) {
-                                Text(
-                                    text = apk.name,
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                                SignatureStatus(packagingViewModel, apk, loadingApk)
-                            }
-                            if (loadingApk.value == apk) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(32.dp),
-                                    strokeWidth = 3.dp,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            } else {
-                                IconButton({
-                                    loadingApk.value = apk
-                                    scope.launch {
-                                        packagingViewModel.signApk(
-                                            keystoreInfo = keystoreInfo,
-                                            apk = apk.zipFile,
-                                            outputApk = apk.zipFile,
-                                            onError = { throwable ->
-                                                loadingApk.value = null
-                                                snackbarManager?.showError(throwable)
-                                            },
-                                            onSuccess = {
-                                                loadingApk.value = null
-                                                snackbarManager?.showSuccess()
-                                            }
+                                if (loadingApk.value == apk) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp),
+                                        strokeWidth = 2.dp,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                } else {
+                                    IconButton(onClick = {
+                                        loadingApk.value = apk
+                                        scope.launch {
+                                            packagingViewModel.signApk(
+                                                keystoreInfo = keystoreInfo,
+                                                apk = apk.zipFile,
+                                                outputApk = apk.zipFile,
+                                                onError = { throwable ->
+                                                    loadingApk.value = null
+                                                    snackbarManager?.showError(throwable)
+                                                },
+                                                onSuccess = {
+                                                    loadingApk.value = null
+                                                    snackbarManager?.showSuccess()
+                                                }
+                                            )
+                                        }
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.Draw,
+                                            contentDescription = stringResource(Res.string.sign)
                                         )
                                     }
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Draw,
-                                        contentDescription = stringResource(Res.string.sign)
-                                    )
-                                }
-                                IconButton({
-                                    loadingApk.value = apk
-                                    scope.launch {
-                                        packagingViewModel.deployApk(
-                                            apk = apk.zipFile,
-                                            onError = { throwable ->
-                                                loadingApk.value = null
-                                                snackbarManager?.showError(throwable)
-                                            },
-                                            onSuccess = {
-                                                loadingApk.value = null
-                                                snackbarManager?.showSuccess()
-                                            }
+
+                                    IconButton(onClick = {
+                                        loadingApk.value = apk
+                                        scope.launch {
+                                            packagingViewModel.deployApk(
+                                                apk = apk.zipFile,
+                                                onError = { throwable ->
+                                                    loadingApk.value = null
+                                                    snackbarManager?.showError(throwable)
+                                                },
+                                                onSuccess = {
+                                                    loadingApk.value = null
+                                                    snackbarManager?.showSuccess()
+                                                }
+                                            )
+                                        }
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.InstallMobile,
+                                            contentDescription = stringResource(Res.string.deploy)
                                         )
                                     }
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.InstallMobile,
-                                        contentDescription = stringResource(Res.string.deploy)
-                                    )
                                 }
                             }
                         }
-
                     }
                 }
             }
@@ -233,6 +223,7 @@ private fun SignInfoCards(
     }
 }
 
+
 @Composable
 fun SignatureStatus(
     packagingViewModel: PackagingViewModel,
@@ -242,28 +233,48 @@ fun SignatureStatus(
     var signatureState by remember(apk) { mutableStateOf<ApkVerifier.Result?>(null) }
 
     LaunchedEffect(apk, loadingApk) {
-        if (loadingApk.value != null) return@LaunchedEffect // some apk is being signed.
+        if (loadingApk.value != null) return@LaunchedEffect
         signatureState = null
         signatureState = packagingViewModel.checkSignature(apk.zipFile)
     }
 
     if (signatureState != null) {
+        val result = signatureState!!
         val levels = listOf(
-            signatureState!!.isVerifiedUsingV1Scheme,
-            signatureState!!.isVerifiedUsingV2Scheme,
-            signatureState!!.isVerifiedUsingV3Scheme,
-            signatureState!!.isVerifiedUsingV4Scheme
+            result.isVerifiedUsingV1Scheme,
+            result.isVerifiedUsingV2Scheme,
+            result.isVerifiedUsingV3Scheme || result.isVerifiedUsingV31Scheme,
+            result.isVerifiedUsingV4Scheme
         )
-        val texts = listOf("V1", "V2", "V3", "V4")
-        MultiChoiceSegmentedButtonRow {
-            texts.forEachIndexed { index, label ->
-                SegmentedButton(
-                    shape = SegmentedButtonDefaults.itemShape(index = index, count = texts.size),
-                    onCheckedChange = {},
-                    checked = levels[index],
-                ) {
-                    Text(label)
+        val texts = listOf("V1", "V2", "V3/3.1", "V4")
+
+        Column {
+            Text(stringResource(Res.string.signature_validity), style = MaterialTheme.typography.titleSmall)
+
+            MultiChoiceSegmentedButtonRow(
+                modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+            ) {
+                texts.forEachIndexed { index, label ->
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(index = index, count = texts.size),
+                        onCheckedChange = {},
+                        checked = levels[index],
+                    ) {
+                        Text(label)
+                    }
                 }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            SignatureSchemeSection("V1", result.v1SchemeSigners.mapNotNull { it.certificate })
+            SignatureSchemeSection("V2", result.v2SchemeSigners.mapNotNull { it.certificate })
+            SignatureSchemeSection("V3", result.v3SchemeSigners.mapNotNull { it.certificate })
+            SignatureSchemeSection("V3.1", result.v31SchemeSigners.mapNotNull { it.certificate })
+            SignatureSchemeSection("V4", result.v4SchemeSigners.mapNotNull { it.certificate })
+
+            result.sourceStampInfo?.certificate?.let {
+                SignatureSchemeSection("SourceStamp", listOf(it))
             }
         }
     } else {
@@ -273,4 +284,50 @@ fun SignatureStatus(
             color = MaterialTheme.colorScheme.primary
         )
     }
+}
+
+@Composable
+fun SignatureSchemeSection(title: String, certs: List<X509Certificate>) {
+    if (certs.isEmpty()) return
+
+    Column(modifier = Modifier.padding(vertical = 4.dp)) {
+        Text(
+            text = stringResource(Res.string.signer_title, title),
+            style = MaterialTheme.typography.titleSmall
+        )
+
+        certs.forEachIndexed { index, cert ->
+            val subject = cert.subjectX500Principal.name
+            val issuer = cert.issuerX500Principal.name
+            val sha256 = cert.encoded.sha256Fingerprint()
+
+            SelectionContainer {
+                Column(modifier = Modifier.padding(start = 8.dp, top = 4.dp)) {
+                    Text(
+                        text = stringResource(Res.string.signer_index, index + 1),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        text = stringResource(Res.string.signer_subject, subject),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        text = stringResource(Res.string.signer_issuer, issuer),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        text = stringResource(Res.string.signer_sha256, sha256),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+
+fun ByteArray.sha256Fingerprint(): String {
+    val digest = MessageDigest.getInstance("SHA-256").digest(this)
+    return digest.joinToString(":") { "%02X".format(it) }
 }

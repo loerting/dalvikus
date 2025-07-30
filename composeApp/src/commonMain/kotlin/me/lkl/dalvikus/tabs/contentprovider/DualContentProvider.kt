@@ -26,7 +26,11 @@ open class DualContentProvider(val contentProvider: ContentProvider, val content
         return if(firstContentProvider) contentProvider.getSizeEstimate() else contentProvider2.getSizeEstimate()
     }
 
-    override fun isEditableTextually(): Boolean {
-        return if(firstContentProvider) contentProvider.isEditableTextually() else contentProvider2.isEditableTextually()
+    override fun isDisplayable(): Boolean {
+        return if(firstContentProvider) contentProvider.isDisplayable() else contentProvider2.isDisplayable()
+    }
+
+    override fun isEditable(): Boolean {
+        return if(firstContentProvider) contentProvider.isEditable() else contentProvider2.isEditable()
     }
 }

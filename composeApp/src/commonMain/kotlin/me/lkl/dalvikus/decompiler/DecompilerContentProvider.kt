@@ -18,6 +18,6 @@ class DecompilerContentProvider(private val dexEntryClassNode: DexEntryClassNode
         )
     }
 
-    override fun isEditableTextually(): Boolean = true
-
+    override fun isDisplayable(): Boolean = true
+    override fun isEditable(): Boolean = false
 }

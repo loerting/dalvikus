@@ -1,6 +1,7 @@
 package me.lkl.dalvikus.tree.dex
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FolderSpecial
 import androidx.compose.material.icons.outlined.FolderSpecial
 import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.tree.Node
@@ -13,7 +14,7 @@ open class DexEntryPackageNode(
     override val parent: ContainerNode?
 ) : ContainerNode() {
 
-    override val icon = Icons.Outlined.FolderSpecial
+    override val icon = Icons.Default.FolderSpecial
     override val editableContent = false
     override val changesWithChildren = false
 
