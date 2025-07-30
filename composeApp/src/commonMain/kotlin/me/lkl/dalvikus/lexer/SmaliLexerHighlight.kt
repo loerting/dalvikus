@@ -79,7 +79,9 @@ fun getSmaliTokenStyle(tokenType: Int, colors: CodeHighlightColors): SpanStyle? 
     val weight = when {
         tokenName == "ARROW" -> FontWeight.Bold
         tokenName.startsWith("INSTRUCTION_") -> FontWeight.Medium
-        tokenName == "REGISTER" -> FontWeight.Medium
+        tokenName == "ACCESS_SPEC" -> FontWeight.SemiBold
+        tokenName.endsWith("_DIRECTIVE") -> FontWeight.SemiBold
+
         else -> FontWeight.Normal
     }
 

@@ -5,7 +5,7 @@ import me.lkl.dalvikus.tabs.CodeTab
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.tree.FileNode
-import me.lkl.dalvikus.ui.tree.IconForFileExtension
+import me.lkl.dalvikus.theme.getFileExtensionMeta
 import me.lkl.dalvikus.util.guessIfEditableTextually
 import java.io.File
 
@@ -15,7 +15,7 @@ class FileSystemFileNode(
     override val parent: ContainerNode?
 ) : FileNode() {
 
-    override val icon: ImageVector = IconForFileExtension(name)
+    override val icon: ImageVector = getFileExtensionMeta(name).icon
     override val editableContent: Boolean = true
 
     override suspend fun getContent(): ByteArray {

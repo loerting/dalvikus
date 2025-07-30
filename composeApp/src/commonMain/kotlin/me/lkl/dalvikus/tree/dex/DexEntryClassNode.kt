@@ -25,8 +25,8 @@ import java.io.BufferedWriter
 import java.io.StringWriter
 
 class DexEntryClassNode(
-    override val name: String,
-    private val fullPath: String, // com/example/MyClass
+    override var name: String,
+    private var fullPath: String, // com/example/MyClass
     private val root: DexFileNode,
     override val parent: ContainerNode?
 ) : FileNode() {
@@ -34,7 +34,7 @@ class DexEntryClassNode(
     override val icon = Icons.Outlined.DataObject
     override val editableContent = true
 
-    suspend fun getClassDef(): ClassDef = root.readEntry(fullPath)
+    fun getClassDef(): ClassDef = root.readEntry(fullPath)
 
     override suspend fun getContent(): ByteArray {
         val classDefinition = ClassDefinition(BaksmaliOptions(), getClassDef())
@@ -88,6 +88,19 @@ class DexEntryClassNode(
         val classDef = dexGen.smali_file()
 
         root.updateEntry(path = fullPath, newClassDef = classDef)
+        reflectChanges(classDef)
+    }
+
+    private suspend fun reflectChanges(newClassDef: ClassDef) {
+        // Update the name and fullPath based on the classDef type
+        val newType = newClassDef.type.removePrefix("L").removeSuffix(";")
+        val newName = newType.substringAfterLast('/')
+        if (newName != name) {
+            name = newName
+            fullPath = newType
+            // TODO actually we would have to update the parent as well, but currently it is not important.
+        }
+        notifyChanged()
     }
 
     override suspend fun notifyChanged() {
@@ -100,7 +113,6 @@ class DexEntryClassNode(
 
     override suspend fun createTab(): TabElement {
         return SmaliTab(
-            classDef = getClassDef(),
             tabId = fullPath,
             dexEntryClassNode = this
         )

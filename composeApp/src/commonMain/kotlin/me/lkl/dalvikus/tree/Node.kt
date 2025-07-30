@@ -8,8 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import me.lkl.dalvikus.tabs.contentprovider.ContentProvider
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.root.HiddenRoot
-import me.lkl.dalvikus.ui.tree.ColorForFileExtension
-import me.lkl.dalvikus.util.guessIfEditableTextually
+import me.lkl.dalvikus.theme.getFileExtensionMeta
 
 sealed interface Node {
     val name: String
@@ -21,7 +20,7 @@ sealed interface Node {
         get() = parent == null
 
     val color: Color?
-        get() = ColorForFileExtension(name) // Default color, can be overridden
+        get() = getFileExtensionMeta(name).color // Default color, can be overridden
 
     suspend fun notifyChanged()
 }

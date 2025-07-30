@@ -5,7 +5,7 @@ import me.lkl.dalvikus.tree.Node
 import me.lkl.dalvikus.tree.backing.ZipBacking
 import me.lkl.dalvikus.tree.buildChildNodes
 import me.lkl.dalvikus.tree.dex.DexFileNode
-import me.lkl.dalvikus.ui.tree.IconForFileExtension
+import me.lkl.dalvikus.theme.getFileExtensionMeta
 import java.io.File
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -19,7 +19,7 @@ class ZipNode(
 
     val entries = mutableMapOf<String, ByteArray>()
 
-    override val icon = IconForFileExtension(name)
+    override val icon = getFileExtensionMeta(name).icon
     override val changesWithChildren = true
     override val editableContent = false
 

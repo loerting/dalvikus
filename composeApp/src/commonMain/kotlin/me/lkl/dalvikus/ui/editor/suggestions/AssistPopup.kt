@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -17,7 +15,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -28,6 +25,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
+import me.lkl.dalvikus.theme.getSuggestionTypeIcon
 import me.lkl.dalvikus.ui.editor.EditorViewModel
 import me.lkl.dalvikus.ui.editor.LayoutSnapshot
 import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
@@ -137,7 +135,7 @@ fun AssistPopup(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            IconForSuggestion(suggestion.type), contentDescription = null,
+                            getSuggestionTypeIcon(suggestion.type), contentDescription = null,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -172,12 +170,3 @@ fun AssistPopup(
     }
 }
 
-fun IconForSuggestion(type: SuggestionType): ImageVector {
-    return when (type) {
-        SuggestionType.Instruction -> Icons.Default.Code
-        SuggestionType.Directive -> Icons.Default.Directions
-        SuggestionType.Register -> Icons.Default.Memory
-        SuggestionType.Access -> Icons.Default.Api
-        SuggestionType.LabelOrType -> Icons.Default.Class
-    }
-}

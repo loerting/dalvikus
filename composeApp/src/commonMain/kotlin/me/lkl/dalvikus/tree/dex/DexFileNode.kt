@@ -71,12 +71,14 @@ class DexFileNode(
         return memoryDataStore.data
     }
 
-    suspend fun readEntry(path: String): ClassDef {
+    fun readEntry(path: String): ClassDef {
         return entries[path] ?: error("Class not found: $path")
     }
 
     suspend fun updateEntry(path: String, newClassDef: ClassDef) {
         entries[path] = newClassDef
         rebuild()
+        // to ensure e.g. class name changes are reflected in the UI.
+        loadChildren()
     }
 }

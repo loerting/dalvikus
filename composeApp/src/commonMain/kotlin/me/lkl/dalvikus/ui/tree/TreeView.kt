@@ -6,9 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Article
-import androidx.compose.material.icons.filled.Android
-import androidx.compose.material.icons.filled.FolderZip
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -18,12 +15,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.launch
-import me.lkl.dalvikus.theme.*
 import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.tree.Node
 import me.lkl.dalvikus.tree.root.HiddenRoot
@@ -40,29 +35,24 @@ fun TreeView(
     val scrollState = rememberLazyListState()
 
     val expandedState = remember { mutableStateMapOf<Node, Boolean>() }
+
     val rootChildren by root.childrenFlow.collectAsState()
+    val visibleNodes = mutableListOf<Pair<Node, Int>>()
 
-    val visibleNodes by remember(rootChildren, expandedState) {
-        derivedStateOf {
-            val result = mutableListOf<Pair<Node, Int>>()
+    @Composable
+    fun visit(node: Node, indent: Int) {
+        visibleNodes.add(node to indent)
 
-            fun visit(node: Node, indent: Int) {
-                result.add(node to indent)
-
-                val isExpanded = expandedState[node] == true
-                if (node is ContainerNode && isExpanded) {
-                    val children = node.childrenFlow.value
-                    children.forEach { child ->
-                        visit(child, indent + if (node.isRoot) 0 else 1)
-                    }
-                }
+        val isExpanded = expandedState[node] == true
+        if (node is ContainerNode && isExpanded) {
+            val children = node.childrenFlow.collectAsState()
+            children.value.forEach { child ->
+                visit(child, indent + if (node.isRoot) 0 else 1)
             }
-
-            rootChildren.forEach { visit(it, 0) }
-
-            result
         }
     }
+
+    rootChildren.forEach { visit(it, 0) }
 
     LaunchedEffect(scrollAndExpandSelection.value, selectedElement, visibleNodes) {
         if (scrollAndExpandSelection.value) {
@@ -191,39 +181,3 @@ private fun TreeRow(
 }
 
 
-fun IconForFileExtension(fileName: String): ImageVector {
-    val extension = fileName.substringAfterLast('.', "").lowercase()
-
-    return when (extension) {
-        "txt", "md", "log" -> Icons.Outlined.Description
-        "jpg", "jpeg", "png", "gif", "bmp", "webp" -> Icons.Outlined.Image
-        "mp3", "wav", "ogg", "flac" -> Icons.Outlined.MusicNote
-        "mp4", "avi", "mov", "mkv", "webm" -> Icons.Outlined.Movie
-        "pdf" -> Icons.Outlined.PictureAsPdf
-        "zip", "jar" -> Icons.Filled.FolderZip
-        "doc", "docx" -> Icons.AutoMirrored.Outlined.Article
-        "xls", "xlsx" -> Icons.Outlined.TableChart
-        "ppt", "pptx" -> Icons.Outlined.Slideshow
-        "html", "xml", "json", "yaml", "yml" -> Icons.Outlined.Code
-        "apk", "apks", "aab", "xapk", "dex", "odex" -> Icons.Filled.Android
-        else -> Icons.Outlined.Description
-    }
-}
-
-fun ColorForFileExtension(fileName: String): Color? {
-    val extension = fileName.substringAfterLast('.', "").lowercase()
-
-    return when (extension) {
-        "apk", "dex" -> AndroidGreen
-        "zip", "rar", "7z", "tar", "gz" -> ArchiveGray
-        "html", "xml", "json", "yaml", "yml" -> CodeBlue
-        "jpg", "jpeg", "png", "gif", "bmp", "webp", "svg" -> ImagePurple
-        "mp3", "wav", "flac", "aac", "ogg" -> AudioTeal
-        "mp4", "avi", "mkv", "mov", "webm" -> VideoRed
-        "pdf" -> PdfRed
-        "doc", "docx" -> WordBlue
-        "xls", "xlsx" -> ExcelGreen
-        "ppt", "pptx" -> PowerPointOrange
-        else -> null
-    }
-}

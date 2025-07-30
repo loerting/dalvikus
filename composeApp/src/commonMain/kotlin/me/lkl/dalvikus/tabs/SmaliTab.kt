@@ -22,7 +22,6 @@ import me.lkl.dalvikus.tabs.contentprovider.DualContentProvider
 import me.lkl.dalvikus.tree.dex.DexEntryClassNode
 
 class SmaliTab(
-    val classDef: ClassDef,
     override val tabId: String,
     val dexEntryClassNode: DexEntryClassNode
 ) : TabElement {
@@ -45,6 +44,6 @@ class SmaliTab(
     }
 
     @Composable
-    override fun tabName(): String = classDef.type.removeSurrounding("L", ";").substringAfterLast('/')
+    override fun tabName(): String = dexEntryClassNode.getClassDef().type.removeSurrounding("L", ";").substringAfterLast('/')
     override val tabIcon: ImageVector = Icons.Outlined.DataObject
 }

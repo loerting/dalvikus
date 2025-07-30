@@ -1,6 +1,7 @@
 package me.lkl.dalvikus.theme
 
 import androidx.compose.ui.graphics.Color
+import com.materialkolor.MaterialKolors
 
 // inspired by https://lospec.com/palette-list/our-wicked-sweet-star-cruiser
 
