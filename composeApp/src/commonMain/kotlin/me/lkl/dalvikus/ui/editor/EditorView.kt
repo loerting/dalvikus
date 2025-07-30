@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SaveAs
+import androidx.compose.material.icons.outlined.SentimentDissatisfied
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -22,9 +23,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
+import dalvikus.composeapp.generated.resources.editor_cannot_open
 import dalvikus.composeapp.generated.resources.fab_save_and_assemble
 import kotlinx.coroutines.delay
 import me.lkl.dalvikus.tabs.TabElement
@@ -32,21 +35,29 @@ import me.lkl.dalvikus.theme.JetBrainsMono
 import me.lkl.dalvikus.ui.editor.highlight.defaultCodeHighlightColors
 import me.lkl.dalvikus.util.handleFocusedCtrlShortcuts
 import me.lkl.dalvikus.settings.shortcutSave
+import me.lkl.dalvikus.tabs.SmaliTab
 import me.lkl.dalvikus.theme.LocalThemeIsDark
 import me.lkl.dalvikus.ui.editor.suggestions.AssistPopup
 import me.lkl.dalvikus.ui.editor.suggestions.ErrorPopup
+import me.lkl.dalvikus.ui.editor.suggestions.LookupPopup
 import org.jetbrains.compose.resources.stringResource
 
 data class LayoutSnapshot(val layout: TextLayoutResult, val textFieldValue: TextFieldValue)
 
-const val maxEditorFileSize = 128 * 1024 // 128 KiB
-
 @Composable
-fun EditorScreen(editable: TabElement) {
+fun EditorView(editable: TabElement) {
+
+
     val isDarkState: MutableState<Boolean> = LocalThemeIsDark.current
 
     val viewModel = remember(editable) { EditorViewModel(editable) }
     viewModel.highlightColors = defaultCodeHighlightColors(isDarkState.value)
+
+
+    if (!viewModel.editable) {
+        EditorCannotOpen()
+        return
+    }
 
     LaunchedEffect(isDarkState.value) {
         viewModel.refreshHighlight()
@@ -136,14 +147,13 @@ fun EditorScreen(editable: TabElement) {
             ) {
                 Box(
                     modifier = Modifier
-                        .verticalScroll(vertState)
                         .horizontalScroll(horState)
                         .fillMaxSize()
                         .padding(8.dp)
                 ) {
                     BasicTextField(
                         value = viewModel.internalContent,
-                        readOnly = !viewModel.isEditable(),
+                        readOnly = !viewModel.editable,
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.None,
                             keyboardType = KeyboardType.Ascii
@@ -153,7 +163,9 @@ fun EditorScreen(editable: TabElement) {
                         },
                         modifier = Modifier
                             .fillMaxSize()
-                            .handleFocusedCtrlShortcuts(enabled = viewModel.isEditable(),
+                            .verticalScroll(vertState)
+                            .handleFocusedCtrlShortcuts(
+                                enabled = viewModel.editable,
                                 mapOf(shortcutSave to { viewModel.saveCode(coroutine) })),
 
                         textStyle = textStyle.copy(
@@ -184,19 +196,29 @@ fun EditorScreen(editable: TabElement) {
                             }
                         }
                     )
-                    AssistPopup(
-                        assistPopupState = viewModel.assistPopupState,
-                        viewModel = viewModel,
-                        lastLayoutSnapshot = lastLayoutSnapshot,
-                        textStyle = textStyle,
-                        highlightColors = viewModel.highlightColors
-                    )
-                    viewModel.highlightedText.getStringAnnotations(
-                        tag = "error",
-                        start = viewModel.internalContent.selection.start,
-                        end = viewModel.internalContent.selection.end
-                    ).forEach { annotation ->
-                        ErrorPopup(lastLayoutSnapshot, annotation, viewModel, textStyle)
+                    if(editable is SmaliTab) {
+                        AssistPopup(
+                            assistPopupState = viewModel.assistPopupState,
+                            viewModel = viewModel,
+                            lastLayoutSnapshot = lastLayoutSnapshot,
+                            textStyle = textStyle,
+                            highlightColors = viewModel.highlightColors
+                        )
+                        // these are annotated in the smali highlighter
+                        viewModel.highlightedText.getStringAnnotations(
+                            tag = "error",
+                            start = viewModel.internalContent.selection.start,
+                            end = viewModel.internalContent.selection.end
+                        ).forEach { annotation ->
+                            ErrorPopup(lastLayoutSnapshot, annotation, viewModel, textStyle)
+                        }
+                        viewModel.highlightedText.getStringAnnotations(
+                            tag = "class",
+                            start = viewModel.internalContent.selection.start,
+                            end = viewModel.internalContent.selection.end
+                        ).forEach { annotation ->
+                            LookupPopup(editable, lastLayoutSnapshot, annotation, viewModel, textStyle)
+                        }
                     }
                 }
 
@@ -220,3 +242,25 @@ fun EditorScreen(editable: TabElement) {
     }
 }
 
+@Composable
+fun EditorCannotOpen() {
+    Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
+        Column (
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.SentimentDissatisfied,
+                tint = MaterialTheme.colorScheme.error,
+                contentDescription = stringResource(Res.string.editor_cannot_open),
+                modifier = Modifier.size(48.dp)
+            )
+            Text(
+                stringResource(Res.string.editor_cannot_open),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Companion.Center
+            )
+        }
+    }
+}

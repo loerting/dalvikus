@@ -36,6 +36,11 @@ fun highlightSmaliCode(code: String, colors: CodeHighlightColors): AnnotatedStri
             val start = token.startIndex
             val end = token.stopIndex + 1
 
+            if (token.type == smaliParser.CLASS_DESCRIPTOR) {
+                val clazz = token.text.removePrefix("L").removeSuffix(";")
+                addStringAnnotation("class", clazz, start, end)
+            }
+
             if (token in parser.errorTokens) {
                 addStringAnnotation("error", parser.errorTokens[token]!!, start, end)
                 addStyle(
@@ -73,6 +78,7 @@ fun getSmaliTokenStyle(tokenType: Int, colors: CodeHighlightColors): SpanStyle? 
         tokenName.startsWith("INSTRUCTION_") -> colors.senary
         tokenName in listOf("COLON", "COMMA", "OPEN_PAREN", "CLOSE_PAREN") -> colors.onSurface.copy(alpha = 0.7f)
         tokenName == "LINE_COMMENT" -> colors.onSurface.copy(alpha = 0.5f)
+        tokenName == "ANNOTATION_VISIBILITY" -> colors.primary
         else -> return null
     }
 

@@ -57,6 +57,22 @@ abstract class ContainerNode : Node {
     }
 
     protected abstract suspend fun rebuild()
+
+    suspend fun resolveChildrenPath(fullPath: String): Node? {
+        val parts = fullPath.split('/')
+        if (parts.isEmpty()) return null
+
+        var current: Node? = this
+        for (part in parts) {
+            if (current is ContainerNode) {
+                current.loadChildren()
+                current = current.childrenFlow.value.find { it.name == part }
+            } else {
+                return null // Not a container, can't resolve further
+            }
+        }
+        return current
+    }
 }
 
 abstract class FileNode : Node, ContentProvider() {
@@ -90,9 +106,6 @@ abstract class FileNode : Node, ContentProvider() {
 
     abstract suspend fun createTab(): TabElement
 
-    abstract fun getSizeEstimate(): Long
-
-    abstract fun isEditableTextually(): Boolean
 }
 
 typealias PathMap<T> = Map<String, T>

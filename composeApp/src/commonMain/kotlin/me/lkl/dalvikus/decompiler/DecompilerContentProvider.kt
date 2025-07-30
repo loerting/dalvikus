@@ -4,8 +4,6 @@ import me.lkl.dalvikus.tabs.contentprovider.ContentProvider
 import me.lkl.dalvikus.tree.dex.DexEntryClassNode
 
 class DecompilerContentProvider(private val dexEntryClassNode: DexEntryClassNode, private val decompilerProvider: () -> Decompiler) : ContentProvider() {
-    override val editableContent: Boolean = false
-
     override suspend fun loadContent() {
         _contentFlow.value = decompilerProvider().decompile(dexEntryClassNode.getClassDef()).toByteArray()
     }
@@ -13,5 +11,13 @@ class DecompilerContentProvider(private val dexEntryClassNode: DexEntryClassNode
     override fun getFileType(): String = "java"
 
     override fun getSourcePath(): String? = dexEntryClassNode.getSourcePath()
+    override fun getSizeEstimate(): Long {
+        return maxOf(
+            contentFlow.value.size.toLong(),
+            64 * 1024 // 64 kB
+        )
+    }
+
+    override fun isEditableTextually(): Boolean = true
 
 }

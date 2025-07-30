@@ -5,18 +5,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 abstract class ContentProvider {
-    abstract val editableContent: Boolean
     protected val _contentFlow = MutableStateFlow<ByteArray>(ByteArray(0))
     open val contentFlow: StateFlow<ByteArray> = _contentFlow.asStateFlow()
 
     abstract suspend fun loadContent()
 
     open suspend fun updateContent(newContent: ByteArray) {
-        if(!editableContent) throw IllegalArgumentException("ContentProvider is not editable.")
+        if(!isEditableTextually()) throw IllegalArgumentException("ContentProvider is not editable.")
         _contentFlow.value = newContent
     }
 
     abstract fun getFileType(): String
 
     abstract fun getSourcePath(): String?
+
+    abstract fun getSizeEstimate(): Long
+    abstract fun isEditableTextually(): Boolean
 }

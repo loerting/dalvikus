@@ -2,16 +2,9 @@ package me.lkl.dalvikus.ui.editor
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.isCtrlPressed
-import androidx.compose.ui.input.key.isMetaPressed
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.key.*
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -25,6 +18,9 @@ import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
 import me.lkl.dalvikus.ui.editor.highlight.highlightCode
 import me.lkl.dalvikus.ui.editor.suggestions.AssistPopupState
+
+const val maxEditorFileSize = 128 * 1024 // 128 KiB
+const val maxEditorLines = 10000 // 10,000 lines
 
 class EditorViewModel(private val tab: TabElement) {
     var isLoaded by mutableStateOf(false)
@@ -42,13 +38,17 @@ class EditorViewModel(private val tab: TabElement) {
 
     val assistPopupState = mutableStateOf(AssistPopupState())
 
+    var editable by
+    mutableStateOf(tab.contentProvider.getSizeEstimate() < maxEditorFileSize && tab.contentProvider.isEditableTextually())
+        private set
+
     val popupKeyEvents = Modifier.onPreviewKeyEvent { event ->
         val apState = assistPopupState.value
 
-        if (event.type != KeyEventType.KeyDown || !isEditable()) return@onPreviewKeyEvent false
+        if (event.type != KeyEventType.KeyDown || !editable) return@onPreviewKeyEvent false
 
-        if(apState.popupDismissed) {
-            if((event.isCtrlPressed || event.isMetaPressed) && event.key == Key.Spacebar) {
+        if (apState.popupDismissed) {
+            if ((event.isCtrlPressed || event.isMetaPressed) && event.key == Key.Spacebar) {
                 assistPopupState.value = assistPopupState.value.copy(popupDismissed = false)
                 return@onPreviewKeyEvent true
             }
@@ -75,6 +75,7 @@ class EditorViewModel(private val tab: TabElement) {
                 assistPopupState.value = AssistPopupState()
                 true
             }
+
             else -> false
         }
     }
@@ -84,6 +85,11 @@ class EditorViewModel(private val tab: TabElement) {
             tab.contentProvider.loadContent()
             internalContent = internalContent.copy(text = tab.contentProvider.contentFlow.value.decodeToString())
 
+            if (internalContent.text.lines().size > maxEditorLines) {
+                editable = false
+                return@withContext
+            }
+
             isLoaded = true
             refreshHighlight()
         }
@@ -91,8 +97,8 @@ class EditorViewModel(private val tab: TabElement) {
 
     suspend fun refreshHighlight() {
         highlightedText = withContext(Dispatchers.Default) {
-                highlightCode(internalContent.text, tab.contentProvider.getFileType(), highlightColors)
-            }
+            highlightCode(internalContent.text, tab.contentProvider.getFileType(), highlightColors)
+        }
     }
 
     fun changeContent(newTextFieldValue: TextFieldValue, coroutineScope: CoroutineScope, checkNewline: Boolean = true) {
@@ -115,7 +121,7 @@ class EditorViewModel(private val tab: TabElement) {
 
         if (checkNewline && isNewlineInserted) {
             val caretPosition = newTextFieldValue.selection.start
-            if(caretPosition > 0) {
+            if (caretPosition > 0) {
                 val beforeNewline = newText.substring(0, caretPosition - 1)
                 val currentLineStart = beforeNewline.lastIndexOf('\n') + 1
                 val currentLine = beforeNewline.substring(currentLineStart)
@@ -135,7 +141,7 @@ class EditorViewModel(private val tab: TabElement) {
 
         mimicOldHighlight(newText, diffIndex, newSuffixStart, oldSuffixStart, insertedText)
 
-        if(newText.length > oldText.length) {
+        if (newText.length > oldText.length) {
             assistPopupState.value = assistPopupState.value.copy(
                 popupDismissed = false,
                 selectedIndex = 0
@@ -148,7 +154,8 @@ class EditorViewModel(private val tab: TabElement) {
         if (dalvikusSettings["save_automatically"]) {
             saveCode(coroutineScope)
         } else {
-            if(newText.length != oldText.length)
+            // TODO this does not take into account the case where the text is by selection replacement, but i don't want a O(n) equals check here
+            if (newText.length != oldText.length)
                 tab.hasUnsavedChanges.value = true
         }
     }
@@ -187,7 +194,7 @@ class EditorViewModel(private val tab: TabElement) {
     }
 
     fun saveCode(coroutineScope: CoroutineScope) {
-        if(!isLoaded) throw IllegalArgumentException("code not initialized.")
+        if (!isLoaded) throw IllegalArgumentException("code not initialized.")
         coroutineScope.launch {
             tab.contentProvider.updateContent(internalContent.text.toByteArray())
             tab.hasUnsavedChanges.value = false
@@ -198,19 +205,6 @@ class EditorViewModel(private val tab: TabElement) {
         return isLoaded && tab.hasUnsavedChanges.value
     }
 
-    fun isEditable() = tab.contentProvider.editableContent
-
-    fun insertAtCaret(text: String) {
-        if (!isLoaded) return
-
-        val currentText = internalContent.text
-        val selectionStart = internalContent.selection.start
-        val selectionEnd = internalContent.selection.end
-
-        val newText = currentText.substring(0, selectionStart) + text + currentText.substring(selectionEnd)
-
-        internalContent = internalContent.copy(text = newText)
-    }
 
     fun getFileType(): String = tab.contentProvider.getFileType()
     fun replaceTextAndMoveCaret(startIndex: Int, stopIndex: Int, text: String, coroutineScope: CoroutineScope) {
@@ -219,7 +213,10 @@ class EditorViewModel(private val tab: TabElement) {
         val currentText = internalContent.text
         val newText = currentText.substring(0, startIndex) + text + currentText.substring(stopIndex)
 
-        val newTextFieldValue = internalContent.copy(text = newText, selection = TextRange(startIndex + text.length, startIndex + text.length))
+        val newTextFieldValue = internalContent.copy(
+            text = newText,
+            selection = TextRange(startIndex + text.length, startIndex + text.length)
+        )
         changeContent(newTextFieldValue, coroutineScope)
     }
 }

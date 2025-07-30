@@ -26,8 +26,8 @@ import java.io.StringWriter
 
 class DexEntryClassNode(
     override var name: String,
-    private var fullPath: String, // com/example/MyClass
-    private val root: DexFileNode,
+    var fullPath: String, // com/example/MyClass
+    val root: DexFileNode,
     override val parent: ContainerNode?
 ) : FileNode() {
 

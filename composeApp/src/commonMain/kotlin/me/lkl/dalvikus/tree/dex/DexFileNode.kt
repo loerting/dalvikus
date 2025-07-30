@@ -81,4 +81,8 @@ class DexFileNode(
         // to ensure e.g. class name changes are reflected in the UI.
         loadChildren()
     }
+
+    fun hasClass(item: String): Boolean {
+        return entries.containsKey(item)
+    }
 }
