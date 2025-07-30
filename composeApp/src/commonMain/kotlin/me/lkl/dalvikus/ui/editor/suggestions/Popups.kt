@@ -1,35 +1,21 @@
 package me.lkl.dalvikus.ui.editor.suggestions
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.outlined.ArrowCircleRight
+import androidx.compose.material.icons.outlined.Code
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.dp
-import dalvikus.composeapp.generated.resources.Res
-import dalvikus.composeapp.generated.resources.lookup_popup_current_class
-import dalvikus.composeapp.generated.resources.lookup_popup_not_found
-import dalvikus.composeapp.generated.resources.lookup_popup_open_definition
-import dalvikus.composeapp.generated.resources.lookup_popup_runtime
+import dalvikus.composeapp.generated.resources.*
 import kotlinx.coroutines.launch
 import me.lkl.dalvikus.tabs.SmaliTab
 import me.lkl.dalvikus.ui.editor.EditorViewModel
@@ -51,44 +37,20 @@ fun ErrorPopup(
     val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
 
-    EditorAnnotationPopup(
-        lastLayoutSnapshot, annotation, viewModel, {
-            Surface(
-                modifier = Modifier.Companion
-                    .wrapContentSize()
-                    .background(MaterialTheme.colorScheme.surface)
-                    .border(1.dp, MaterialTheme.colorScheme.error, RoundedCornerShape(4.dp)),
-                shadowElevation = 4.dp,
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    Text(
-                        text = annotation.item,
-                        style = textStyle.copy(color = MaterialTheme.colorScheme.error),
-                        modifier = Modifier.padding(8.dp)
-                    )
-                    IconButton(onClick = {
-                        scope.launch {
-                            clipboard.setClipEntry(ClipEntry(StringSelection(annotation.item)))
-                        }
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.ContentCopy,
-                            contentDescription = "Copy to clipboard",
-                            tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    }
-                }
+    EditorAnnotationPopup(lastLayoutSnapshot, annotation, viewModel, {
+        ModernPopupContainer(
+            color = MaterialTheme.colorScheme.error,
+            icon = Icons.Default.ErrorOutline,
+            text = annotation.item,
+            textStyle = textStyle,
+            action = stringResource(Res.string.copy),
+            actionIcon = Icons.Default.ContentCopy,
+        ) {
+            scope.launch {
+                clipboard.setClipEntry(ClipEntry(StringSelection(annotation.item)))
             }
-        }, getTextWidth(
-            annotation.item,
-            textStyle
-        )
-    )
+        }
+    }, getTextWidth(annotation.item, textStyle))
 }
 
 @Composable
@@ -111,58 +73,47 @@ fun LookupPopup(
 
     val scope = rememberCoroutineScope()
 
-    EditorAnnotationPopup(
-        lastLayoutSnapshot, annotation, viewModel, {
-            Surface(
-                modifier = Modifier.Companion
-                    .wrapContentSize()
-                    .background(MaterialTheme.colorScheme.surface)
-                    .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)),
-                shadowElevation = 4.dp,
-                shape = RoundedCornerShape(4.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = lookupText,
-                        style = textStyle.copy(color = MaterialTheme.colorScheme.primary),
-                        modifier = Modifier.padding(8.dp)
-                    )
-                    if (hasEntry) {
-                        IconButton(onClick = {
-                            scope.launch {
-                                val resolved = smaliTab.dexEntryClassNode.root.resolveChildrenPath(fullPath)
-                                resolved?.let { selectFileTreeNode(it) }
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Outlined.ArrowCircleRight,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.padding(8.dp)
-                            )
-                        }
-                    } else if(fullPath.startsWith("android") && !fullPath.contains('.')) {
-                        IconButton(onClick = {
-                            Desktop.getDesktop().browse(URI("https://developer.android.com/reference/${fullPath}"))
-                        }) {
-                            Icon(
-                                imageVector = Icons.Outlined.Search,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.padding(8.dp)
-                            )
-                        }
-                    }
-                }
+    val browse = fullPath.startsWith("android") && !fullPath.contains('.')
+    val actionText =
+        when {
+            hasEntry -> stringResource(Res.string.open)
+            browse -> stringResource(Res.string.browse_web)
+            else -> null
+        }
+    val actionIcon =
+        when {
+            hasEntry -> Icons.Outlined.ArrowCircleRight
+            browse -> Icons.Outlined.Search
+            else -> null
+        }
+
+    EditorAnnotationPopup(lastLayoutSnapshot, annotation, viewModel, {
+        ModernPopupContainer(
+            color = MaterialTheme.colorScheme.primary,
+            icon = Icons.Outlined.Info,
+            text = lookupText,
+            textStyle = textStyle,
+            action = actionText,
+            actionIcon = actionIcon,
+        ) {
+
+            scope.launch {
+                val resolved = smaliTab.dexEntryClassNode.root.resolveChildrenPath(fullPath)
+                resolved?.let { selectFileTreeNode(it) }
             }
-        }, getTextWidth(
-            lookupText,
-            textStyle
-        )
-    )
+
+            if (hasEntry) {
+                scope.launch {
+                    val resolved = smaliTab.dexEntryClassNode.root.resolveChildrenPath(fullPath)
+                    resolved?.let { selectFileTreeNode(it) }
+                }
+            } else if (browse) {
+                Desktop.getDesktop().browse(URI("https://developer.android.com/reference/${fullPath}"))
+            }
+        }
+    }, getTextWidth(lookupText, textStyle))
 }
+
 
 @Composable
 fun HexPopup(
@@ -181,48 +132,40 @@ fun HexPopup(
 
         when (cleanedHex.length) {
             8 -> {
-                // 32-bit — IEEE-754 float
-                val intBits = signedValue.toInt()
-                val floatValue = Float.fromBits(intBits)
-                "$signedValue (base 10) = $floatValue (float)"
+                println(cleanedHex)
+                if(cleanedHex.startsWith("7e") || cleanedHex.startsWith("7f")) {
+                    val intValue = signedValue.toInt()
+                    val typeId = (intValue shr 16) and 0xFF
+                    val entryId = intValue and 0xFFFF
+                    val typeNames = mapOf(
+                        1 to "anim", 2 to "drawable", 3 to "layout", 4 to "string", 5 to "style", 6 to "id"
+                    )
+                    val typeName = typeNames[typeId] ?: "unknown"
+                    "$typeName:$entryId (resource ID)"
+                } else {
+                    val floatValue = Float.fromBits(signedValue.toInt())
+                    "$signedValue (base 10) = $floatValue (float)"
+                }
             }
+
             16 -> {
-                // 64-bit — IEEE-754 double
-                val longBits = signedValue.toLong()
-                val doubleValue = Double.fromBits(longBits)
+                val doubleValue = Double.fromBits(signedValue.toLong())
                 "$signedValue (base 10) = $doubleValue (double)"
             }
-            else -> {
-                "$signedValue (base 10)"
-            }
+
+            else -> "$signedValue (base 10)"
         }
     } catch (e: Exception) {
         "Invalid hex: $rawHex"
     }
 
-    EditorAnnotationPopup(
-        lastLayoutSnapshot, annotation, viewModel, {
-            Surface(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .background(MaterialTheme.colorScheme.surface)
-                    .border(1.dp, MaterialTheme.colorScheme.secondary, RoundedCornerShape(4.dp)),
-                shadowElevation = 4.dp,
-                shape = RoundedCornerShape(4.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    SelectionContainer {
-                        Text(
-                            text = infoText,
-                            style = textStyle.copy(color = MaterialTheme.colorScheme.secondary),
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    }
-                }
-            }
-        },
-        getTextWidth(infoText, textStyle)
-    )
+    EditorAnnotationPopup(lastLayoutSnapshot, annotation, viewModel, {
+        ModernPopupContainer(
+            color = MaterialTheme.colorScheme.secondary,
+            text = infoText,
+            textStyle = textStyle,
+            icon = Icons.Outlined.Info,
+        )
+    }, getTextWidth(infoText, textStyle))
 }
+

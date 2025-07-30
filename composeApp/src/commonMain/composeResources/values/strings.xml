@@ -2,13 +2,12 @@
     <string name="app_name">dalvikus</string>
     <string name="app_description">Bewitch your apps.</string>
 
-    <string name="app_greeting">Welcome %1$s to...</string>
-    <string name="app_introduction">Dalvikus is an Android reverse engineering and modification toolkit written in compose multiplatform. It supports smali editing, resource editing, app signing and deploying. As every computer scientist should know: With great power comes great responsibility. Dalvikus is intended for ethical purposes only. For more information, visit the GitHub page.</string>
+    <string name="app_introduction">Welcome, %1$s! To get started, open the file tree on the bottom left. For updates, help and more visit the GitHub page.</string>
     <string name="app_github_button">Star on GitHub</string>
     <string name="app_dalvik_button">Dalvik reference</string>
     <string name="app_gpl_button">GPLv3 license</string>
 
-    <string name="tree_search_placeholder">Search tree...</string>
+    <string name="tree_search_placeholder">Search</string>
     <string name="tree_drop_placeholder">Drop file(s) here.</string>
     <string name="tree_unsupported_file_type">This file type is not supported.</string>
 
@@ -80,6 +79,7 @@
 
     <string name="deploy">Deploy</string>
     <string name="sign_deploy_app">Sign and deploy %1$s</string>
+    <string name="open">"Open</string>
     <string name="close">Close</string>
     <string name="select">Select</string>
     <string name="cancel">Cancel</string>
@@ -89,6 +89,8 @@
     <string name="sign">Sign</string>
     <string name="dismiss">Dismiss</string>
     <string name="copy">Copy</string>
+    <string name="browse_web">Browse web</string>
+
     <string name="sign_and_deploy">Sign and deploy</string>
     <string name="select_file">Select file</string>
 

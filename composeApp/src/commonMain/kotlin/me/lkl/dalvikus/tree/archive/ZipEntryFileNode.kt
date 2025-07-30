@@ -44,6 +44,6 @@ class ZipEntryFileNode(
     }
 
     override fun isEditable(): Boolean {
-        return name.endsWith(".smali") || name.endsWith(".txt") || name.endsWith(".java") || guessIfEditableTextually(zipRoot.readEntry(fullPath).inputStream())
+        return name.endsWith(".xml") || name.endsWith(".smali") || name.endsWith(".txt") || name.endsWith(".java") || guessIfEditableTextually(zipRoot.readEntry(fullPath).inputStream())
     }
 }

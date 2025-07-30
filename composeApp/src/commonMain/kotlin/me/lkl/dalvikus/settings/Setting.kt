@@ -7,8 +7,13 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Android
+import androidx.compose.material.icons.filled.Coffee
+import androidx.compose.material.icons.filled.Draw
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.material3.ExposedDropdownMenuDefaults.TrailingIcon
@@ -29,11 +34,11 @@ import java.io.File
 
 
 enum class SettingsCategory(val nameRes: StringResource, val icon: ImageVector) {
-    GENERAL(Res.string.settings_category_general, Icons.Outlined.Settings),
-    EDITOR(Res.string.settings_category_editor, Icons.Outlined.EditNote),
-    SMALI(Res.string.settings_category_smali, Icons.Outlined.Android),
-    DECOMPILER(Res.string.settings_category_decompiler, Icons.Outlined.Code),
-    SIGNING(Res.string.settings_category_signing, Icons.Outlined.Draw),
+    GENERAL(Res.string.settings_category_general, Icons.Default.Settings),
+    EDITOR(Res.string.settings_category_editor, Icons.Default.Edit),
+    SMALI(Res.string.settings_category_smali, Icons.Default.Android),
+    DECOMPILER(Res.string.settings_category_decompiler, Icons.Default.Coffee),
+    SIGNING(Res.string.settings_category_signing, Icons.Default.Draw),
 }
 
 // Base sealed class for settings

@@ -8,9 +8,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Coffee
 import androidx.compose.material.icons.filled.Draw
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Lan
 import androidx.compose.material.icons.filled.Park
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -138,10 +141,9 @@ internal fun Content() {
 
     val navItems = listOf(
         NavItem("Editor", Icons.Default.Edit, Res.string.nav_editor),
-        NavItem("Decompiler", Icons.Default.Code, Res.string.nav_decompiler),
+        NavItem("Decompiler", Icons.Default.Coffee, Res.string.nav_decompiler),
         NavItem("Packaging", Icons.Default.Draw, Res.string.nav_signing),
-
-        NavItem("Settings", Icons.Outlined.Settings, Res.string.nav_settings),
+        NavItem("Settings", Icons.Default.Settings, Res.string.nav_settings),
     )
     var showTree by remember { mutableStateOf(false) }
     var showTreeEverPressed by remember { mutableStateOf(false) }
@@ -182,7 +184,7 @@ internal fun Content() {
                             }
                         }) {
                             Icon(
-                                if (!showTree) Icons.Outlined.Park else Icons.Filled.Park,
+                                if (!showTree) Icons.Outlined.Lan else Icons.Filled.Lan,
                                 contentDescription = stringResource(Res.string.nav_file_tree)
                             )
                         }

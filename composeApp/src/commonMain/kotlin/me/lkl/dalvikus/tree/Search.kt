@@ -6,6 +6,7 @@ import androidx.compose.material.icons.outlined.Abc
 import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material.icons.outlined.DataObject
 import androidx.compose.material.icons.outlined.Interests
+import androidx.compose.material.icons.outlined.SubdirectoryArrowRight
 import androidx.compose.material.icons.outlined.Title
 import androidx.compose.material.icons.outlined.Water
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -36,7 +37,7 @@ data class TreeSearchResult(val node: Node, val snippet: String, val type: TreeS
     val icon: ImageVector = when (type) {
         TreeSearchResultType.TREE_NODE -> node.icon
         TreeSearchResultType.STRING_VALUE -> Icons.Default.Abc
-        TreeSearchResultType.REFERENCE -> Icons.Outlined.Interests
+        TreeSearchResultType.REFERENCE -> Icons.Outlined.SubdirectoryArrowRight
     }
     val path: String = node.getPathHistory()
 }

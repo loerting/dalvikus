@@ -1,7 +1,7 @@
 package me.lkl.dalvikus.tree.dex
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DataObject
+import androidx.compose.material.icons.outlined.SubdirectoryArrowRight
 import co.touchlab.kermit.Logger
 import com.android.tools.smali.baksmali.Adaptors.ClassDefinition
 import com.android.tools.smali.baksmali.BaksmaliOptions
@@ -11,6 +11,7 @@ import com.android.tools.smali.dexlib2.iface.ClassDef
 import com.android.tools.smali.dexlib2.writer.builder.DexBuilder
 import com.android.tools.smali.smali.smaliFlexLexer
 import com.android.tools.smali.smali.smaliTreeWalker
+import io.github.composegears.valkyrie.DeployedCode
 import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.smali.ErrorHandlingSmaliParser
 import me.lkl.dalvikus.snackbarManager
@@ -31,7 +32,7 @@ class DexEntryClassNode(
     override val parent: ContainerNode?
 ) : FileNode() {
 
-    override val icon = Icons.Outlined.DataObject
+    override val icon = Icons.Filled.DeployedCode
     override val editableContent = true
 
     fun getClassDef(): ClassDef = root.readEntry(fullPath)

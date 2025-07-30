@@ -28,6 +28,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
+import io.github.composegears.valkyrie.MatchCase
+import io.github.composegears.valkyrie.RegularExpression
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import me.lkl.dalvikus.snackbarManager
@@ -116,14 +118,12 @@ internal fun LeftPanelContent() {
                             IconToggleButton(
                                 checked = searchOptions.useRegex,
                                 onCheckedChange = { searchOptions = searchOptions.copy(useRegex = it) }) {
-                                // TODO find a better icon for regex.
-                                Icon(Icons.Outlined.Password, contentDescription = "Regular expression")
+                                Icon(Icons.Filled.RegularExpression, contentDescription = "Regular expression")
                             }
                             IconToggleButton(
                                 checked = searchOptions.caseSensitive,
                                 onCheckedChange = { searchOptions = searchOptions.copy(caseSensitive = it) }) {
-                                // TODO find a better icon for case sensitivity.
-                                Icon(Icons.Outlined.TextFields, contentDescription = "Case sensitive")
+                                Icon(Icons.Filled.MatchCase, contentDescription = "Case sensitive")
                             }
                             IconButton(onClick = {
                                 searchFieldState.setTextAndPlaceCursorAtEnd("")

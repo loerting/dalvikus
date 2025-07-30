@@ -73,4 +73,8 @@ class ZipNode(
         tmp.copyTo(zipFile, overwrite = true)
         tmp.delete()
     }
+
+    fun isAndroidPackage(): Boolean {
+        return name.endsWith(".apk") || name.endsWith(".apks")
+    }
 }
