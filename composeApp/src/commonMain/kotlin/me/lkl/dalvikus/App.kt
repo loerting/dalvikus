@@ -6,7 +6,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Draw
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Park
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,21 +25,17 @@ import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
 import kotlinx.coroutines.launch
 import me.lkl.dalvikus.settings.DalvikusSettings
+import me.lkl.dalvikus.settings.shortcutToggleEditorDecompiler
+import me.lkl.dalvikus.settings.shortcutTreeAdd
 import me.lkl.dalvikus.tabs.WelcomeTab
 import me.lkl.dalvikus.theme.AppTheme
 import me.lkl.dalvikus.theme.LocalThemeIsDark
 import me.lkl.dalvikus.tree.archive.ZipNode
-import me.lkl.dalvikus.ui.LeftPanelContent
-import me.lkl.dalvikus.ui.RightPanelContent
+import me.lkl.dalvikus.ui.*
 import me.lkl.dalvikus.ui.nav.NavItem
-import me.lkl.dalvikus.ui.packagingViewModel
-import me.lkl.dalvikus.ui.showTreeAddFileDialog
-import me.lkl.dalvikus.ui.tabs.TabManager
-import me.lkl.dalvikus.ui.uiTreeRoot
-import me.lkl.dalvikus.settings.shortcutToggleEditorDecompiler
-import me.lkl.dalvikus.settings.shortcutTreeAdd
 import me.lkl.dalvikus.ui.snackbar.SnackbarManager
 import me.lkl.dalvikus.ui.snackbar.SnackbarResources
+import me.lkl.dalvikus.ui.tabs.TabManager
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
 import org.jetbrains.compose.splitpane.HorizontalSplitPane
@@ -101,7 +100,7 @@ internal fun App(
 
 @Composable
 fun InitializeSnackbar() {
-    if(snackbarManager != null) return
+    if (snackbarManager != null) return
     val coroutineScope = rememberCoroutineScope()
     val clipboard = LocalClipboard.current
 
@@ -141,7 +140,9 @@ internal fun Content() {
 
         NavItem("Settings", Icons.Outlined.Settings, Res.string.nav_settings),
     )
-    var showTree by remember { mutableStateOf(true) }
+    var showTree by remember { mutableStateOf(false) }
+    var showTreeEverPressed by remember { mutableStateOf(false) }
+
 
     Row {
         Column(
@@ -162,12 +163,21 @@ internal fun Content() {
                 Spacer(modifier = Modifier.weight(1f))
                 NavigationRailItem(
                     selected = false,
-                    onClick = { showTree = !showTree },
+                    onClick = {
+                        showTree = !showTree
+                        showTreeEverPressed = true
+                    },
                     icon = {
-                        Icon(
-                            if (!showTree) Icons.Outlined.Park else Icons.Filled.Park,
-                            contentDescription = stringResource(Res.string.nav_file_tree)
-                        )
+                        BadgedBox(badge = {
+                            if (!showTreeEverPressed) {
+                                Badge()
+                            }
+                        }) {
+                            Icon(
+                                if (!showTree) Icons.Outlined.Park else Icons.Filled.Park,
+                                contentDescription = stringResource(Res.string.nav_file_tree)
+                            )
+                        }
                     },
                     label = { Text(stringResource(Res.string.nav_file_tree)) }
                 )
@@ -322,7 +332,7 @@ fun DeployButton(deploy: (ZipNode) -> Unit) {
 
 val keyActionMap: Map<Key, () -> Unit> = mapOf(
     shortcutToggleEditorDecompiler to {
-        selectedNavItem = when(selectedNavItem) {
+        selectedNavItem = when (selectedNavItem) {
             "Editor" -> "Decompiler"
             "Decompiler" -> "Editor"
             else -> selectedNavItem

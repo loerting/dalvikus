@@ -1,10 +1,8 @@
 package me.lkl.dalvikus.ui
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.draganddrop.dragAndDropTarget
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
@@ -21,13 +19,18 @@ import androidx.compose.material.icons.outlined.TextFields
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draganddrop.DragAndDropEvent
+import androidx.compose.ui.draganddrop.DragAndDropTarget
+import androidx.compose.ui.draganddrop.awtTransferable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import me.lkl.dalvikus.snackbarManager
 import me.lkl.dalvikus.tabManager
 import me.lkl.dalvikus.tree.*
 import me.lkl.dalvikus.tree.archive.ZipNode
@@ -45,17 +48,18 @@ val editableFiles = listOf("apk", "apks", "aab", "jar", "zip", "xapk", "dex", "o
 var showTreeAddFileDialog by mutableStateOf(false)
 
 internal val uiTreeRoot: HiddenRoot = HiddenRoot(
-   /* ZipNode(
-        "sample.apk",
-        File("/home/admin/Downloads/sample.apk"), null
-    )*/
+    /* ZipNode(
+         "sample.apk",
+         File("/home/admin/Downloads/sample.apk"), null
+     )*/
 )
 internal var currentSelection by mutableStateOf<Node?>(null)
 internal var scrollAndExpandSelection = mutableStateOf(false)
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 internal fun LeftPanelContent() {
+    val unsupportedFileText = stringResource(Res.string.tree_unsupported_file_type)
     if (showTreeAddFileDialog) {
         FileSelectorDialog(
             title = stringResource(Res.string.dialog_select_android_archive_title),
@@ -65,25 +69,7 @@ internal fun LeftPanelContent() {
                 showTreeAddFileDialog = false
             }) { node ->
             if (node !is FileSystemFileNode) return@FileSelectorDialog
-            when (node.file.extension.lowercase()) {
-                "apk", "apks", "aab", "jar", "zip", "xapk" -> uiTreeRoot.addChild(
-                    ZipNode(
-                        node.name,
-                        node.file,
-                        uiTreeRoot
-                    )
-                )
-
-                "dex", "odex" -> uiTreeRoot.addChild(
-                    DexFileNode(
-                        node.name,
-                        FileBacking(node.file),
-                        uiTreeRoot
-                    )
-                )
-
-                else -> throw AssertionError("Unsupported file type: ${node.file.extension} not in $editableFiles")
-            }
+            addFile(node.file, unsupportedFileText)
             showTreeAddFileDialog = false
         }
     }
@@ -149,7 +135,28 @@ internal fun LeftPanelContent() {
             )
         }
 
-    // TODO drag-and-drop support for files
+    val dragAndDropTarget = remember {
+        object : DragAndDropTarget {
+            override fun onDrop(event: DragAndDropEvent): Boolean {
+                val flavors = event.awtTransferable.transferDataFlavors
+
+                for (flavor in flavors) {
+                    if (flavor.isMimeTypeEqual("application/x-java-file-list")) {
+                        val files = event.awtTransferable.getTransferData(flavor) as? List<*>
+                        files?.filterIsInstance<File>()?.forEach { file ->
+                            addFile(file, unsupportedFileText)
+                        }
+                        return true
+                    }
+                }
+
+                return false
+            }
+        }
+    }
+
+
+
     Scaffold(
         containerColor = Color.Transparent,
         topBar = {
@@ -184,15 +191,34 @@ internal fun LeftPanelContent() {
                     Icon(Icons.Default.FolderOpen, contentDescription = stringResource(Res.string.fab_load_file))
                 },
                 text = {
-                    Text(stringResource(Res.string.fab_load_file))
+                    Text(stringResource(Res.string.fab_load_file), maxLines = 1)
                 }
             )
         }
     ) { innerPadding ->
+        val rootKids = uiTreeRoot.childrenFlow.collectAsState()
         Column(
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier.fillMaxSize().padding(innerPadding)
+                .dragAndDropTarget(
+                    shouldStartDragAndDrop = { true },
+                    target = dragAndDropTarget
+                ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            if (rootKids.value.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        stringResource(Res.string.tree_drop_placeholder),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        maxLines = 1
+                    )
+                }
+                return@Scaffold
+            }
             TreeView(
                 uiTreeRoot,
                 onFileSelected = { node ->
@@ -209,6 +235,29 @@ internal fun LeftPanelContent() {
                 scrollAndExpandSelection = scrollAndExpandSelection
             )
         }
+    }
+}
+
+private fun addFile(file: File, unsupportedFileText: String) {
+    val extension = file.extension
+    when (extension.lowercase()) {
+        "apk", "apks", "aab", "jar", "zip", "xapk" -> uiTreeRoot.addChild(
+            ZipNode(
+                file.name,
+                file,
+                uiTreeRoot
+            )
+        )
+
+        "dex", "odex" -> uiTreeRoot.addChild(
+            DexFileNode(
+                file.name,
+                FileBacking(file),
+                uiTreeRoot
+            )
+        )
+
+        else -> snackbarManager?.showMessage(unsupportedFileText)
     }
 }
 
@@ -264,11 +313,13 @@ private fun SearchResults(
                         overflow = TextOverflow.Ellipsis
                     )
                 },
-                overlineContent = { Text(result.path,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                                  },
+                overlineContent = {
+                    Text(
+                        result.path,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
                 leadingContent = { Icon(result.icon, contentDescription = null) },
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                 modifier = Modifier
