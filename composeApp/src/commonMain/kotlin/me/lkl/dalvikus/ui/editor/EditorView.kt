@@ -148,6 +148,7 @@ fun EditorView(editable: TabElement) {
                 Box(
                     modifier = Modifier
                         .horizontalScroll(horState)
+                        .verticalScroll(vertState)
                         .fillMaxSize()
                         .padding(8.dp)
                 ) {
@@ -163,7 +164,6 @@ fun EditorView(editable: TabElement) {
                         },
                         modifier = Modifier
                             .fillMaxSize()
-                            .verticalScroll(vertState)
                             .handleFocusedCtrlShortcuts(
                                 enabled = viewModel.editable,
                                 mapOf(shortcutSave to { viewModel.saveCode(coroutine) })),

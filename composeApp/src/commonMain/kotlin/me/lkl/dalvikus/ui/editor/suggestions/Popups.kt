@@ -7,12 +7,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowCircleRight
 import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Web
 import androidx.compose.material.icons.outlined.ArrowCircleRight
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.Web
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +34,7 @@ import me.lkl.dalvikus.tabs.SmaliTab
 import me.lkl.dalvikus.ui.editor.EditorViewModel
 import me.lkl.dalvikus.ui.editor.LayoutSnapshot
 import me.lkl.dalvikus.ui.selectFileTreeNode
+import me.lkl.dalvikus.util.getTextWidth
 import org.jetbrains.compose.resources.stringResource
 import java.awt.Desktop
 import java.awt.datatransfer.StringSelection
@@ -52,39 +50,44 @@ fun ErrorPopup(
     val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
 
-    EditorAnnotationPopup(lastLayoutSnapshot, annotation, viewModel, textStyle) {
-        Surface(
-            modifier = Modifier.Companion
-                .wrapContentSize()
-                .background(MaterialTheme.colorScheme.surface)
-                .border(1.dp, MaterialTheme.colorScheme.error, RoundedCornerShape(4.dp)),
-            shadowElevation = 4.dp,
-            shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+    EditorAnnotationPopup(
+        lastLayoutSnapshot, annotation, viewModel, {
+            Surface(
+                modifier = Modifier.Companion
+                    .wrapContentSize()
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(1.dp, MaterialTheme.colorScheme.error, RoundedCornerShape(4.dp)),
+                shadowElevation = 4.dp,
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
             ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
 
-                Text(
-                    text = annotation.item,
-                    style = textStyle.copy(color = MaterialTheme.colorScheme.error),
-                    modifier = Modifier.padding(8.dp)
-                )
-                IconButton(onClick = {
-                    scope.launch {
-                        clipboard.setClipEntry(ClipEntry(StringSelection(annotation.item)))
-                    }
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.ContentCopy,
-                        contentDescription = "Copy to clipboard",
-                        tint = MaterialTheme.colorScheme.error,
+                    Text(
+                        text = annotation.item,
+                        style = textStyle.copy(color = MaterialTheme.colorScheme.error),
                         modifier = Modifier.padding(8.dp)
                     )
+                    IconButton(onClick = {
+                        scope.launch {
+                            clipboard.setClipEntry(ClipEntry(StringSelection(annotation.item)))
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.ContentCopy,
+                            contentDescription = "Copy to clipboard",
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
                 }
             }
-        }
-    }
+        }, getTextWidth(
+            annotation.item,
+            textStyle
+        )
+    )
 }
 
 @Composable
@@ -107,50 +110,55 @@ fun LookupPopup(
 
     val scope = rememberCoroutineScope()
 
-    EditorAnnotationPopup(lastLayoutSnapshot, annotation, viewModel, textStyle) {
-        Surface(
-            modifier = Modifier.Companion
-                .wrapContentSize()
-                .background(MaterialTheme.colorScheme.surface)
-                .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)),
-            shadowElevation = 4.dp,
-            shape = RoundedCornerShape(4.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+    EditorAnnotationPopup(
+        lastLayoutSnapshot, annotation, viewModel, {
+            Surface(
+                modifier = Modifier.Companion
+                    .wrapContentSize()
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)),
+                shadowElevation = 4.dp,
+                shape = RoundedCornerShape(4.dp)
             ) {
-                Text(
-                    text = lookupText,
-                    style = textStyle.copy(color = MaterialTheme.colorScheme.primary),
-                    modifier = Modifier.padding(8.dp)
-                )
-                if (hasEntry) {
-                    IconButton(onClick = {
-                        scope.launch {
-                            val resolved = smaliTab.dexEntryClassNode.root.resolveChildrenPath(fullPath)
-                            resolved?.let { selectFileTreeNode(it) }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = lookupText,
+                        style = textStyle.copy(color = MaterialTheme.colorScheme.primary),
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    if (hasEntry) {
+                        IconButton(onClick = {
+                            scope.launch {
+                                val resolved = smaliTab.dexEntryClassNode.root.resolveChildrenPath(fullPath)
+                                resolved?.let { selectFileTreeNode(it) }
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Outlined.ArrowCircleRight,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(8.dp)
+                            )
                         }
-                    }) {
-                        Icon(
-                            imageVector = Icons.Outlined.ArrowCircleRight,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    }
-                } else if(fullPath.startsWith("android") && !fullPath.contains('.')) {
-                    IconButton(onClick = {
-                        Desktop.getDesktop().browse(URI("https://developer.android.com/reference/${fullPath}"))
-                    }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Search,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(8.dp)
-                        )
+                    } else if(fullPath.startsWith("android") && !fullPath.contains('.')) {
+                        IconButton(onClick = {
+                            Desktop.getDesktop().browse(URI("https://developer.android.com/reference/${fullPath}"))
+                        }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Search,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
                     }
                 }
             }
-        }
-    }
+        }, getTextWidth(
+            lookupText,
+            textStyle
+        )
+    )
 }

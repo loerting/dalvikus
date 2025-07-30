@@ -44,10 +44,14 @@ val editableFiles = listOf("apk", "apks", "aab", "jar", "zip", "xapk", "dex", "o
 
 var showTreeAddFileDialog by mutableStateOf(false)
 
-// TODO remove before pushing
 internal val uiTreeRoot: HiddenRoot = HiddenRoot(
+   /* ZipNode(
+        "sample.apk",
+        File("/home/admin/Downloads/sample.apk"), null
+    )*/
 )
 internal var currentSelection by mutableStateOf<Node?>(null)
+internal var scrollAndExpandSelection = mutableStateOf(false)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,7 +92,6 @@ internal fun LeftPanelContent() {
     val searchBarState = rememberSearchBarState()
     val searchFieldState = rememberTextFieldState()
     var searchOptions by remember { mutableStateOf(SearchOptions()) }
-    var scrollAndExpandSelection = remember { mutableStateOf(false) }
 
     val searchField =
         @Composable {
@@ -283,4 +286,9 @@ private fun SearchResults(
             )
         }
     }
+}
+
+fun selectFileTreeNode(node: Node) {
+    currentSelection = node
+    scrollAndExpandSelection.value = true
 }

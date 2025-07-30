@@ -3,22 +3,20 @@ package me.lkl.dalvikus.ui.editor.suggestions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import me.lkl.dalvikus.ui.editor.EditorViewModel
 import me.lkl.dalvikus.ui.editor.LayoutSnapshot
-import me.lkl.dalvikus.util.getTextWidth
 
 @Composable
 fun EditorAnnotationPopup(
     lastLayoutSnapshot: LayoutSnapshot?,
     annotation: AnnotatedString.Range<String>,
     viewModel: EditorViewModel,
-    textStyle: TextStyle,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
+    contentWidthEstimate: Int
 ) {
     val density = LocalDensity.current
     val layoutResult = lastLayoutSnapshot?.layout ?: return
@@ -29,10 +27,7 @@ fun EditorAnnotationPopup(
     Popup(
         offset = with(density) {
             IntOffset(
-                x = ((boxStart.left + boxEnd.left) / 2).toInt() - getTextWidth(
-                    annotation.item,
-                    textStyle
-                ) / 2 - 12.dp.toPx().toInt(),
+                x = ((boxStart.left + boxEnd.left) / 2).toInt() - contentWidthEstimate / 2 - 12.dp.toPx().toInt(),
                 y = (boxStart.top - 48.dp.toPx()).toInt()
             )
         },
