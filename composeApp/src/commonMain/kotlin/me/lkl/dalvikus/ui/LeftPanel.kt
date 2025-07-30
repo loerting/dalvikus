@@ -39,6 +39,7 @@ import me.lkl.dalvikus.tree.dex.DexFileNode
 import me.lkl.dalvikus.tree.filesystem.FileSystemFileNode
 import me.lkl.dalvikus.tree.root.HiddenRoot
 import me.lkl.dalvikus.ui.tree.FileSelectorDialog
+import me.lkl.dalvikus.ui.tree.TreeDragAndDropTarget
 import me.lkl.dalvikus.ui.tree.TreeView
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
@@ -69,7 +70,7 @@ internal fun LeftPanelContent() {
                 showTreeAddFileDialog = false
             }) { node ->
             if (node !is FileSystemFileNode) return@FileSelectorDialog
-            addFile(node.file, unsupportedFileText)
+            addFileToTree(node.file, unsupportedFileText)
             showTreeAddFileDialog = false
         }
     }
@@ -135,27 +136,7 @@ internal fun LeftPanelContent() {
             )
         }
 
-    val dragAndDropTarget = remember {
-        object : DragAndDropTarget {
-            override fun onDrop(event: DragAndDropEvent): Boolean {
-                val flavors = event.awtTransferable.transferDataFlavors
-
-                for (flavor in flavors) {
-                    if (flavor.isMimeTypeEqual("application/x-java-file-list")) {
-                        val files = event.awtTransferable.getTransferData(flavor) as? List<*>
-                        files?.filterIsInstance<File>()?.forEach { file ->
-                            addFile(file, unsupportedFileText)
-                        }
-                        return true
-                    }
-                }
-
-                return false
-            }
-        }
-    }
-
-
+    val dragAndDropTarget = remember { TreeDragAndDropTarget(unsupportedFileText) }
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -238,7 +219,7 @@ internal fun LeftPanelContent() {
     }
 }
 
-private fun addFile(file: File, unsupportedFileText: String) {
+fun addFileToTree(file: File, unsupportedFileText: String) {
     val extension = file.extension
     when (extension.lowercase()) {
         "apk", "apks", "aab", "jar", "zip", "xapk" -> uiTreeRoot.addChild(
@@ -340,6 +321,7 @@ private fun SearchResults(
 }
 
 fun selectFileTreeNode(node: Node) {
+    // TODO find out why it doesn't scroll.
     currentSelection = node
     scrollAndExpandSelection.value = true
 }
