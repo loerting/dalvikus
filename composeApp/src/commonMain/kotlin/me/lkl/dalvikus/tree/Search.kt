@@ -46,6 +46,7 @@ fun searchTreeBFS(
     query: String,
     options: SearchOptions
 ): Flow<TreeSearchResult> = flow {
+    // TODO search for resources.
     val matcher: (String) -> Boolean = if (options.useRegex) {
         // Compile regex with case option
         val regex = try {

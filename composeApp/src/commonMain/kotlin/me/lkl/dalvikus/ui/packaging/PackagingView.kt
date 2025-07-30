@@ -160,7 +160,7 @@ private fun SignInfoCards(
                                         color = MaterialTheme.colorScheme.primary
                                     )
                                 } else {
-                                    IconButton(onClick = {
+                                    TextButton(onClick = {
                                         loadingApk.value = apk
                                         scope.launch {
                                             packagingViewModel.signApk(
@@ -182,9 +182,11 @@ private fun SignInfoCards(
                                             imageVector = Icons.Outlined.Draw,
                                             contentDescription = stringResource(Res.string.sign)
                                         )
+                                        Spacer(Modifier.width(4.dp))
+                                        Text(stringResource(Res.string.sign))
                                     }
 
-                                    IconButton(onClick = {
+                                    TextButton(onClick = {
                                         loadingApk.value = apk
                                         scope.launch {
                                             packagingViewModel.deployApk(
@@ -204,8 +206,10 @@ private fun SignInfoCards(
                                             imageVector = Icons.Outlined.InstallMobile,
                                             contentDescription = stringResource(Res.string.deploy)
                                         )
+                                        Spacer(Modifier.width(4.dp))
+                                        Text(stringResource(Res.string.deploy))
                                     }
-                                }
+                                    }
                             }
                         }
                     }

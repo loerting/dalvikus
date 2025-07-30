@@ -3,6 +3,7 @@ package me.lkl.dalvikus
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
@@ -36,6 +37,7 @@ import me.lkl.dalvikus.ui.nav.NavItem
 import me.lkl.dalvikus.ui.snackbar.SnackbarManager
 import me.lkl.dalvikus.ui.snackbar.SnackbarResources
 import me.lkl.dalvikus.ui.tabs.TabManager
+import me.lkl.dalvikus.ui.tree.TreeDragAndDropTarget
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
 import org.jetbrains.compose.splitpane.HorizontalSplitPane
@@ -72,6 +74,7 @@ internal fun App(
             text = { Text(stringResource(Res.string.dialog_exit_message)) },
             confirmButton = {
                 TextButton(onClick = {
+                    dalvikusSettings.saveAll()
                     onExitConfirmed()
                 }) {
                     Icon(
@@ -143,6 +146,8 @@ internal fun Content() {
     var showTree by remember { mutableStateOf(false) }
     var showTreeEverPressed by remember { mutableStateOf(false) }
 
+    val unsupportedFileText = stringResource(Res.string.tree_unsupported_file_type)
+    val dragAndDropTarget = remember { TreeDragAndDropTarget(unsupportedFileText) }
 
     Row {
         Column(
@@ -155,7 +160,10 @@ internal fun Content() {
                 navItems.forEach { item ->
                     NavigationRailItem(
                         selected = selectedNavItem == item.key,
-                        onClick = { selectedNavItem = item.key },
+                        onClick = {
+                            dalvikusSettings.saveAll()
+                            selectedNavItem = item.key
+                        },
                         icon = { Icon(item.icon, contentDescription = stringResource(item.labelRes)) },
                         label = { Text(stringResource(item.labelRes)) }
                     )
@@ -179,7 +187,11 @@ internal fun Content() {
                             )
                         }
                     },
-                    label = { Text(stringResource(Res.string.nav_file_tree)) }
+                    label = { Text(stringResource(Res.string.nav_file_tree)) },
+                    modifier = Modifier.dragAndDropTarget(
+                            shouldStartDragAndDrop = { true },
+                            target = dragAndDropTarget
+                        ),
                 )
             }
         }
@@ -307,6 +319,7 @@ fun DeployButton(deploy: (ZipNode) -> Unit) {
             .map { it as ZipNode }
     var checked by remember { mutableStateOf(false) }
     IconButton(
+        enabled = packagingViewModel.getKeystoreInfo().isValid() && apks.isNotEmpty(),
         onClick = { checked = !checked },
     ) {
         Icon(Icons.Outlined.PlayCircle, contentDescription = stringResource(Res.string.sign_and_deploy))

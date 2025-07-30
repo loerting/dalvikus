@@ -29,6 +29,8 @@ fun main() = application {
         onKeyEvent = ctrlShortcuts(keyActionMap)
     ) {
         window.minimumSize = Dimension(350, 600)
-        App(showExitDialog, onExitConfirmed = { exitApplication() })
+        App(showExitDialog, onExitConfirmed = {
+            exitApplication()
+        })
     }
 }

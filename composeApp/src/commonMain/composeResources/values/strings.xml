@@ -16,7 +16,7 @@
     <string name="welcome_tab_description">TODO</string>
 
     <string name="dialog_exit_title">Exit</string>
-    <string name="dialog_exit_message">Are you sure you want to exit? Unsaved changes will be lost.</string>
+    <string name="dialog_exit_message">Are you sure you want to exit? Unsaved editor changes will be lost.</string>
 
     <string name="dialog_select_android_archive_title">Select Android Archive</string>
     <string name="dialog_select_android_archive_message">Please select an Android archive (APK, AAB, ZIP) to open.</string>

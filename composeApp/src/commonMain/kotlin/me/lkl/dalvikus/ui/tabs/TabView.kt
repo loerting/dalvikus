@@ -27,72 +27,77 @@ fun TabView(
         UnsavedChangesDialog(tabManager, showCloseDialog, pendingCloseTab)
     }
     Column {
-        SecondaryScrollableTabRow(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            selectedTabIndex = tabManager.selectedTabIndex,
-            modifier = Modifier.fillMaxWidth(),
-            edgePadding = 0.dp,
-        ) {
-            tabManager.tabs.forEachIndexed { index, tab ->
-                val tooltipState = rememberTooltipState(isPersistent = false)
-                Tab(
-                    selected = tabManager.selectedTabIndex == index,
-                    onClick = { tabManager.selectTab(index) },
-                    text = {
-                        var unsaved by tab.hasUnsavedChanges
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(end = 8.dp)
-                        ) {
-                            Icon(imageVector = tab.tabIcon, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            TooltipBox(
-                                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(8.dp),
-                                tooltip = {
-                                    RichTooltip(
-                                        title = { Text(stringResource(Res.string.tooltip_tab_title)) }
-                                    ) {
-                                        Text(
-                                            tab.contentProvider.getSourcePath() ?: stringResource(Res.string.unknown_source),
-                                        )
-                                    }
-                                },
-                                state = tooltipState
+        if (tabManager.tabs.isNotEmpty()) {
+            SecondaryScrollableTabRow(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                selectedTabIndex = tabManager.selectedTabIndex,
+                modifier = Modifier.fillMaxWidth(),
+                edgePadding = 0.dp,
+            ) {
+                tabManager.tabs.forEachIndexed { index, tab ->
+                    val tooltipState = rememberTooltipState(isPersistent = false)
+                    Tab(
+                        selected = tabManager.selectedTabIndex == index,
+                        onClick = { tabManager.selectTab(index) },
+                        text = {
+                            var unsaved by tab.hasUnsavedChanges
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(end = 8.dp)
                             ) {
-                                Text(
-                                    if (unsaved) "${tab.tabName()}*" else tab.tabName(),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.width(4.dp))
-                            if(tabManager.tabs.size > 1) {
                                 Icon(
-                                    imageVector = Icons.Default.Close,
+                                    imageVector = tab.tabIcon,
                                     contentDescription = null,
-                                    modifier = Modifier
-                                        .size(16.dp)
-                                        .clickable {
-                                            if (tabManager.tabs.size > 1) {
-                                                if (unsaved) {
-                                                    pendingCloseTab.value = tab
-                                                    showCloseDialog.value = true
-                                                } else {
-                                                    tabManager.closeTab(tab)
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                TooltipBox(
+                                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(8.dp),
+                                    tooltip = {
+                                        RichTooltip(
+                                            title = { Text(stringResource(Res.string.tooltip_tab_title)) }
+                                        ) {
+                                            Text(
+                                                tab.contentProvider.getSourcePath()
+                                                    ?: stringResource(Res.string.unknown_source),
+                                            )
+                                        }
+                                    },
+                                    state = tooltipState
+                                ) {
+                                    Text(
+                                        if (unsaved) "${tab.tabName()}*" else tab.tabName(),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.width(4.dp))
+                                if (tabManager.tabs.size > 1) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(16.dp)
+                                            .clickable {
+                                                if (tabManager.tabs.size > 1) {
+                                                    if (unsaved) {
+                                                        pendingCloseTab.value = tab
+                                                        showCloseDialog.value = true
+                                                    } else {
+                                                        tabManager.closeTab(tab)
+                                                    }
                                                 }
                                             }
-                                        }
-                                )
+                                    )
+                                }
                             }
                         }
-                    }
-                )
+                    )
+                }
             }
-        }
 
-        if (tabManager.tabs.isNotEmpty()) {
             TabContentRenderer(tab = tabManager.currentTab)
         }
     }
