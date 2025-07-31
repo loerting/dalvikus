@@ -1,5 +1,6 @@
 package me.lkl.dalvikus.ui.editor
 
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,15 +10,19 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.sp
+import brut.androlib.res.data.ResResSpec
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.tabs.TabElement
+import me.lkl.dalvikus.tree.archive.ApkNode
 import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
 import me.lkl.dalvikus.ui.editor.highlight.highlightCode
 import me.lkl.dalvikus.ui.editor.suggestions.AssistPopupState
+import me.lkl.dalvikus.ui.uiTreeRoot
+import java.math.BigInteger
 
 const val maxEditorFileSize = 128 * 1024 // 128 KiB
 const val maxEditorLines = 10000 // 10,000 lines
@@ -220,5 +225,18 @@ class EditorViewModel(private val tab: TabElement) {
             selection = TextRange(startIndex + text.length, startIndex + text.length)
         )
         changeContent(newTextFieldValue, coroutineScope)
+    }
+
+    fun tryResolveResIdText(unsignedValue: BigInteger): String {
+        val apks = uiTreeRoot.childrenFlow.value.filterIsInstance<ApkNode>()
+        val resIds = mutableListOf<ResResSpec>()
+        for (apk in apks) {
+            val resResSpec = apk.getResourceById(unsignedValue.toInt())
+            if (resResSpec != null) {
+                resIds.add(resResSpec)
+            }
+        }
+        return if (resIds.isEmpty()) "Resource not found"
+        else resIds.joinToString(", ") { "R.${it.type.name}.${it.name}" }
     }
 }

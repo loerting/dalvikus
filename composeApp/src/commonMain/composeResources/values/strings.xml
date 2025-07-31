@@ -80,7 +80,7 @@
 
     <string name="deploy">Deploy</string>
     <string name="sign_deploy_app">Sign and deploy %1$s</string>
-    <string name="open">"Open</string>
+    <string name="open">Open</string>
     <string name="close">Close</string>
     <string name="select">Select</string>
     <string name="cancel">Cancel</string>

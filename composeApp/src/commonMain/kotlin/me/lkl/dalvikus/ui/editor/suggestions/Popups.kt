@@ -2,10 +2,8 @@ package me.lkl.dalvikus.ui.editor.suggestions
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.outlined.ArrowCircleRight
-import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.MaterialTheme
@@ -134,14 +132,7 @@ fun HexPopup(
             8 -> {
                 println(cleanedHex)
                 if(cleanedHex.startsWith("7e") || cleanedHex.startsWith("7f")) {
-                    val intValue = signedValue.toInt()
-                    val typeId = (intValue shr 16) and 0xFF
-                    val entryId = intValue and 0xFFFF
-                    val typeNames = mapOf(
-                        1 to "anim", 2 to "drawable", 3 to "layout", 4 to "string", 5 to "style", 6 to "id"
-                    )
-                    val typeName = typeNames[typeId] ?: "unknown"
-                    "$typeName:$entryId (resource ID)"
+                    "$cleanedHex (resource ID) = ${viewModel.tryResolveResIdText(unsignedValue)} (resolved) "
                 } else {
                     val floatValue = Float.fromBits(signedValue.toInt())
                     "$signedValue (base 10) = $floatValue (float)"

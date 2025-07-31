@@ -11,6 +11,7 @@ import me.lkl.dalvikus.snackbarManager
 import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.tree.Node
 import java.io.File
+import java.math.BigInteger
 
 class ApkNode(
     override val name: String,
@@ -46,6 +47,13 @@ class ApkNode(
 
     override fun readEntry(path: String): ByteArray {
         return super.readEntry(path)
+    }
+
+    fun getResourceById(unsignedValue: Int): ResResSpec? {
+        if (!resTable.isMainPackageLoaded) return null
+        val resId = ResID(unsignedValue)
+        val resSpec = resTable.mainPackage.getResSpec(resId)
+        return resSpec
     }
 }
 

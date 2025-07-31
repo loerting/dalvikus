@@ -64,9 +64,9 @@ val resourceTypesIcons = mapOf(
 
 @Composable
 private fun ApkResourceCards() {
+    // TODO add search bar for resource ids in base 16, base 10, and resource name.
     val treeRootChildren by uiTreeRoot.childrenFlow.collectAsState()
-    val apks = treeRootChildren
-        .filterIsInstance<ApkNode>()
+    val apks = treeRootChildren.filterIsInstance<ApkNode>()
 
     val gridState = rememberLazyGridState()
     var selectedResType by remember { mutableStateOf("all") }
