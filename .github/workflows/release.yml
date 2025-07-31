@@ -28,13 +28,12 @@ jobs:
 
       - name: Build native installer
         run: |
-          cd composeApp
           if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            ./gradlew packageReleaseDeb
+            ./gradlew composeApp:packageReleaseDeb
           elif [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            ./gradlew packageReleaseMsi
+            ./gradlew composeApp:packageReleaseMsi
           elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-            ./gradlew packageReleaseDmg
+            ./gradlew composeApp:packageReleaseDmg
           fi
 
       - name: Upload installer artifacts
