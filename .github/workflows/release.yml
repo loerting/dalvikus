@@ -46,3 +46,24 @@ jobs:
             composeApp/build/compose/binaries/**/*.deb
             composeApp/build/compose/binaries/**/*.msi
             composeApp/build/compose/binaries/**/*.dmg
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Download all installer artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts # All artifacts will be downloaded into this directory
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/dalvikus-ubuntu-latest/**/*.deb
+            artifacts/dalvikus-windows-latest/**/*.msi
+            artifacts/dalvikus-macos-latest/**/*.dmg
