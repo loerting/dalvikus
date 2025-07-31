@@ -150,7 +150,7 @@ class PackagingViewModel() {
         onSuccess: () -> Unit,
         packageName: String? = null
     ) = withContext(Dispatchers.IO) {
-        // TODO add translations for messages here.
+        // TODO add string resources for messages here.
         try {
             AndroidDebugBridge.init(false)
             val adbLocation = dalvikusSettings["adb_path"] as File

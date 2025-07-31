@@ -66,19 +66,29 @@ compose.desktop {
     application {
         mainClass = "MainKt"
 
+        buildTypes.release.proguard {
+            configurationFiles.from(
+                project.file("proguard-rules.pro")
+            )
+            isEnabled.set(false)
+        }
+
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "dalvikus"
             packageVersion = "1.0.0"
+            description = "Dalvikus is a versatile tool for working with Dalvik bytecode, APKs, and Android applications."
+            vendor = "Leonhard Kohl-Loerting"
+            copyright = "© 2025 Leonhard Kohl-Loerting - License: GPL-3.0"
 
             linux {
-                iconFile.set(project.file("desktopAppIcons/LinuxIcon.png"))
+                iconFile.set(project.file("desktopAppIcons/logo.png"))
             }
             windows {
-                iconFile.set(project.file("desktopAppIcons/WindowsIcon.ico"))
+                iconFile.set(project.file("desktopAppIcons/logo.ico"))
             }
             macOS {
-                iconFile.set(project.file("desktopAppIcons/MacosIcon.icns"))
+                iconFile.set(project.file("desktopAppIcons/logo.icns"))
                 bundleID = "me.lkl.dalvikus.desktopApp"
             }
         }
@@ -89,6 +99,7 @@ compose.desktop {
 composeCompiler {
     featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
 }
+
 tasks.withType<ComposeHotRun>().configureEach {
     mainClass.set("MainKt")
 }

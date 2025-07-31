@@ -14,6 +14,8 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.InsertDriveFile
+import androidx.compose.material.icons.automirrored.outlined.ViewList
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.filled.Search
@@ -113,7 +115,7 @@ val resourceTypesIcons = mapOf(
     "anim" to Icons.Outlined.PlayArrow,
     "animator" to Icons.Outlined.Movie,
     "attr" to Icons.Outlined.Tune,
-    "array" to Icons.Outlined.ViewList,
+    "array" to Icons.AutoMirrored.Outlined.ViewList,
     "bool" to Icons.Outlined.CheckBox,
     "color" to Icons.Outlined.Palette,
     "dimen" to Icons.Outlined.FormatListNumbered,
@@ -123,7 +125,7 @@ val resourceTypesIcons = mapOf(
     "menu" to Icons.Outlined.Menu,
     "mipmap" to Icons.Outlined.Apps,
     "plurals" to Icons.Outlined.FormatListNumbered,
-    "raw" to Icons.Outlined.InsertDriveFile,
+    "raw" to Icons.AutoMirrored.Outlined.InsertDriveFile,
     "string" to Icons.Outlined.TextFields,
     "style" to Icons.Outlined.Style,
     "xml" to Icons.Outlined.Code,

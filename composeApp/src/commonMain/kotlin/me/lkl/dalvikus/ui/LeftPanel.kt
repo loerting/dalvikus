@@ -37,6 +37,7 @@ import me.lkl.dalvikus.tree.root.HiddenRoot
 import me.lkl.dalvikus.ui.tree.FileSelectorDialog
 import me.lkl.dalvikus.ui.tree.TreeDragAndDropTarget
 import me.lkl.dalvikus.ui.tree.TreeView
+import me.lkl.dalvikus.util.SearchOptions
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
 
@@ -45,6 +46,10 @@ val editableFiles = listOf("apk", "apks", "aab", "jar", "zip", "xapk", "dex", "o
 var showTreeAddFileDialog by mutableStateOf(false)
 
 internal val uiTreeRoot: HiddenRoot = HiddenRoot(
+    /*ApkNode(
+        "sample.apk",
+        File("/home/admin/Downloads/sample.apk"), null
+    )*/
 )
 internal var currentSelection by mutableStateOf<Node?>(null)
 internal var scrollAndExpandSelection = mutableStateOf(false)
@@ -68,6 +73,7 @@ internal fun LeftPanelContent() {
     }
 
     val scope = rememberCoroutineScope()
+
     val searchBarState = rememberSearchBarState()
     val searchFieldState = rememberTextFieldState()
     var searchOptions by remember { mutableStateOf(SearchOptions()) }
@@ -336,7 +342,6 @@ private fun SearchResults(
 }
 
 fun selectFileTreeNode(node: Node) {
-    // TODO find out why it doesn't scroll.
     currentSelection = node
     scrollAndExpandSelection.value = true
 }
