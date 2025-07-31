@@ -1,7 +1,8 @@
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,22 +18,25 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun SettingsView() {
     val grouped = dalvikusSettings.groupedByCategory()
-    val listState = rememberLazyListState()
+    val gridState = rememberLazyGridState()
 
     Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 800.dp),
+            state = gridState,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(end = 12.dp),
-            state = listState
+            contentPadding = PaddingValues(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             grouped.forEach { (category, settings) ->
                 item {
                     CollapseCard(
                         title = stringResource(category.nameRes),
                         icon = category.icon,
-                        defaultState = false,
-                        modifier = Modifier.fillMaxWidth()
+                        defaultState = false
                     ) {
                         Column {
                             settings.forEach { setting ->
@@ -45,7 +49,7 @@ fun SettingsView() {
         }
 
         VerticalScrollbar(
-            adapter = rememberScrollbarAdapter(scrollState = listState),
+            adapter = rememberScrollbarAdapter(scrollState = gridState),
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .fillMaxHeight()

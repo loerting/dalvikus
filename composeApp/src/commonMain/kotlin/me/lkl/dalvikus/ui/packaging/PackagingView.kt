@@ -3,8 +3,9 @@ package me.lkl.dalvikus.ui.packaging
 import SettingRow
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
@@ -64,167 +65,166 @@ fun PackagingView(packagingViewModel: PackagingViewModel) {
                 text = {
                     Text(stringResource(Res.string.fab_create_keystore))
                 },
-                )
+            )
         }
     ) { innerPadding ->
         Column(
             modifier = Modifier.fillMaxSize().padding(innerPadding)
         ) {
-            CollapseCard(
-                title = stringResource(Res.string.signature_settings_title),
-                icon = Icons.Outlined.Key,
-                defaultState = false
-            ) {
-                Column {
-                    SettingRow(dalvikusSettings.getSetting("keystore_file"))
-                    Column(Modifier.padding(horizontal = settingPadHor)) {
-                        Text(
-                            stringResource(Res.string.signature_keystore_password, keystoreInfo.keystoreFile.name),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        PasswordField(
-                            password = keystorePassword,
-                            onPasswordChange = packagingViewModel::updateKeystorePassword,
-                            isError = keystorePassword.length < 6,
-                            errorMessage = stringResource(Res.string.error_password_min_length)
-                        )
-                        Spacer(modifier = Modifier.height(settingPadVer))
-                    }
-
-                    SettingRow(dalvikusSettings.getSetting("key_alias"))
-                    Column(Modifier.padding(horizontal = settingPadHor)) {
-                        Text(
-                            stringResource(Res.string.signature_key_password, keystoreInfo.keyAlias),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        PasswordField(
-                            password = keyPassword,
-                            onPasswordChange = packagingViewModel::updateKeyPassword,
-                            isError = keyPassword.length < 6,
-                            errorMessage = stringResource(Res.string.error_password_min_length)
-                        )
-                        Spacer(modifier = Modifier.height(settingPadVer))
-                    }
-                }
-            }
-            SignInfoCards(packagingViewModel)
-        }
-    }
-}
-
-
-@Composable
-private fun SignInfoCards(
-    packagingViewModel: PackagingViewModel
-) {
-    val keystoreInfo = packagingViewModel.getKeystoreInfo()
-
-    val treeRootChildren by uiTreeRoot.childrenFlow.collectAsState()
-    val apks =
-        treeRootChildren
-            .filter { it is ApkNode }
-            .map { it as ApkNode }
-
-    val loadingApk = remember { mutableStateOf<ZipNode?>(null) }
-    val scope = rememberCoroutineScope()
-
-    val listState = rememberLazyListState()
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            state = listState
-        ) {
-            apks.forEach { apk ->
-                item {
-                    CollapseCard(
-                        title = apk.name,
-                        icon = Icons.Outlined.Android,
-                        defaultState = false
-                    ) {
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            SignatureStatus(packagingViewModel, apk, loadingApk)
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                                horizontalArrangement = Arrangement.End
-                            ) {
-                                if (loadingApk.value == apk) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(24.dp),
-                                        strokeWidth = 2.dp,
-                                        color = MaterialTheme.colorScheme.primary
+            val keystoreInfo = packagingViewModel.getKeystoreInfo()
+            val treeRootChildren by uiTreeRoot.childrenFlow.collectAsState()
+            val apks =
+                treeRootChildren
+                    .filter { it is ApkNode }
+                    .map { it as ApkNode }
+            val loadingApk = remember<MutableState<ZipNode?>> { mutableStateOf(null) }
+            val scope = rememberCoroutineScope()
+            val gridState = rememberLazyGridState()
+            Box(modifier = Modifier.fillMaxSize()) {
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(minSize = 800.dp),
+                    state = gridState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(end = 12.dp),
+                    contentPadding = PaddingValues(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    item {
+                        CollapseCard(
+                            title = stringResource(Res.string.signature_settings_title),
+                            icon = Icons.Outlined.Key,
+                            defaultState = false
+                        ) {
+                            Column {
+                                SettingRow(dalvikusSettings.getSetting("keystore_file"))
+                                Column(Modifier.padding(horizontal = settingPadHor)) {
+                                    Text(
+                                        stringResource(
+                                            Res.string.signature_keystore_password,
+                                            keystoreInfo.keystoreFile.name
+                                        ),
+                                        style = MaterialTheme.typography.bodyLarge
                                     )
-                                } else {
-                                    TextButton(onClick = {
-                                        loadingApk.value = apk
-                                        scope.launch {
-                                            packagingViewModel.signApk(
-                                                keystoreInfo = keystoreInfo,
-                                                apk = apk.zipFile,
-                                                outputApk = apk.zipFile,
-                                                onError = { throwable ->
-                                                    loadingApk.value = null
-                                                    snackbarManager?.showError(throwable)
-                                                },
-                                                onSuccess = {
-                                                    loadingApk.value = null
-                                                    snackbarManager?.showSuccess()
-                                                }
-                                            )
-                                        }
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Draw,
-                                            contentDescription = stringResource(Res.string.sign)
-                                        )
-                                        Spacer(Modifier.width(4.dp))
-                                        Text(stringResource(Res.string.sign))
-                                    }
+                                    PasswordField(
+                                        password = keystorePassword,
+                                        onPasswordChange = packagingViewModel::updateKeystorePassword,
+                                        isError = keystorePassword.length < 6,
+                                        errorMessage = stringResource(Res.string.error_password_min_length)
+                                    )
+                                    Spacer(modifier = Modifier.height(settingPadVer))
+                                }
 
-                                    TextButton(onClick = {
-                                        loadingApk.value = apk
-                                        scope.launch {
-                                            packagingViewModel.deployApk(
-                                                apk = apk.zipFile,
-                                                onError = { throwable ->
-                                                    loadingApk.value = null
-                                                    snackbarManager?.showError(throwable)
-                                                },
-                                                onSuccess = {
-                                                    loadingApk.value = null
-                                                    snackbarManager?.showSuccess()
-                                                },
-                                                packageName = apk.getAndroidPackageName()
+                                SettingRow(dalvikusSettings.getSetting("key_alias"))
+                                Column(Modifier.padding(horizontal = settingPadHor)) {
+                                    Text(
+                                        stringResource(Res.string.signature_key_password, keystoreInfo.keyAlias),
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                    PasswordField(
+                                        password = keyPassword,
+                                        onPasswordChange = packagingViewModel::updateKeyPassword,
+                                        isError = keyPassword.length < 6,
+                                        errorMessage = stringResource(Res.string.error_password_min_length)
+                                    )
+                                    Spacer(modifier = Modifier.height(settingPadVer))
+                                }
+                            }
+                        }
+                    }
+                    apks.forEach { apk ->
+                        item {
+                            CollapseCard(
+                                title = apk.name,
+                                icon = Icons.Outlined.Android,
+                                defaultState = false
+                            ) {
+                                Column(modifier = Modifier.fillMaxWidth()) {
+                                    SignatureStatus(packagingViewModel, apk, loadingApk)
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                                        horizontalArrangement = Arrangement.End
+                                    ) {
+                                        if (loadingApk.value == apk) {
+                                            CircularProgressIndicator(
+                                                modifier = Modifier.size(24.dp),
+                                                strokeWidth = 2.dp,
+                                                color = MaterialTheme.colorScheme.primary
                                             )
+                                        } else {
+                                            TextButton(onClick = {
+                                                loadingApk.value = apk
+                                                scope.launch {
+                                                    packagingViewModel.signApk(
+                                                        keystoreInfo = keystoreInfo,
+                                                        apk = apk.zipFile,
+                                                        outputApk = apk.zipFile,
+                                                        onError = { throwable ->
+                                                            loadingApk.value = null
+                                                            snackbarManager?.showError(throwable)
+                                                        },
+                                                        onSuccess = {
+                                                            loadingApk.value = null
+                                                            snackbarManager?.showSuccess()
+                                                        }
+                                                    )
+                                                }
+                                            }) {
+                                                Icon(
+                                                    imageVector = Icons.Outlined.Draw,
+                                                    contentDescription = stringResource(Res.string.sign)
+                                                )
+                                                Spacer(Modifier.width(4.dp))
+                                                Text(stringResource(Res.string.sign))
+                                            }
+
+                                            TextButton(onClick = {
+                                                loadingApk.value = apk
+                                                scope.launch {
+                                                    packagingViewModel.deployApk(
+                                                        apk = apk.zipFile,
+                                                        onError = { throwable ->
+                                                            loadingApk.value = null
+                                                            snackbarManager?.showError(throwable)
+                                                        },
+                                                        onSuccess = {
+                                                            loadingApk.value = null
+                                                            snackbarManager?.showSuccess()
+                                                        },
+                                                        packageName = apk.getAndroidPackageName()
+                                                    )
+                                                }
+                                            }) {
+                                                Icon(
+                                                    imageVector = Icons.Outlined.InstallMobile,
+                                                    contentDescription = stringResource(Res.string.deploy)
+                                                )
+                                                Spacer(Modifier.width(4.dp))
+                                                Text(stringResource(Res.string.deploy))
+                                            }
                                         }
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.InstallMobile,
-                                            contentDescription = stringResource(Res.string.deploy)
-                                        )
-                                        Spacer(Modifier.width(4.dp))
-                                        Text(stringResource(Res.string.deploy))
                                     }
-                                    }
+                                }
                             }
                         }
                     }
                 }
+
+                VerticalScrollbar(
+                    adapter = rememberScrollbarAdapter(scrollState = gridState),
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .fillMaxHeight()
+                        .padding(vertical = 8.dp, horizontal = 8.dp)
+                )
             }
         }
-
-        VerticalScrollbar(
-            adapter = rememberScrollbarAdapter(scrollState = listState),
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .fillMaxHeight()
-                .padding(vertical = 8.dp, horizontal = 8.dp)
-        )
     }
 }
 
@@ -329,7 +329,6 @@ fun SignatureSchemeSection(title: String, certs: List<X509Certificate>) {
         }
     }
 }
-
 
 
 fun ByteArray.sha256Fingerprint(): String {

@@ -37,7 +37,7 @@ internal fun CollapseCard(
 ) {
     var expanded by remember { mutableStateOf(defaultState) }
 
-    DefaultCard(modifier = modifier) {
+    DefaultCard(modifier = modifier.sizeIn(maxWidth = 800.dp)) {
         Column {
             Row(
                 modifier = Modifier

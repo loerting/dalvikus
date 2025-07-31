@@ -1,34 +1,17 @@
 package me.lkl.dalvikus.ui.resources
 
 import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ViewList
 import androidx.compose.material.icons.filled.QuestionMark
-import androidx.compose.material.icons.outlined.Android
-import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.material.icons.outlined.Badge
-import androidx.compose.material.icons.outlined.CheckBox
-import androidx.compose.material.icons.outlined.Code
-import androidx.compose.material.icons.outlined.Dialpad
-import androidx.compose.material.icons.outlined.FontDownload
-import androidx.compose.material.icons.outlined.FormatListNumbered
-import androidx.compose.material.icons.outlined.Image
-import androidx.compose.material.icons.outlined.InsertDriveFile
-import androidx.compose.material.icons.outlined.Menu
-import androidx.compose.material.icons.outlined.Movie
-import androidx.compose.material.icons.outlined.Palette
-import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material.icons.outlined.Style
-import androidx.compose.material.icons.outlined.TextFields
-import androidx.compose.material.icons.outlined.Tune
-import androidx.compose.material.icons.outlined.ViewAgenda
-import androidx.compose.material.icons.outlined.ViewList
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -36,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import me.lkl.dalvikus.tree.TreeSearchResultType
 import me.lkl.dalvikus.tree.archive.ApkNode
 import me.lkl.dalvikus.ui.uiTreeRoot
 import me.lkl.dalvikus.util.CollapseCard
@@ -79,13 +61,14 @@ val resourceTypesIcons = mapOf(
     "font" to Icons.Outlined.FontDownload,
     "id" to Icons.Outlined.Badge,
 )
+
 @Composable
 private fun ApkResourceCards() {
     val treeRootChildren by uiTreeRoot.childrenFlow.collectAsState()
     val apks = treeRootChildren
         .filterIsInstance<ApkNode>()
 
-    val listState = rememberLazyListState()
+    val gridState = rememberLazyGridState()
     var selectedResType by remember { mutableStateOf("all") }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -114,9 +97,15 @@ private fun ApkResourceCards() {
         }
 
         Box(modifier = Modifier.fillMaxSize()) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                state = listState
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 800.dp),
+                state = gridState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(end = 12.dp),
+                contentPadding = PaddingValues(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 apks.forEach { apk ->
                     item {
@@ -128,14 +117,15 @@ private fun ApkResourceCards() {
                             val resSpecList = apk.getResourceSpecs()
                             if (resSpecList == null) return@CollapseCard
                             val resourceSpecs = resSpecList.filter { resourceSpec ->
-                                    resourceSpec != null && (selectedResType == "all" || resourceSpec.type.name == selectedResType)
-                                }
+                                resourceSpec != null && (selectedResType == "all" || resourceSpec.type.name == selectedResType)
+                            }
 
                             val innerListState = rememberLazyListState()
 
-                            Box(modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(max = 400.dp)
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(max = 400.dp)
                             ) {
                                 LazyColumn(
                                     state = innerListState,
@@ -170,7 +160,12 @@ private fun ApkResourceCards() {
                                             trailingContent = {
                                                 Text(resourceSpec.type.name)
                                             },
-                                            leadingContent = { Icon(resourceTypesIcons[resourceSpec.type.name] ?: Icons.Default.QuestionMark, contentDescription = null) },
+                                            leadingContent = {
+                                                Icon(
+                                                    resourceTypesIcons[resourceSpec.type.name]
+                                                        ?: Icons.Default.QuestionMark, contentDescription = null
+                                                )
+                                            },
                                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                                             modifier = Modifier
                                                 .fillMaxWidth()
@@ -194,7 +189,7 @@ private fun ApkResourceCards() {
             }
 
             VerticalScrollbar(
-                adapter = rememberScrollbarAdapter(scrollState = listState),
+                adapter = rememberScrollbarAdapter(scrollState = gridState),
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .fillMaxHeight()
