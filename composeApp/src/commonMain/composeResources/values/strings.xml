@@ -91,6 +91,8 @@
     <string name="dismiss">Dismiss</string>
     <string name="copy">Copy</string>
     <string name="browse_web">Browse web</string>
+    <string name="all_elements">All elements</string>
+
 
     <string name="sign_and_deploy">Sign and deploy</string>
     <string name="select_file">Select file</string>
@@ -105,6 +107,7 @@
     <string name="tree_search_no_results">No results found</string>
     <string name="tree_search_result_type_node">Tree node</string>
     <string name="tree_search_result_type_string">String constant</string>
+    <string name="tree_search_result_type_literal">Literal</string>
     <string name="tree_search_result_type_reference">Method or field reference</string>
 
     <string name="lookup_popup_open_definition">Open definition of class "%1$s"?</string>

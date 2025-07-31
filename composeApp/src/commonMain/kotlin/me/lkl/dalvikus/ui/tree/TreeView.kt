@@ -6,7 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -52,24 +53,32 @@ fun TreeView(
         }
     }
 
-    rootChildren.forEach { visit(it, 0) }
+    @Composable
+    fun recomputeVisibleNodes() {
+        visibleNodes.clear()
+        rootChildren.forEach { visit(it, 0) }
+    }
 
-    LaunchedEffect(scrollAndExpandSelection.value, selectedElement, visibleNodes) {
-        if (scrollAndExpandSelection.value) {
-            selectedElement?.let { selected ->
-                var parent: Node? = selected
-                while (parent != null) {
-                    expandedState[parent] = true
-                    parent = parent.parent
-                }
-                val index = visibleNodes.indexOfFirst { it.first == selected }
-                if (index >= 0) {
+    if (scrollAndExpandSelection.value) {
+        selectedElement?.let { selected ->
+            var parent: Node? = selected
+            while (parent != null) {
+                expandedState[parent] = true
+                parent = parent.parent
+            }
+            recomputeVisibleNodes()
+            val index = visibleNodes.indexOfFirst { it.first == selected }
+            if (index >= 0) {
+                coroutineScope.launch {
                     scrollState.animateScrollToItem(index)
                 }
             }
-            scrollAndExpandSelection.value = false
         }
+        scrollAndExpandSelection.value = false
     }
+
+    recomputeVisibleNodes()
+
 
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn(
@@ -88,7 +97,7 @@ fun TreeView(
                                 if (shouldExpand) {
                                     try {
                                         node.loadChildren()
-                                    } catch(ex: Exception) {
+                                    } catch (ex: Exception) {
                                         Logger.e("Failed to load file", ex)
                                     }
                                 }

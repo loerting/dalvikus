@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
 import io.github.composegears.valkyrie.MatchCase
 import io.github.composegears.valkyrie.RegularExpression
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import me.lkl.dalvikus.snackbarManager
@@ -227,11 +228,15 @@ private fun SearchResults(
     val query = searchFieldState.text
     var results by remember { mutableStateOf<List<TreeSearchResult>>(emptyList()) }
 
+    val allTypes = TreeSearchResultType.entries.toSet()
+    var selectedTypes by remember { mutableStateOf(allTypes) }
+
     // Trigger search when query changes
-    LaunchedEffect(query, searchOptions) {
+    LaunchedEffect(query, searchOptions, selectedTypes) {
         results = emptyList()
         if (query.isNotBlank()) {
             searchTreeBFS(uiTreeRoot, query as String, searchOptions)
+                .filter { selectedTypes.contains(it.type) }
                 .take(100)
                 .collect { match ->
                     results = results + match
@@ -239,16 +244,50 @@ private fun SearchResults(
         }
     }
 
+    @Composable
+    fun getResultTypeName(type: TreeSearchResultType): String = stringResource(
+        when (type) {
+            TreeSearchResultType.TREE_NODE -> Res.string.tree_search_result_type_node
+            TreeSearchResultType.STRING_VALUE -> Res.string.tree_search_result_type_string
+            TreeSearchResultType.REFERENCE -> Res.string.tree_search_result_type_reference
+            TreeSearchResultType.LITERAL -> Res.string.tree_search_result_type_literal
+        }
+    )
+
     Column(modifier.verticalScroll(rememberScrollState())) {
+        FlowRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            allTypes.forEach { type ->
+                val label = getResultTypeName(type)
+                FilterChip(
+                    elevation = null, // TODO remove elevation when https://youtrack.jetbrains.com/issue/CMP-2868 is fixed.
+                    selected = selectedTypes.contains(type),
+                    onClick = {
+                        selectedTypes = if (selectedTypes.contains(type)) {
+                            selectedTypes - type
+                        } else {
+                            selectedTypes + type
+                        }
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = type.icon,
+                            contentDescription = label
+                        )
+                    },
+                    label = { Text(label) }
+                )
+            }
+
+        }
+
         for (result in results) {
             val node = result.node
-            val type = stringResource(
-                when (result.type) {
-                    TreeSearchResultType.TREE_NODE -> Res.string.tree_search_result_type_node
-                    TreeSearchResultType.STRING_VALUE -> Res.string.tree_search_result_type_string
-                    TreeSearchResultType.REFERENCE -> Res.string.tree_search_result_type_reference
-                }
-            )
+            val type = getResultTypeName(result.type)
             ListItem(
                 headlineContent = {
                     Text(
@@ -257,6 +296,7 @@ private fun SearchResults(
                             TreeSearchResultType.TREE_NODE -> MaterialTheme.colorScheme.onSurface
                             TreeSearchResultType.STRING_VALUE -> MaterialTheme.colorScheme.primary
                             TreeSearchResultType.REFERENCE -> MaterialTheme.colorScheme.secondary
+                            TreeSearchResultType.LITERAL -> MaterialTheme.colorScheme.tertiary
                         },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis

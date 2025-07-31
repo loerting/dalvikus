@@ -10,7 +10,6 @@ import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.Coffee
 import androidx.compose.material.icons.filled.Draw
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Lan
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -26,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
 import kotlinx.coroutines.launch
+import me.lkl.dalvikus.icons.FamilyHistory
 import me.lkl.dalvikus.icons.ThreadUnread
 import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.settings.shortcutToggleEditorDecompiler
@@ -184,16 +184,16 @@ internal fun Content() {
                             }
                         }) {
                             Icon(
-                                if (!showTree) Icons.Outlined.Lan else Icons.Filled.Lan,
+                                imageVector = Icons.Default.FamilyHistory,
                                 contentDescription = stringResource(Res.string.nav_file_tree)
                             )
                         }
                     },
                     label = { Text(stringResource(Res.string.nav_file_tree)) },
                     modifier = Modifier.dragAndDropTarget(
-                            shouldStartDragAndDrop = { true },
-                            target = dragAndDropTarget
-                        ),
+                        shouldStartDragAndDrop = { true },
+                        target = dragAndDropTarget
+                    ),
                 )
             }
         }

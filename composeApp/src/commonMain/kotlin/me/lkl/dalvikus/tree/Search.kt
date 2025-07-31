@@ -2,24 +2,20 @@ package me.lkl.dalvikus.tree
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Abc
-import androidx.compose.material.icons.outlined.Abc
-import androidx.compose.material.icons.outlined.Category
-import androidx.compose.material.icons.outlined.DataObject
-import androidx.compose.material.icons.outlined.Interests
-import androidx.compose.material.icons.outlined.SubdirectoryArrowRight
-import androidx.compose.material.icons.outlined.Title
-import androidx.compose.material.icons.outlined.Water
+import androidx.compose.material.icons.filled.Route
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.android.tools.smali.dexlib2.iface.Annotation
 import com.android.tools.smali.dexlib2.iface.ClassDef
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.WideLiteralInstruction
 import com.android.tools.smali.dexlib2.iface.reference.FieldReference
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
 import com.android.tools.smali.dexlib2.iface.value.StringEncodedValue
-
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import me.lkl.dalvikus.icons.FamilyHistory
+import me.lkl.dalvikus.icons.ThreadUnread
 import me.lkl.dalvikus.tree.dex.DexEntryClassNode
 
 data class SearchOptions(
@@ -30,14 +26,22 @@ data class SearchOptions(
 enum class TreeSearchResultType {
     TREE_NODE,
     STRING_VALUE,
-    REFERENCE
+    LITERAL,
+    REFERENCE;
+
+    val icon: ImageVector
+        get() = when (this) {
+            TREE_NODE -> Icons.Default.FamilyHistory
+            STRING_VALUE -> Icons.Default.Abc
+            LITERAL -> Icons.Default.ThreadUnread
+            REFERENCE -> Icons.Default.Route
+        }
 }
 
 data class TreeSearchResult(val node: Node, val snippet: String, val type: TreeSearchResultType) {
     val icon: ImageVector = when (type) {
         TreeSearchResultType.TREE_NODE -> node.icon
-        TreeSearchResultType.STRING_VALUE -> Icons.Default.Abc
-        TreeSearchResultType.REFERENCE -> Icons.Outlined.SubdirectoryArrowRight
+        else -> type.icon
     }
     val path: String = node.getPathHistory()
 }
@@ -45,9 +49,10 @@ data class TreeSearchResult(val node: Node, val snippet: String, val type: TreeS
 fun searchTreeBFS(
     root: Node,
     query: String,
-    options: SearchOptions
+    options: SearchOptions,
+    maxResults: Int = 500
 ): Flow<TreeSearchResult> = flow {
-    // TODO search for resources.
+    // TODO search for resources by resource name, not by literal
     val matcher: (String) -> Boolean = if (options.useRegex) {
         // Compile regex with case option
         val regex = try {
@@ -69,7 +74,7 @@ fun searchTreeBFS(
     queue.add(root)
 
     var resultsFound = 0
-    while (queue.isNotEmpty() && resultsFound < 100) {
+    while (queue.isNotEmpty() && resultsFound < maxResults) {
         val current = queue.removeFirst()
         val path = current.getPathHistory()
 
@@ -95,7 +100,8 @@ fun searchTreeBFS(
                     if (instruction is ReferenceInstruction) {
                         val ref = instruction.reference
                         if (ref is MethodReference) {
-                            val methodSig = "${ref.definingClass}->${ref.name}(${ref.parameterTypes.joinToString("")})${ref.returnType}"
+                            val methodSig =
+                                "${ref.definingClass}->${ref.name}(${ref.parameterTypes.joinToString("")})${ref.returnType}"
                             if (matcher(methodSig)) {
                                 emit(TreeSearchResult(current, methodSig, TreeSearchResultType.REFERENCE))
                                 resultsFound++
@@ -106,6 +112,13 @@ fun searchTreeBFS(
                                 emit(TreeSearchResult(current, fieldSig, TreeSearchResultType.REFERENCE))
                                 resultsFound++
                             }
+                        }
+                    } else if (instruction is WideLiteralInstruction) {
+                        val value = instruction.wideLiteral.toString()
+                        val hexValue = "0x${instruction.wideLiteral.toString(16).lowercase()}"
+                        if (matcher(value) || matcher(hexValue)) {
+                            emit(TreeSearchResult(current, "$value ($hexValue)", TreeSearchResultType.LITERAL))
+                            resultsFound++
                         }
                     }
                 }
