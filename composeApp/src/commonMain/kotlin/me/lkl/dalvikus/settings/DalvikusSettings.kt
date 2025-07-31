@@ -150,6 +150,11 @@ class DalvikusSettings() {
         return settingsList.groupBy { it.category }
     }
 
+    fun getVersion(): String {
+        // get implementation version from the resources
+        return DalvikusSettings::class.java.`package`.implementationVersion ?: "(dev)"
+    }
+
     companion object {
         fun getRepoURI(): URI {
             return URI("https://github.com/loerting/dalvikus")

@@ -26,6 +26,7 @@ import org.jetbrains.compose.resources.stringResource
 import java.awt.Desktop
 import java.net.URI
 import kotlinx.coroutines.delay
+import me.lkl.dalvikus.dalvikusSettings
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -59,13 +60,13 @@ fun WelcomeView() {
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.AutoFixHigh,
-                        contentDescription = stringResource(Res.string.app_name),
+                        contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(64.dp)
                     )
 
                     Text(
-                        stringResource(Res.string.app_name),
+                        stringResource(Res.string.app_name_version, dalvikusSettings.getVersion()),
                         style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Center
