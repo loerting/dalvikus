@@ -11,6 +11,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
+import me.lkl.dalvikus.util.base10To0xOrNull
+import me.lkl.dalvikus.util.is0xHex
 
 actual fun highlightJavaCode(code: String, colors: CodeHighlightColors): AnnotatedString {
     val lexer = Java20Lexer(CharStreams.fromString(code))
@@ -29,11 +31,11 @@ actual fun highlightJavaCode(code: String, colors: CodeHighlightColors): Annotat
             val end = token.stopIndex + 1
 
             if (token.type == Java20Lexer.IntegerLiteral) {
-                if (token.text.startsWith("0x") || token.text.startsWith("-0x")) {
+                if (token.text.is0xHex()) {
                     addStringAnnotation("hex", token.text, start, end)
                 } else {
-                    token.text.toLongOrNull()?.let {
-                        addStringAnnotation("hex", "0x${it.toString(16).uppercase()}", start, end)
+                    token.text.base10To0xOrNull()?.let {
+                        addStringAnnotation("hex", it, start, end)
                     }
                 }
             }

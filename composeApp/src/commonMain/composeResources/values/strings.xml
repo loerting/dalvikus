@@ -115,4 +115,6 @@
     <string name="lookup_popup_current_class">This is the current class.</string>
     <string name="lookup_popup_runtime">Likely an Android or Java runtime class.</string>
 
+    <string name="resources_search_placeholder">Filter by id or name</string>
+
 </resources>

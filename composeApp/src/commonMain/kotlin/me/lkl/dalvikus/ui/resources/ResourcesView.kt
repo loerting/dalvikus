@@ -8,9 +8,15 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.QuestionMark
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,28 +25,91 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import dalvikus.composeapp.generated.resources.Res
+import dalvikus.composeapp.generated.resources.all_elements
+import dalvikus.composeapp.generated.resources.resources_search_placeholder
+import io.github.composegears.valkyrie.MatchCase
+import io.github.composegears.valkyrie.RegularExpression
 import me.lkl.dalvikus.tree.archive.ApkNode
 import me.lkl.dalvikus.ui.uiTreeRoot
 import me.lkl.dalvikus.util.CollapseCard
+import me.lkl.dalvikus.util.SearchOptions
+import me.lkl.dalvikus.util.createSearchMatcher
+import me.lkl.dalvikus.util.to0xHex
+import org.jetbrains.compose.resources.stringResource
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResourcesView() {
     val scope = rememberCoroutineScope()
+    val searchBarState = rememberSearchBarState()
+    val searchFieldState = rememberTextFieldState()
+    var searchOptions by remember { mutableStateOf(SearchOptions()) }
+
+    val searchField =
+        @Composable {
+            SearchBarDefaults.InputField(
+                searchBarState = searchBarState,
+                textFieldState = searchFieldState,
+                onSearch = {},
+                placeholder = {
+                    Text(
+                        stringResource(Res.string.resources_search_placeholder),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                leadingIcon = {
+                    Icon(Icons.Default.Search, contentDescription = null)
+                },
+                trailingIcon = {
+                    Row {
+                        if (searchFieldState.text.isNotEmpty()) {
+                            IconToggleButton(
+                                checked = searchOptions.useRegex,
+                                onCheckedChange = { searchOptions = searchOptions.copy(useRegex = it) }) {
+                                Icon(Icons.Filled.RegularExpression, contentDescription = "Regular expression")
+                            }
+                            IconToggleButton(
+                                checked = searchOptions.caseSensitive,
+                                onCheckedChange = { searchOptions = searchOptions.copy(caseSensitive = it) }) {
+                                Icon(Icons.Filled.MatchCase, contentDescription = "Case sensitive")
+                            }
+                            IconButton(onClick = {
+                                searchFieldState.setTextAndPlaceCursorAtEnd("")
+                            }) {
+                                Icon(Icons.Default.Clear, contentDescription = "Clear")
+                            }
+                        }
+                    }
+                }
+            )
+        }
 
     Scaffold(
-        containerColor = Color.Transparent
+        containerColor = Color.Transparent,
+        topBar = {
+            TopSearchBar(
+                state = searchBarState,
+                inputField = searchField,
+                shape = RoundedCornerShape(16.dp),
+                tonalElevation = 4.dp,
+                shadowElevation = 0.dp,
+                windowInsets = SearchBarDefaults.windowInsets,
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                scrollBehavior = null
+            )
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier.fillMaxSize().padding(innerPadding)
         ) {
-            ApkResourceCards()
+            ApkResourceCards(searchFieldState, searchOptions)
         }
     }
 }
 
 val resourceTypesIcons = mapOf(
-    "all" to Icons.Outlined.Android,
-
     "anim" to Icons.Outlined.PlayArrow,
     "animator" to Icons.Outlined.Movie,
     "attr" to Icons.Outlined.Tune,
@@ -63,22 +132,31 @@ val resourceTypesIcons = mapOf(
 )
 
 @Composable
-private fun ApkResourceCards() {
-    // TODO add search bar for resource ids in base 16, base 10, and resource name.
+private fun ApkResourceCards(searchFieldState: TextFieldState, searchOptions: SearchOptions) {
     val treeRootChildren by uiTreeRoot.childrenFlow.collectAsState()
     val apks = treeRootChildren.filterIsInstance<ApkNode>()
 
     val gridState = rememberLazyGridState()
     var selectedResType by remember { mutableStateOf("all") }
 
+    val searchMatcher by remember(searchFieldState.text, searchOptions) {
+        derivedStateOf { createSearchMatcher(searchFieldState.text.toString().replace(" ", ""), searchOptions) }
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
-        // Filter chips row
         FlowRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            FilterChip(
+                // TODO remove elevation = null when https://youtrack.jetbrains.com/issue/CMP-2868 is fixed.
+                elevation = null,
+                selected = selectedResType == "all",
+                onClick = { selectedResType = "all" },
+                label = { Text(stringResource(Res.string.all_elements)) }
+            )
             resourceTypesIcons.forEach { (type, icon) ->
                 FilterChip(
                     // TODO remove elevation = null when https://youtrack.jetbrains.com/issue/CMP-2868 is fixed.
@@ -118,6 +196,8 @@ private fun ApkResourceCards() {
                             if (resSpecList == null) return@CollapseCard
                             val resourceSpecs = resSpecList.filter { resourceSpec ->
                                 resourceSpec != null && (selectedResType == "all" || resourceSpec.type.name == selectedResType)
+                                        && (searchMatcher == null || searchMatcher!!(resourceSpec.name)
+                                        || searchMatcher!!(resourceSpec.id.toLong().toString()) || searchMatcher!!(resourceSpec.id.toLong().to0xHex()))
                             }
 
                             val innerListState = rememberLazyListState()
@@ -134,9 +214,9 @@ private fun ApkResourceCards() {
                                     items(resourceSpecs.size) { index ->
                                         val resourceSpec = resourceSpecs[index]
                                         val resId = resourceSpec!!.id
-                                        val resIdPkg = String.format("%02X", resId.packageId)
-                                        val resIdTypeId = String.format("%02X", resId.type)
-                                        val resIdEntryNumber = String.format("%04X", resId.entry)
+                                        val resIdPkg = String.format("%02x", resId.packageId)
+                                        val resIdTypeId = String.format("%02x", resId.type)
+                                        val resIdEntryNumber = String.format("%04x", resId.entry)
 
                                         ListItem(
                                             headlineContent = {

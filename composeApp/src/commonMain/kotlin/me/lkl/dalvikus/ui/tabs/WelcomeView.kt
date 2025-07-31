@@ -39,7 +39,7 @@ fun WelcomeView() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .background(MaterialTheme.colorScheme.surfaceContainerLow)
             .padding(24.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -79,7 +79,7 @@ fun WelcomeView() {
                         modifier = Modifier.padding(horizontal = 8.dp)
                     )
 
-                    Row(
+                    FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.padding(top = 8.dp)
                     ) {

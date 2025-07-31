@@ -17,11 +17,8 @@ import kotlinx.coroutines.flow.flow
 import me.lkl.dalvikus.icons.FamilyHistory
 import me.lkl.dalvikus.icons.ThreadUnread
 import me.lkl.dalvikus.tree.dex.DexEntryClassNode
-
-data class SearchOptions(
-    val caseSensitive: Boolean = false,
-    val useRegex: Boolean = false
-)
+import me.lkl.dalvikus.util.SearchOptions
+import me.lkl.dalvikus.util.createSearchMatcher
 
 enum class TreeSearchResultType {
     TREE_NODE,
@@ -53,22 +50,7 @@ fun searchTreeBFS(
     maxResults: Int = 500
 ): Flow<TreeSearchResult> = flow {
     // TODO search for resources by resource name, not by literal
-    val matcher: (String) -> Boolean = if (options.useRegex) {
-        // Compile regex with case option
-        val regex = try {
-            Regex(
-                query,
-                if (options.caseSensitive) setOf() else setOf(RegexOption.IGNORE_CASE)
-            )
-        } catch (_: Exception) {
-            return@flow // Invalid regex: skip search
-        }
-        { input -> regex.containsMatchIn(input) }
-    } else {
-        { input ->
-            input.contains(query, ignoreCase = !options.caseSensitive)
-        }
-    }
+    val matcher: (String) -> Boolean = createSearchMatcher(query, options) ?: return@flow
 
     val queue = ArrayDeque<Node>()
     queue.add(root)
@@ -94,7 +76,6 @@ fun searchTreeBFS(
                 }
             }
 
-            // Search method references
             classDef.methods.forEach { method ->
                 method.implementation?.instructions?.forEach { instruction ->
                     if (instruction is ReferenceInstruction) {
@@ -115,9 +96,10 @@ fun searchTreeBFS(
                         }
                     } else if (instruction is WideLiteralInstruction) {
                         val value = instruction.wideLiteral.toString()
-                        val hexValue = "0x${instruction.wideLiteral.toString(16).lowercase()}"
+                        val sign = if (value.startsWith("-")) "-" else ""
+                        val hexValue = "${sign}0x${instruction.wideLiteral.toString(16).removePrefix(sign)}"
                         if (matcher(value) || matcher(hexValue)) {
-                            emit(TreeSearchResult(current, "$value ($hexValue)", TreeSearchResultType.LITERAL))
+                            emit(TreeSearchResult(current, "$value (dec) / $hexValue (hex)", TreeSearchResultType.LITERAL))
                             resultsFound++
                         }
                     }
@@ -131,6 +113,7 @@ fun searchTreeBFS(
         }
     }
 }
+
 
 fun ClassDef.getStringPool(): List<String> {
     val stringPool = mutableSetOf<String>()

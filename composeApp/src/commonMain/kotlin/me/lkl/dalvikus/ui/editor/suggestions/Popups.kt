@@ -130,7 +130,7 @@ fun HexPopup(
 
         when (cleanedHex.length) {
             8 -> {
-                if(cleanedHex.startsWith("7e") || cleanedHex.startsWith("7f")) {
+                if(!isNegative && (cleanedHex.startsWith("7e") || cleanedHex.startsWith("7f"))) {
                     "$cleanedHex (resource ID) = ${viewModel.tryResolveResIdText(unsignedValue)} (resolved) "
                 } else {
                     val floatValue = Float.fromBits(signedValue.toInt())
