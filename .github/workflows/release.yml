@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     name: Build on ${{ matrix.os }}
+    timeout-minutes: 15
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -27,13 +28,14 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build native installer
+        shell: bash
         run: |
           if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            ./gradlew composeApp:packageReleaseDeb
+            ./gradlew composeApp:packageReleaseDeb --info --stacktrace
           elif [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            ./gradlew composeApp:packageReleaseMsi
+            ./gradlew composeApp:packageReleaseMsi --info --stacktrace
           elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-            ./gradlew composeApp:packageReleaseDmg
+            ./gradlew composeApp:packageReleaseDmg --info --stacktrace
           fi
 
       - name: Upload installer artifacts
