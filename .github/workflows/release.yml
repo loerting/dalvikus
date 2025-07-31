@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'       # Trigger on tag push like v1.0.0
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build on ${{ matrix.os }}
