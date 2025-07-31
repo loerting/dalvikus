@@ -70,7 +70,7 @@ compose.desktop {
             configurationFiles.from(
                 project.file("proguard-rules.pro")
             )
-            isEnabled.set(false)
+            isEnabled.set(true)
         }
 
         nativeDistributions {
