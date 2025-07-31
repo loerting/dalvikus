@@ -14,16 +14,11 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Password
-import androidx.compose.material.icons.outlined.TextFields
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draganddrop.DragAndDropEvent
-import androidx.compose.ui.draganddrop.DragAndDropTarget
-import androidx.compose.ui.draganddrop.awtTransferable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -35,9 +30,7 @@ import kotlinx.coroutines.launch
 import me.lkl.dalvikus.snackbarManager
 import me.lkl.dalvikus.tabManager
 import me.lkl.dalvikus.tree.*
-import me.lkl.dalvikus.tree.archive.ZipNode
-import me.lkl.dalvikus.tree.backing.FileBacking
-import me.lkl.dalvikus.tree.dex.DexFileNode
+import me.lkl.dalvikus.tree.archive.ApkNode
 import me.lkl.dalvikus.tree.filesystem.FileSystemFileNode
 import me.lkl.dalvikus.tree.root.HiddenRoot
 import me.lkl.dalvikus.ui.tree.FileSelectorDialog
@@ -51,10 +44,6 @@ val editableFiles = listOf("apk", "apks", "aab", "jar", "zip", "xapk", "dex", "o
 var showTreeAddFileDialog by mutableStateOf(false)
 
 internal val uiTreeRoot: HiddenRoot = HiddenRoot(
-    /* ZipNode(
-         "sample.apk",
-         File("/home/admin/Downloads/sample.apk"), null
-     )*/
 )
 internal var currentSelection by mutableStateOf<Node?>(null)
 internal var scrollAndExpandSelection = mutableStateOf(false)
@@ -220,25 +209,11 @@ internal fun LeftPanelContent() {
 }
 
 fun addFileToTree(file: File, unsupportedFileText: String) {
-    val extension = file.extension
-    when (extension.lowercase()) {
-        "apk", "apks", "aab", "jar", "zip", "xapk" -> uiTreeRoot.addChild(
-            ZipNode(
-                file.name,
-                file,
-                uiTreeRoot
-            )
-        )
-
-        "dex", "odex" -> uiTreeRoot.addChild(
-            DexFileNode(
-                file.name,
-                FileBacking(file),
-                uiTreeRoot
-            )
-        )
-
-        else -> snackbarManager?.showMessage(unsupportedFileText)
+    val node = NodeFactory.createNode(file, uiTreeRoot)
+    if (node !is FileSystemFileNode) {
+        uiTreeRoot.addChild(node)
+    } else {
+        snackbarManager?.showMessage(unsupportedFileText)
     }
 }
 

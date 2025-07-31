@@ -24,10 +24,10 @@ import dalvikus.composeapp.generated.resources.*
 import kotlinx.coroutines.launch
 import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.snackbarManager
+import me.lkl.dalvikus.tree.archive.ApkNode
 import me.lkl.dalvikus.tree.archive.ZipNode
 import me.lkl.dalvikus.ui.uiTreeRoot
 import me.lkl.dalvikus.util.CollapseCard
-import me.lkl.dalvikus.util.DefaultCard
 import me.lkl.dalvikus.util.PasswordField
 import org.jetbrains.compose.resources.stringResource
 import settingPadHor
@@ -122,8 +122,8 @@ private fun SignInfoCards(
     val treeRootChildren by uiTreeRoot.childrenFlow.collectAsState()
     val apks =
         treeRootChildren
-            .filter { it is ZipNode && it.name.endsWith("apk", ignoreCase = true) }
-            .map { it as ZipNode }
+            .filter { it is ApkNode }
+            .map { it as ApkNode }
 
     val loadingApk = remember { mutableStateOf<ZipNode?>(null) }
     val scope = rememberCoroutineScope()
@@ -198,7 +198,8 @@ private fun SignInfoCards(
                                                 onSuccess = {
                                                     loadingApk.value = null
                                                     snackbarManager?.showSuccess()
-                                                }
+                                                },
+                                                packageName = apk.getAndroidPackageName()
                                             )
                                         }
                                     }) {

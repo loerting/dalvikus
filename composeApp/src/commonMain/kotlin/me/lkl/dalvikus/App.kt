@@ -7,12 +7,10 @@ import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
-import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Coffee
 import androidx.compose.material.icons.filled.Draw
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Lan
-import androidx.compose.material.icons.filled.Park
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -28,13 +26,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
 import kotlinx.coroutines.launch
+import me.lkl.dalvikus.icons.ThreadUnread
 import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.settings.shortcutToggleEditorDecompiler
 import me.lkl.dalvikus.settings.shortcutTreeAdd
 import me.lkl.dalvikus.tabs.WelcomeTab
 import me.lkl.dalvikus.theme.AppTheme
 import me.lkl.dalvikus.theme.LocalThemeIsDark
-import me.lkl.dalvikus.tree.archive.ZipNode
+import me.lkl.dalvikus.tree.archive.ApkNode
 import me.lkl.dalvikus.ui.*
 import me.lkl.dalvikus.ui.nav.NavItem
 import me.lkl.dalvikus.ui.snackbar.SnackbarManager
@@ -142,6 +141,7 @@ internal fun Content() {
     val navItems = listOf(
         NavItem("Editor", Icons.Default.Edit, Res.string.nav_editor),
         NavItem("Decompiler", Icons.Default.Coffee, Res.string.nav_decompiler),
+        NavItem("Resources", Icons.Default.ThreadUnread, Res.string.nav_resources),
         NavItem("Packaging", Icons.Default.Draw, Res.string.nav_signing),
         NavItem("Settings", Icons.Default.Settings, Res.string.nav_settings),
     )
@@ -293,6 +293,7 @@ fun TopBar() {
                                     apk = node.zipFile,
                                     onError = { snackbarManager?.showError(it) },
                                     onSuccess = { snackbarManager?.showSuccess() },
+                                    packageName = node.getAndroidPackageName()
                                 )
                             }
                         }
@@ -313,12 +314,12 @@ fun TopBar() {
 @Composable
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview
-fun DeployButton(deploy: (ZipNode) -> Unit) {
+fun DeployButton(deploy: (ApkNode) -> Unit) {
     val treeRootChildren by uiTreeRoot.childrenFlow.collectAsState()
     val apks =
         treeRootChildren
-            .filter { it is ZipNode && it.name.endsWith("apk", ignoreCase = true) }
-            .map { it as ZipNode }
+            .filter { it is ApkNode }
+            .map { it as ApkNode }
     var checked by remember { mutableStateOf(false) }
     IconButton(
         enabled = packagingViewModel.getKeystoreInfo().isValid() && apks.isNotEmpty(),

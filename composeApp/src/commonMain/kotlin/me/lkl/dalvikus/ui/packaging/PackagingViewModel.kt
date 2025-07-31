@@ -1,6 +1,5 @@
 package me.lkl.dalvikus.ui.packaging
 
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -12,12 +11,12 @@ import com.android.ddmlib.AdbCommandRejectedException
 import com.android.ddmlib.AndroidDebugBridge
 import com.android.ddmlib.IDevice
 import com.android.ddmlib.InstallException
+import com.android.ddmlib.NullOutputReceiver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.snackbarManager
@@ -148,8 +147,10 @@ class PackagingViewModel() {
     suspend fun deployApk(
         apk: File,
         onError: (Throwable) -> Unit,
-        onSuccess: () -> Unit
+        onSuccess: () -> Unit,
+        packageName: String? = null
     ) = withContext(Dispatchers.IO) {
+        // TODO add translations for messages here.
         try {
             AndroidDebugBridge.init(false)
             val adbLocation = dalvikusSettings["adb_path"] as File
@@ -191,7 +192,20 @@ class PackagingViewModel() {
                     } else throw Exception("Failed to install APK on device ${device.serialNumber}: ${ie.message}", ie.cause ?: ie)
                 }
             }
-            // TODO launch the app (on all devices). this requires the package name.
+            // launch the app (on all devices). this requires the package name.
+            packageName?.let {
+                for (device in devices) {
+                    try {
+                        val launchIntent = "monkey -p $packageName -c android.intent.category.LAUNCHER 1"
+                        device.executeShellCommand(launchIntent, NullOutputReceiver())
+                    } catch (e: Exception) {
+                        snackbarManager?.showMessage("Failed to launch app on ${device.serialNumber}: ${e.message}")
+                    }
+                }
+            } ?: run {
+                snackbarManager?.showMessage("APK installed successfully, but no package name provided to launch the app.")
+            }
+
 
             onSuccess()
         } catch (e: Exception) {

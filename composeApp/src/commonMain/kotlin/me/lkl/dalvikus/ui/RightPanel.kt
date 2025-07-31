@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import me.lkl.dalvikus.selectedNavItem
 import me.lkl.dalvikus.ui.packaging.PackagingView
 import me.lkl.dalvikus.ui.packaging.PackagingViewModel
+import me.lkl.dalvikus.ui.resources.ResourcesView
 import me.lkl.dalvikus.ui.tabs.TabView
 import me.lkl.dalvikus.util.DefaultCard
 
@@ -23,8 +24,9 @@ internal fun RightPanelContent() {
         AnimatedContent(targetState = selectedNavItem, label = "NavItem Animation") { targetTab ->
             when (targetTab) {
                 "Editor", "Decompiler" -> DefaultCard { TabView() }
-                "Settings" -> SettingsView()
+                "Resources" -> ResourcesView()
                 "Packaging" -> PackagingView(packagingViewModel)
+                "Settings" -> SettingsView()
                 else -> throw IllegalArgumentException(
                     "Unsupported selectedNavItem: $selectedNavItem. "
                 )

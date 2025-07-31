@@ -15,6 +15,7 @@ ddmlib = "31.13.0-alpha01"
 cfr = "0.152"
 dex2jarNicoMexis = "2.4.28"
 vineflower = "1.11.1"
+apktoolLib = "2.12.0"
 
 [libraries]
 
@@ -35,6 +36,7 @@ ddmlib = { module = "com.android.tools.ddms:ddmlib", version.ref = "ddmlib" }
 cfr = { module = "org.benf:cfr", version.ref = "cfr" }
 dex2jarNicoMexis = { module = "de.femtopedia.dex2jar:dex2jar", version.ref = "dex2jarNicoMexis" }
 vineflower = { module = "org.vineflower:vineflower", version.ref = "vineflower" }
+apktoolLib = { module = "org.apktool:apktool-lib", version.ref = "apktoolLib" }
 
 [plugins]
 

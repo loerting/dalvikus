@@ -11,15 +11,16 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
-class ZipNode(
+open class ZipNode(
     override val name: String,
-    val zipFile: File, // TODO change this to Backing.
+    open val zipFile: File, // TODO change this to Backing.
     override val parent: ContainerNode?
 ) : ContainerNode() {
 
     val entries = mutableMapOf<String, ByteArray>()
 
-    override val icon = getFileExtensionMeta(name).icon
+    override val icon
+        get() = getFileExtensionMeta(name).icon
     override val changesWithChildren = true
     override val editableContent = false
 
@@ -52,11 +53,11 @@ class ZipNode(
 
     }
 
-    fun readEntry(path: String): ByteArray {
+    open fun readEntry(path: String): ByteArray {
         return entries[path] ?: error("Entry not found: $path")
     }
 
-    suspend fun updateEntry(path: String, newContent: ByteArray) {
+    open suspend fun updateEntry(path: String, newContent: ByteArray) {
         entries[path] = newContent
         rebuild()
     }
@@ -72,9 +73,5 @@ class ZipNode(
         }
         tmp.copyTo(zipFile, overwrite = true)
         tmp.delete()
-    }
-
-    fun isAndroidPackage(): Boolean {
-        return name.endsWith(".apk") || name.endsWith(".apks")
     }
 }

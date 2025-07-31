@@ -41,8 +41,12 @@ kotlin {
             implementation(libs.vineflower)
 
             implementation(libs.antlr4)
+
             implementation(libs.apksig)
             implementation(libs.ddmlib)
+
+            implementation(libs.apktoolLib)
+
         }
 
         commonTest.dependencies {
