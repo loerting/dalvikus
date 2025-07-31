@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.Draw
+import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.InstallMobile
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material3.*
@@ -256,17 +257,23 @@ fun SignatureStatus(
         Column {
             Text(stringResource(Res.string.signature_validity), style = MaterialTheme.typography.titleSmall)
 
-            MultiChoiceSegmentedButtonRow(
-                modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 texts.forEachIndexed { index, label ->
-                    SegmentedButton(
-                        shape = SegmentedButtonDefaults.itemShape(index = index, count = texts.size),
-                        onCheckedChange = {},
-                        checked = levels[index],
-                    ) {
-                        Text(label)
-                    }
+                    FilterChip(
+                        // TODO remove elevation = null when https://youtrack.jetbrains.com/issue/CMP-2868 is fixed.
+                        elevation = null,
+                        selected = levels[index],
+                        onClick = {},
+                        leadingIcon = {
+                            Icon(
+                                imageVector = if (levels[index]) Icons.Outlined.Key else Icons.Outlined.Error,
+                                contentDescription = null
+                            )
+                        },
+                        label = { Text(label) }
+                    )
                 }
             }
 
