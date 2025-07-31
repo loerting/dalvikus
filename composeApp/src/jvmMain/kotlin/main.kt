@@ -22,7 +22,7 @@ fun main() = application {
 
     Window(
         title = "dalvikus",
-        state = rememberWindowState(width = 800.dp, height = 600.dp),
+        state = rememberWindowState(width = 1200.dp, height = 800.dp),
         onCloseRequest = {
             showExitDialog.value = true
         },
