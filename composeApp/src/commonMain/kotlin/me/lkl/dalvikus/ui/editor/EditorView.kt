@@ -7,12 +7,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SaveAs
 import androidx.compose.material.icons.outlined.SentimentDissatisfied
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,7 +15,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -33,17 +27,17 @@ import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.editor_cannot_open
 import dalvikus.composeapp.generated.resources.fab_save_and_assemble
 import kotlinx.coroutines.delay
-import me.lkl.dalvikus.tabs.TabElement
-import me.lkl.dalvikus.theme.JetBrainsMono
-import me.lkl.dalvikus.ui.editor.highlight.defaultCodeHighlightColors
-import me.lkl.dalvikus.util.handleFocusedCtrlShortcuts
 import me.lkl.dalvikus.settings.shortcutSave
 import me.lkl.dalvikus.tabs.SmaliTab
+import me.lkl.dalvikus.tabs.TabElement
+import me.lkl.dalvikus.theme.JetBrainsMono
 import me.lkl.dalvikus.theme.LocalThemeIsDark
+import me.lkl.dalvikus.ui.editor.highlight.defaultCodeHighlightColors
 import me.lkl.dalvikus.ui.editor.suggestions.AssistPopup
 import me.lkl.dalvikus.ui.editor.suggestions.ErrorPopup
 import me.lkl.dalvikus.ui.editor.suggestions.HexPopup
 import me.lkl.dalvikus.ui.editor.suggestions.LookupPopup
+import me.lkl.dalvikus.util.handleFocusedCtrlShortcuts
 import org.jetbrains.compose.resources.stringResource
 
 data class LayoutSnapshot(val layout: TextLayoutResult, val textFieldValue: TextFieldValue)
@@ -118,17 +112,20 @@ fun EditorView(tabElement: TabElement) {
     Scaffold(
         containerColor = Color.Transparent,
         floatingActionButton = {
-            if(viewModel.hasUnsavedChanges())
-            ExtendedFloatingActionButton(
-                modifier = Modifier.padding(bottom = 8.dp, end = 8.dp),
-                onClick = { viewModel.saveCode(coroutine) },
-                icon = {
-                    Icon(Icons.Default.SaveAs, contentDescription = stringResource(Res.string.fab_save_and_assemble))
-                },
-                text = {
-                    Text(stringResource(Res.string.fab_save_and_assemble))
-                }
-            )
+            if (viewModel.hasUnsavedChanges())
+                ExtendedFloatingActionButton(
+                    modifier = Modifier.padding(bottom = 8.dp, end = 8.dp),
+                    onClick = { viewModel.saveCode(coroutine) },
+                    icon = {
+                        Icon(
+                            Icons.Default.SaveAs,
+                            contentDescription = stringResource(Res.string.fab_save_and_assemble)
+                        )
+                    },
+                    text = {
+                        Text(stringResource(Res.string.fab_save_and_assemble))
+                    }
+                )
         },
         modifier = Modifier.fillMaxSize().then(viewModel.popupKeyEvents)
     ) {
@@ -174,7 +171,8 @@ fun EditorView(tabElement: TabElement) {
                             .focusRequester(focusRequester)
                             .handleFocusedCtrlShortcuts(
                                 enabled = viewModel.editable,
-                                mapOf(shortcutSave to { viewModel.saveCode(coroutine) })),
+                                mapOf(shortcutSave to { viewModel.saveCode(coroutine) })
+                            ),
 
                         textStyle = textStyle.copy(
                             color = Color.Black.copy(alpha = 0.0f)
@@ -204,7 +202,7 @@ fun EditorView(tabElement: TabElement) {
                             }
                         }
                     )
-                    if(tabElement is SmaliTab) {
+                    if (tabElement is SmaliTab) {
                         AssistPopup(
                             assistPopupState = viewModel.assistPopupState,
                             viewModel = viewModel,
@@ -212,22 +210,26 @@ fun EditorView(tabElement: TabElement) {
                             textStyle = textStyle,
                             highlightColors = viewModel.highlightColors
                         )
-                        val start = viewModel.internalContent.selection.start
-                        val end = viewModel.internalContent.selection.end
-
-                        // these are annotated in the smali highlighter
-                        listOf("error", "class", "hex").forEach { tag ->
-                            viewModel.highlightedText.getStringAnnotations(tag, start, end).firstOrNull()?.let {
-                                when (tag) {
-                                    "error" -> ErrorPopup(lastLayoutSnapshot, it, viewModel, textStyle)
-                                    "class" -> LookupPopup(tabElement, lastLayoutSnapshot, it, viewModel, textStyle)
-                                    "hex" -> HexPopup(it, textStyle, lastLayoutSnapshot, viewModel)
-                                }
-                                return@forEach // stops after showing the first popup
-                            }
-                        }
-
                     }
+                    val start = viewModel.internalContent.selection.start
+                    val end = viewModel.internalContent.selection.end
+
+                    // these are annotated in the smali highlighter
+                    listOf("error", "class", "hex").forEach { tag ->
+                        viewModel.highlightedText.getStringAnnotations(tag, start, end).firstOrNull()?.let {
+                            when (tag) {
+                                "error" -> ErrorPopup(lastLayoutSnapshot, it, viewModel, textStyle)
+                                "class" -> {
+                                    if (tabElement is SmaliTab) {
+                                        LookupPopup(tabElement, lastLayoutSnapshot, it, viewModel, textStyle)
+                                    }
+                                }
+                                "hex" -> HexPopup(it, textStyle, lastLayoutSnapshot, viewModel)
+                            }
+                            return@forEach // stops after showing the first popup
+                        }
+                    }
+
                 }
 
                 VerticalScrollbar(
@@ -253,7 +255,7 @@ fun EditorView(tabElement: TabElement) {
 @Composable
 fun EditorCannotOpen() {
     Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
-        Column (
+        Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {

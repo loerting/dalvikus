@@ -25,8 +25,21 @@ actual fun highlightJavaCode(code: String, colors: CodeHighlightColors): Annotat
         for (token in tokens.tokens) {
             if (token.type == -1 || token.text.isBlank()) continue
 
+            val start = token.startIndex
+            val end = token.stopIndex + 1
+
+            if (token.type == Java20Lexer.IntegerLiteral) {
+                if (token.text.startsWith("0x") || token.text.startsWith("-0x")) {
+                    addStringAnnotation("hex", token.text, start, end)
+                } else {
+                    token.text.toLongOrNull()?.let {
+                        addStringAnnotation("hex", "0x${it.toString(16).uppercase()}", start, end)
+                    }
+                }
+            }
+
             getJava20TokenStyle(token.type, colors)?.let {
-                addStyle(it, token.startIndex, token.stopIndex + 1)
+                addStyle(it, start, end)
             }
         }
     }

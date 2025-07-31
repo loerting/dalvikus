@@ -120,9 +120,9 @@ fun HexPopup(
     lastLayoutSnapshot: LayoutSnapshot?,
     viewModel: EditorViewModel
 ) {
-    val rawHex = annotation.item.trim()
+    val rawHex = annotation.item.trim().lowercase()
     val isNegative = rawHex.startsWith("-")
-    val cleanedHex = rawHex.removePrefix("-").removePrefix("0x").removePrefix("0X")
+    val cleanedHex = rawHex.removePrefix("-").removePrefix("0x")
 
     val infoText = try {
         val unsignedValue = cleanedHex.toBigInteger(16)
@@ -130,21 +130,20 @@ fun HexPopup(
 
         when (cleanedHex.length) {
             8 -> {
-                println(cleanedHex)
                 if(cleanedHex.startsWith("7e") || cleanedHex.startsWith("7f")) {
                     "$cleanedHex (resource ID) = ${viewModel.tryResolveResIdText(unsignedValue)} (resolved) "
                 } else {
                     val floatValue = Float.fromBits(signedValue.toInt())
-                    "$signedValue (base 10) = $floatValue (float)"
+                    "$signedValue (dec) = $floatValue (float)"
                 }
             }
 
             16 -> {
                 val doubleValue = Double.fromBits(signedValue.toLong())
-                "$signedValue (base 10) = $doubleValue (double)"
+                "$signedValue (dec) = $doubleValue (double)"
             }
 
-            else -> "$signedValue (base 10)"
+            else -> "$rawHex (hex) = $signedValue (dec)"
         }
     } catch (e: Exception) {
         "Invalid hex: $rawHex"
