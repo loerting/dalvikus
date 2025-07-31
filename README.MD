@@ -28,6 +28,10 @@ Designed for developers and researchers who want to inspect, edit, and rebuild A
     <td align="center"><img src="docs/screenshots/decompiler.png" width="400"/><br/><sub>Seamless live decompiler integration.</sub></td>
     <td align="center"><img src="docs/screenshots/sign_and_deploy.png" width="400"/><br/><sub>Sign and deploy edited applications directly.</sub></td>
   </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/resources.png" width="400"/><br/><sub>Browse app resources.</sub></td>
+    <td align="center"><img src="docs/screenshots/search.png" width="400"/><br/><sub>Search literals, strings, references or names.</sub></td>
+  </tr>
 </table>
 
 ## Features
