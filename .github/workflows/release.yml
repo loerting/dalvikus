@@ -24,7 +24,7 @@ jobs:
           distribution: temurin
 
       - name: Grant execute permission for Gradle wrapper
-        run: chmod +x ./composeApp/gradlew
+        run: chmod +x ./gradlew
 
       - name: Build native installer
         run: |
