@@ -128,7 +128,7 @@ internal val dalvikusSettings: DalvikusSettings by lazy {
 }
 internal val tabManager: TabManager by lazy {
     TabManager(
-        initialTabs = listOf(WelcomeTab())
+        initialTabs = listOf()
     )
 }
 

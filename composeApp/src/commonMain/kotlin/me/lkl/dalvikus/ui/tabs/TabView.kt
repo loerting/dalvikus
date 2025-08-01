@@ -15,9 +15,9 @@ import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.tabManager
 import me.lkl.dalvikus.tabs.TabElement
+import me.lkl.dalvikus.tabs.WelcomeTab
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabView(
 ) {
@@ -27,81 +27,100 @@ fun TabView(
         UnsavedChangesDialog(tabManager, showCloseDialog, pendingCloseTab)
     }
     Column {
-        if (tabManager.tabs.isNotEmpty()) {
-            SecondaryScrollableTabRow(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                selectedTabIndex = tabManager.selectedTabIndex,
-                modifier = Modifier.fillMaxWidth(),
-                edgePadding = 0.dp,
-            ) {
-                tabManager.tabs.forEachIndexed { index, tab ->
-                    val tooltipState = rememberTooltipState(isPersistent = false)
-                    Tab(
-                        selected = tabManager.selectedTabIndex == index,
-                        onClick = { tabManager.selectTab(index) },
-                        text = {
-                            var unsaved by tab.hasUnsavedChanges
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(end = 8.dp)
-                            ) {
-                                Icon(
-                                    imageVector = tab.tabIcon,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                TooltipBox(
-                                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(8.dp),
-                                    tooltip = {
-                                        RichTooltip(
-                                            title = { Text(stringResource(Res.string.tooltip_tab_title)) }
-                                        ) {
-                                            Text(
-                                                tab.contentProvider.getSourcePath()
-                                                    ?: stringResource(Res.string.unknown_source),
-                                            )
-                                        }
-                                    },
-                                    state = tooltipState
-                                ) {
-                                    Text(
-                                        if (unsaved) "${tab.tabName()}*" else tab.tabName(),
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        style = MaterialTheme.typography.bodyLarge
-                                    )
+        SecondaryScrollableTabRow(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            selectedTabIndex = tabManager.selectedTabIndex,
+            modifier = Modifier.fillMaxWidth(),
+            edgePadding = 0.dp,
+        ) {
+            if (tabManager.tabs.isEmpty()) {
+                Tab(
+                    selected = true,
+                    onClick = { /* no-op */ },
+                    text = {
+                        TabViewContent(
+                            tab = WelcomeTab(),
+                            onClose = null
+                        )
+                    },
+                )
+            }
+            tabManager.tabs.forEachIndexed { index, tab ->
+                Tab(
+                    selected = tabManager.selectedTabIndex == index,
+                    onClick = { tabManager.selectTab(index) },
+                    text = {
+                        TabViewContent(
+                            tab = tab,
+                            onClose = {
+                                if (tab.hasUnsavedChanges.value) {
+                                    pendingCloseTab.value = tab
+                                    showCloseDialog.value = true
+                                } else {
+                                    tabManager.closeTab(tab)
                                 }
+                            },
+                        )
+                    },
+                )
+            }
+        }
 
-                                Spacer(modifier = Modifier.width(4.dp))
-                                if (tabManager.tabs.size > 1) {
-                                    Icon(
-                                        imageVector = Icons.Default.Close,
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(16.dp)
-                                            .clickable {
-                                                if (tabManager.tabs.size > 1) {
-                                                    if (unsaved) {
-                                                        pendingCloseTab.value = tab
-                                                        showCloseDialog.value = true
-                                                    } else {
-                                                        tabManager.closeTab(tab)
-                                                    }
-                                                }
-                                            }
-                                    )
-                                }
-                            }
-                        }
+        TabContentRenderer(tab = tabManager.currentTab)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TabViewContent(tab: TabElement, onClose: (() -> Unit)?) {
+    var unsaved by tab.hasUnsavedChanges
+    val tooltipState = rememberTooltipState(isPersistent = false)
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = tab.tabIcon,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp)
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        TooltipBox(
+            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(8.dp),
+            tooltip = {
+                RichTooltip(
+                    title = { Text(stringResource(Res.string.tooltip_tab_title)) }
+                ) {
+                    Text(
+                        tab.contentProvider.getSourcePath()
+                            ?: stringResource(Res.string.unknown_source),
                     )
                 }
-            }
+            },
+            state = tooltipState
+        ) {
+            Text(
+                if (unsaved) "${tab.tabName()}*" else tab.tabName(),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
 
-            TabContentRenderer(tab = tabManager.currentTab)
+        Spacer(modifier = Modifier.width(4.dp))
+        if(onClose != null) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp)
+                    .clickable {
+                        onClose()
+                    }
+            )
         }
     }
 }
+
 
 @Composable
 fun UnsavedChangesDialog(

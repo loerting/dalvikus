@@ -6,6 +6,7 @@ import brut.androlib.res.decoder.AndroidManifestResourceParser
 import brut.androlib.res.decoder.ResStreamDecoder
 import brut.androlib.res.decoder.ResXmlPullStreamDecoder
 import me.lkl.dalvikus.tabs.CodeTab
+import me.lkl.dalvikus.tabs.ImageTab
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.util.guessIfEditableTextually
@@ -25,10 +26,9 @@ class ZipEntryImageNode(
     override fun isEditable(): Boolean = false
 
     override suspend fun createTab(): TabElement {
-        return CodeTab(
+        return ImageTab(
             tabName = name,
             tabId = fullPath,
-            tabIcon = icon,
             contentProvider = this
         )
     }
