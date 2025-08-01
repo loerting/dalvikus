@@ -34,9 +34,9 @@ jobs:
         shell: bash
         run: |
           if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            ./gradlew composeApp:packageReleaseDeb --info --stacktrace
+            ./gradlew composeApp:packageReleaseDeb composeApp:packageReleaseAppImage --info --stacktrace
           elif [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            ./gradlew composeApp:packageReleaseMsi --info --stacktrace
+            ./gradlew composeApp:packageReleaseMsi composeApp:packageReleaseExe --info --stacktrace
           elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
             ./gradlew composeApp:packageReleaseDmg --info --stacktrace
           fi
@@ -47,7 +47,9 @@ jobs:
           name: dalvikus-${{ matrix.os }}
           path: |
             composeApp/build/compose/binaries/**/*.deb
+            composeApp/build/compose/binaries/**/*.AppImage
             composeApp/build/compose/binaries/**/*.msi
+            composeApp/build/compose/binaries/**/*.exe
             composeApp/build/compose/binaries/**/*.dmg
 
   release:
@@ -61,12 +63,14 @@ jobs:
       - name: Download all installer artifacts
         uses: actions/download-artifact@v4
         with:
-          path: artifacts # All artifacts will be downloaded into this directory
+          path: artifacts # All artifacts downloaded here
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             artifacts/dalvikus-ubuntu-latest/**/*.deb
+            artifacts/dalvikus-ubuntu-latest/**/*.AppImage
             artifacts/dalvikus-windows-latest/**/*.msi
+            artifacts/dalvikus-windows-latest/**/*.exe
             artifacts/dalvikus-macos-latest/**/*.dmg

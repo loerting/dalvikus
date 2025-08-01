@@ -74,18 +74,26 @@ compose.desktop {
         }
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb, TargetFormat.AppImage)
             packageName = "dalvikus"
-            packageVersion = "1.0.1"
+            packageVersion = "1.0.2"
             description = "Dalvikus is a versatile tool for working with Dalvik bytecode, APKs, and Android applications."
             vendor = "Leonhard Kohl-Loerting"
             copyright = "© 2025 Leonhard Kohl-Loerting - License: GPL-3.0"
+            licenseFile.set(project.file("LICENSE"))
+
 
             linux {
                 iconFile.set(project.file("desktopAppIcons/logo.png"))
+                debPackageVersion = packageVersion
+                debMaintainer = "Leonhard Kohl-Loerting"
             }
+
             windows {
                 iconFile.set(project.file("desktopAppIcons/logo.ico"))
+                exePackageVersion = packageVersion
+                msiPackageVersion = packageVersion
+
             }
             macOS {
                 iconFile.set(project.file("desktopAppIcons/logo.icns"))
