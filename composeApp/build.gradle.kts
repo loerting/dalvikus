@@ -75,6 +75,10 @@ compose.desktop {
         }
 
         nativeDistributions {
+            // add zipfs support for dex2jar
+            modules(
+                "jdk.zipfs",
+            )
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb)
             packageName = "dalvikus"
             packageVersion = "1.0.2"
@@ -87,16 +91,27 @@ compose.desktop {
                 iconFile.set(project.file("desktopAppIcons/logo.png"))
                 debPackageVersion = packageVersion
                 debMaintainer = "Leonhard Kohl-Loerting"
+
+                jvmArgs("-Dapp.version=$packageVersion")
             }
 
             windows {
                 iconFile.set(project.file("desktopAppIcons/logo.ico"))
                 exePackageVersion = packageVersion
                 msiPackageVersion = packageVersion
+
+                menu = true
+                shortcut = true
+                dirChooser = true
+                perUserInstall = true
+
+                jvmArgs("-Dapp.version=$packageVersion")
             }
             macOS {
                 iconFile.set(project.file("desktopAppIcons/logo.icns"))
                 bundleID = "me.lkl.dalvikus.desktopApp"
+
+                jvmArgs("-Dapp.version=$packageVersion")
             }
         }
     }

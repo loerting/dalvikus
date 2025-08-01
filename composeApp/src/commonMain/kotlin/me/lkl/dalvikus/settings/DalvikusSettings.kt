@@ -150,7 +150,11 @@ class DalvikusSettings() {
     }
 
     fun getVersion(): String {
-        // get implementation version from the resources
+        val property = System.getProperty("app.version")
+        if (property != null) {
+            return property
+        }
+        // try to get implementation version from the resources
         return DalvikusSettings::class.java.`package`.implementationVersion ?: "(dev)"
     }
 
