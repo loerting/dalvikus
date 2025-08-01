@@ -46,6 +46,9 @@ class EditorViewModel(private val tab: TabElement) {
 
     val editable by mutableStateOf(tab.contentProvider.isEditable())
 
+    var isSaving by mutableStateOf(false)
+        private set
+
     var openable by
     mutableStateOf(tab.contentProvider.getSizeEstimate() < maxEditorFileSize && tab.contentProvider.isDisplayable())
         private set
@@ -89,7 +92,7 @@ class EditorViewModel(private val tab: TabElement) {
     }
 
     suspend fun loadCode() {
-        withContext(Dispatchers.IO) {
+        withContext(Dispatchers.Default) {
             tab.contentProvider.loadContent()
             internalContent = internalContent.copy(text = tab.contentProvider.contentFlow.value.decodeToString())
 
@@ -203,9 +206,13 @@ class EditorViewModel(private val tab: TabElement) {
 
     fun saveCode(coroutineScope: CoroutineScope) {
         if (!isLoaded) throw IllegalArgumentException("code not initialized.")
-        coroutineScope.launch(crtExHandler) {
+        isSaving = true
+        coroutineScope.launch(Dispatchers.Default + crtExHandler) {
             tab.contentProvider.updateContent(internalContent.text.toByteArray())
             tab.hasUnsavedChanges.value = false
+            withContext(Dispatchers.Main) {
+                isSaving = false
+            }
         }
     }
 

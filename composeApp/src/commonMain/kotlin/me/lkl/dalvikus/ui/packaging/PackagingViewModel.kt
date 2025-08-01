@@ -57,7 +57,7 @@ class PackagingViewModel() {
         apk: File,
         onError: (Throwable) -> Unit,
         onSuccess: (ApkVerifier.Result) -> Unit,
-    ) = withContext(Dispatchers.IO) {
+    ) = withContext(Dispatchers.Default) {
         try {
             val keystoreFile = keystoreInfo.keystoreFile
             val keyAlias = keystoreInfo.keyAlias
@@ -150,7 +150,7 @@ class PackagingViewModel() {
         onError: (Throwable) -> Unit,
         onSuccess: () -> Unit,
         packageName: String? = null
-    ) = withContext(Dispatchers.IO) {
+    ) = withContext(Dispatchers.Default) {
         // TODO add string resources for messages here.
         try {
             AndroidDebugBridge.init(false)

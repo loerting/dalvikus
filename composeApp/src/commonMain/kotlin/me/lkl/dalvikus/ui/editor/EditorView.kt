@@ -119,7 +119,7 @@ fun EditorView(tabElement: TabElement) {
     Scaffold(
         containerColor = Color.Transparent,
         floatingActionButton = {
-            if (viewModel.hasUnsavedChanges())
+            if (viewModel.hasUnsavedChanges() && !viewModel.isSaving)
                 ExtendedFloatingActionButton(
                     modifier = Modifier.padding(bottom = 8.dp, end = 8.dp),
                     onClick = { viewModel.saveCode(coroutine) },

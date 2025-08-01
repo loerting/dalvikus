@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import co.touchlab.kermit.Logger
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.lkl.dalvikus.snackbarManager
 import me.lkl.dalvikus.tree.ContainerNode
@@ -94,7 +95,7 @@ fun TreeView(
                     indent = indent,
                     isExpanded = expandedState[node] == true,
                     onToggleExpand = { shouldExpand ->
-                        coroutineScope.launch(crtExHandler) {
+                        coroutineScope.launch(Dispatchers.IO + crtExHandler) {
                             if (node is ContainerNode) {
                                 if (shouldExpand) {
                                     try {
