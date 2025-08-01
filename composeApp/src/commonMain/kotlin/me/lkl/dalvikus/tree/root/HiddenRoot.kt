@@ -22,7 +22,6 @@ class HiddenRoot(
     override val name: String = "root"
     override val icon: ImageVector = Icons.Outlined.FolderSpecial
 
-    override val editableContent: Boolean = false
     override val changesWithChildren: Boolean = false
     override val isRoot: Boolean = true
 

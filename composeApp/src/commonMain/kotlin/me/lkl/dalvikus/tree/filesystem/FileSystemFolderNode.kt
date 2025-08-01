@@ -16,7 +16,6 @@ class FileSystemFolderNode(
     override val icon: ImageVector
         get() = Icons.Filled.Folder // Use appropriate icon for folder
     override val changesWithChildren: Boolean = false
-    override val editableContent: Boolean = false
 
     override suspend fun loadChildrenInternal(): List<Node> {
         return file.listFiles()?.map {

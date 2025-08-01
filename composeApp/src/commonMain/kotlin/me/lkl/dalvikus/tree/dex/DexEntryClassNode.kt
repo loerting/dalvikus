@@ -1,7 +1,6 @@
 package me.lkl.dalvikus.tree.dex
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.SubdirectoryArrowRight
 import co.touchlab.kermit.Logger
 import com.android.tools.smali.baksmali.Adaptors.ClassDefinition
 import com.android.tools.smali.baksmali.BaksmaliOptions
@@ -33,7 +32,6 @@ class DexEntryClassNode(
 ) : FileNode() {
 
     override val icon = Icons.Filled.DeployedCode
-    override val editableContent = true
 
     fun getClassDef(): ClassDef = root.readEntry(fullPath)
 

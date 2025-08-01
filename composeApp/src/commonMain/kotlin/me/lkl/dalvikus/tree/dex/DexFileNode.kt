@@ -5,7 +5,6 @@ import androidx.compose.material.icons.filled.Adb
 import com.android.tools.smali.dexlib2.Opcodes
 import com.android.tools.smali.dexlib2.dexbacked.DexBackedDexFile
 import com.android.tools.smali.dexlib2.iface.ClassDef
-import com.android.tools.smali.dexlib2.writer.io.FileDataStore
 import com.android.tools.smali.dexlib2.writer.io.MemoryDataStore
 import com.android.tools.smali.dexlib2.writer.pool.DexPool
 import me.lkl.dalvikus.dalvikusSettings
@@ -13,7 +12,6 @@ import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.tree.Node
 import me.lkl.dalvikus.tree.backing.Backing
 import me.lkl.dalvikus.tree.buildChildNodes
-import java.io.File
 
 class DexFileNode(
     override val name: String,
@@ -22,7 +20,6 @@ class DexFileNode(
 ) : ContainerNode() {
 
     override val icon = Icons.Filled.Adb
-    override val editableContent = false
     override val changesWithChildren = true
 
     val entries = mutableMapOf<String, ClassDef>() // Key: com/example/MyClass

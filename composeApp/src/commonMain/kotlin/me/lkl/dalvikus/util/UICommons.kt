@@ -27,6 +27,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 
+val CollapseCardMaxWidth = 600.dp
+
 @Composable
 internal fun CollapseCard(
     title: String,
@@ -37,7 +39,7 @@ internal fun CollapseCard(
 ) {
     var expanded by remember { mutableStateOf(defaultState) }
 
-    DefaultCard(modifier = modifier.sizeIn(maxWidth = 800.dp)) {
+    DefaultCard(modifier = modifier.sizeIn(maxWidth = CollapseCardMaxWidth)) {
         Column {
             Row(
                 modifier = Modifier

@@ -30,6 +30,7 @@ import me.lkl.dalvikus.tree.archive.ApkNode
 import me.lkl.dalvikus.tree.archive.ZipNode
 import me.lkl.dalvikus.ui.uiTreeRoot
 import me.lkl.dalvikus.util.CollapseCard
+import me.lkl.dalvikus.util.CollapseCardMaxWidth
 import me.lkl.dalvikus.util.PasswordField
 import org.jetbrains.compose.resources.stringResource
 import settingPadHor
@@ -83,7 +84,7 @@ fun PackagingView(packagingViewModel: PackagingViewModel) {
             val gridState = rememberLazyGridState()
             Box(modifier = Modifier.fillMaxSize()) {
                 LazyVerticalGrid(
-                    columns = GridCells.Adaptive(minSize = 800.dp),
+                    columns = GridCells.Adaptive(minSize = CollapseCardMaxWidth),
                     state = gridState,
                     modifier = Modifier
                         .fillMaxSize()

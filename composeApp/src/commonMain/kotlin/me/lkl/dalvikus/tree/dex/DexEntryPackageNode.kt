@@ -2,7 +2,6 @@ package me.lkl.dalvikus.tree.dex
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FolderSpecial
-import androidx.compose.material.icons.outlined.FolderSpecial
 import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.tree.Node
 import me.lkl.dalvikus.tree.buildChildNodes
@@ -15,7 +14,6 @@ open class DexEntryPackageNode(
 ) : ContainerNode() {
 
     override val icon = Icons.Default.FolderSpecial
-    override val editableContent = false
     override val changesWithChildren = false
 
     override suspend fun loadChildrenInternal(): List<Node> {

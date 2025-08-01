@@ -14,7 +14,6 @@ sealed interface Node {
     val name: String
     val icon: ImageVector // path or identifier
     val parent: ContainerNode?
-    val editableContent: Boolean
 
     val isRoot: Boolean
         get() = parent == null
@@ -81,7 +80,7 @@ abstract class FileNode : Node, ContentProvider() {
     }
 
     override suspend fun updateContent(newContent: ByteArray) {
-        if (!editableContent) {
+        if (!isEditable()) {
             throw UnsupportedOperationException("This file is not editable")
         }
         _contentFlow.value = newContent

@@ -22,7 +22,6 @@ open class ZipNode(
     override val icon
         get() = getFileExtensionMeta(name).icon
     override val changesWithChildren = true
-    override val editableContent = false
 
     override suspend fun loadChildrenInternal(): List<Node> {
         entries.clear()
@@ -46,6 +45,7 @@ open class ZipNode(
             onFile = { name, path, bytes ->
                 when {
                     name.endsWith(".dex") -> DexFileNode(name, ZipBacking(path, this), this)
+                    name.endsWith(".xml") && this is ApkNode -> ApkEntryXmlNode(name, path, this, this)
                     else -> ZipEntryFileNode(name, path, this, this)
                 }
             }
@@ -54,6 +54,9 @@ open class ZipNode(
     }
 
     open fun readEntry(path: String): ByteArray {
+        if (entries.isEmpty()) {
+            throw IllegalStateException("Entries not loaded. Call loadChildrenInternal() first.")
+        }
         return entries[path] ?: error("Entry not found: $path")
     }
 

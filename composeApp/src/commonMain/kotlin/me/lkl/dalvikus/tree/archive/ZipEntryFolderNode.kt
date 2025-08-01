@@ -15,9 +15,9 @@ class ZipEntryFolderNode(
     override val parent: ContainerNode?
 ) : ContainerNode() {
 
-    override val icon = Icons.Filled.Folder
+    override val icon
+        get() = Icons.Default.Folder
     override val changesWithChildren = false
-    override val editableContent = false
 
     override suspend fun loadChildrenInternal(): List<Node> {
         return buildChildNodes(
@@ -29,6 +29,7 @@ class ZipEntryFolderNode(
             onFile = { name, path, bytes ->
                 when {
                     name.endsWith(".dex") -> DexFileNode(name, ZipBacking(path, zipRoot), this)
+                    name.endsWith(".xml") && zipRoot is ApkNode -> ApkEntryXmlNode(name, path, zipRoot, this)
                     else -> ZipEntryFileNode(name, path, zipRoot, this)
                 }
             }

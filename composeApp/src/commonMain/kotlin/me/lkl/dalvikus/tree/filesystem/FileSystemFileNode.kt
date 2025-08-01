@@ -16,7 +16,6 @@ class FileSystemFileNode(
 ) : FileNode() {
 
     override val icon: ImageVector = getFileExtensionMeta(name).icon
-    override val editableContent: Boolean = true
 
     override suspend fun getContent(): ByteArray {
         return file.readBytes()

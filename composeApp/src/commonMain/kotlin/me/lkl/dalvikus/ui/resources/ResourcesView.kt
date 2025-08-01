@@ -35,6 +35,7 @@ import io.github.composegears.valkyrie.RegularExpression
 import me.lkl.dalvikus.tree.archive.ApkNode
 import me.lkl.dalvikus.ui.uiTreeRoot
 import me.lkl.dalvikus.util.CollapseCard
+import me.lkl.dalvikus.util.CollapseCardMaxWidth
 import me.lkl.dalvikus.util.SearchOptions
 import me.lkl.dalvikus.util.createSearchMatcher
 import me.lkl.dalvikus.util.to0xHex
@@ -178,7 +179,7 @@ private fun ApkResourceCards(searchFieldState: TextFieldState, searchOptions: Se
 
         Box(modifier = Modifier.fillMaxSize()) {
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 800.dp),
+                columns = GridCells.Adaptive(minSize = CollapseCardMaxWidth),
                 state = gridState,
                 modifier = Modifier
                     .fillMaxSize()

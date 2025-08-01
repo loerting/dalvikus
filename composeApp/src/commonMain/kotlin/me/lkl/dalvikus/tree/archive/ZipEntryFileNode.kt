@@ -7,15 +7,15 @@ import me.lkl.dalvikus.tree.FileNode
 import me.lkl.dalvikus.theme.getFileExtensionMeta
 import me.lkl.dalvikus.util.guessIfEditableTextually
 
-class ZipEntryFileNode(
+open class ZipEntryFileNode(
     override val name: String,
     private val fullPath: String,
     private val zipRoot: ZipNode,
     override val parent: ContainerNode?
 ) : FileNode() {
 
-    override val icon = getFileExtensionMeta(name).icon
-    override val editableContent = true
+    override val icon
+        get() = getFileExtensionMeta(name).icon
 
     override suspend fun getContent(): ByteArray {
         return zipRoot.readEntry(fullPath)

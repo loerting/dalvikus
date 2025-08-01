@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.settings.Setting
 import me.lkl.dalvikus.util.CollapseCard
+import me.lkl.dalvikus.util.CollapseCardMaxWidth
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -22,7 +23,7 @@ fun SettingsView() {
 
     Box(modifier = Modifier.fillMaxSize()) {
         LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 800.dp),
+            columns = GridCells.Adaptive(minSize = CollapseCardMaxWidth),
             state = gridState,
             modifier = Modifier
                 .fillMaxSize()
