@@ -10,6 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dalvikus.composeapp.generated.resources.Res
+import dalvikus.composeapp.generated.resources.credits_and_version
 import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.settings.Setting
 import me.lkl.dalvikus.util.CollapseCard
@@ -55,6 +57,14 @@ fun SettingsView() {
                 .align(Alignment.CenterEnd)
                 .fillMaxHeight()
                 .padding(vertical = 8.dp, horizontal = 8.dp)
+        )
+
+        Text(
+            text = stringResource(Res.string.credits_and_version, dalvikusSettings.getVersion()),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
         )
     }
 }

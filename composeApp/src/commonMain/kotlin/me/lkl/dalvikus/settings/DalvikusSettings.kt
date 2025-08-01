@@ -134,7 +134,6 @@ class DalvikusSettings() {
             is StringSetting -> setting.value
             is StringOptionSetting -> setting.value
             is FileSetting -> File(setting.value)
-            else -> throw IllegalArgumentException("Unsupported setting type for key: $key")
         }
 
         return value as? T

@@ -11,17 +11,23 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.editor_cannot_open
@@ -30,8 +36,8 @@ import kotlinx.coroutines.delay
 import me.lkl.dalvikus.settings.shortcutSave
 import me.lkl.dalvikus.tabs.SmaliTab
 import me.lkl.dalvikus.tabs.TabElement
-import me.lkl.dalvikus.theme.JetBrainsMono
 import me.lkl.dalvikus.theme.LocalThemeIsDark
+import me.lkl.dalvikus.theme.Monaspace
 import me.lkl.dalvikus.ui.editor.highlight.defaultCodeHighlightColors
 import me.lkl.dalvikus.ui.editor.suggestions.AssistPopup
 import me.lkl.dalvikus.ui.editor.suggestions.ErrorPopup
@@ -95,11 +101,12 @@ fun EditorView(tabElement: TabElement) {
     var lastLayoutSnapshot by remember { mutableStateOf<LayoutSnapshot?>(null) }
 
     val textStyle = TextStyle(
-        fontFamily = JetBrainsMono(),
+        fontFamily = Monaspace(),
         fontSize = viewModel.fontSize,
         lineHeight = viewModel.fontSize * 1.5f,
         color = MaterialTheme.colorScheme.onSurface
     )
+    val textMeasurer = rememberTextMeasurer()
 
     val vertState = rememberScrollState()
     val horState = rememberScrollState()
@@ -143,18 +150,47 @@ fun EditorView(tabElement: TabElement) {
                     .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
             )
 
-            Box(
+            BoxWithConstraints(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize()
                     .padding(end = 12.dp, bottom = 12.dp)
             ) {
+                val viewportHeight = constraints.maxHeight.toFloat()
                 Box(
                     modifier = Modifier
                         .horizontalScroll(horState)
                         .verticalScroll(vertState)
                         .fillMaxSize()
                         .padding(8.dp)
+                        .drawBehind {
+                            if (viewModel.highlightedText.isEmpty()) return@drawBehind
+                            val scrollY = vertState.value
+                            val lineHeight = textStyle.lineHeight.toPx()
+                            val startLine = (scrollY / lineHeight).toInt()
+                            val endLine = ((scrollY + viewportHeight) / lineHeight).toInt()
+
+                            clipRect {
+                                // This is a crazy hack, but it works fine.
+                                val annotatedText = viewModel.getClippedHighlightedText(startLine - 1, endLine + 1)
+                                val layoutResult = textMeasurer.measure(
+                                    text = annotatedText,
+                                    style = textStyle,
+                                    constraints = Constraints(maxWidth = size.width.toInt()),
+                                )
+
+                                drawText(
+                                    textLayoutResult = layoutResult,
+                                    topLeft = Offset(0f, 0f),
+                                    brush = SolidColor(Color.Black),
+                                    alpha = 1f,
+                                    shadow = null,
+                                    textDecoration = null,
+                                    drawStyle = null,
+                                    blendMode = BlendMode.SrcOver
+                                )
+                            }
+                        }
                 ) {
                     BasicTextField(
                         value = viewModel.internalContent,
@@ -175,7 +211,7 @@ fun EditorView(tabElement: TabElement) {
                             ),
 
                         textStyle = textStyle.copy(
-                            color = Color.Black.copy(alpha = 0.0f)
+                            color = Color.Transparent
                         ),
                         onTextLayout = {
                             lastLayoutSnapshot = LayoutSnapshot(
@@ -183,24 +219,7 @@ fun EditorView(tabElement: TabElement) {
                                 textFieldValue = viewModel.internalContent
                             )
                         },
-                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                        decorationBox = { inner ->
-                            Box(
-                                Modifier
-                                    .fillMaxSize()
-                                    .padding(1.dp)
-                            ) {
-                                Text(
-                                    text = viewModel.highlightedText,
-                                    maxLines = Int.MAX_VALUE,
-                                    softWrap = false,
-                                    overflow = TextOverflow.Clip,
-                                    modifier = Modifier.matchParentSize(),
-                                    style = textStyle
-                                )
-                                inner()
-                            }
-                        }
+                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary)
                     )
                     if (tabElement is SmaliTab) {
                         AssistPopup(
@@ -224,6 +243,7 @@ fun EditorView(tabElement: TabElement) {
                                         LookupPopup(tabElement, lastLayoutSnapshot, it, viewModel, textStyle)
                                     }
                                 }
+
                                 "hex" -> HexPopup(it, textStyle, lastLayoutSnapshot, viewModel)
                             }
                             return@forEach // stops after showing the first popup

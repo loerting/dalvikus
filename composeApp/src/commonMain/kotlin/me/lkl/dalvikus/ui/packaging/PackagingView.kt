@@ -11,8 +11,8 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.outlined.Android
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Draw
-import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.InstallMobile
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material3.*
@@ -250,10 +250,11 @@ fun SignatureStatus(
         val levels = listOf(
             result.isVerifiedUsingV1Scheme,
             result.isVerifiedUsingV2Scheme,
-            result.isVerifiedUsingV3Scheme || result.isVerifiedUsingV31Scheme,
+            result.isVerifiedUsingV3Scheme,
+            result.isVerifiedUsingV31Scheme,
             result.isVerifiedUsingV4Scheme
         )
-        val texts = listOf("V1", "V2", "V3/3.1", "V4")
+        val texts = listOf("V1", "V2", "V3", "V3.1", "V4")
 
         Column {
             Text(stringResource(Res.string.signature_validity), style = MaterialTheme.typography.titleSmall)
@@ -269,7 +270,7 @@ fun SignatureStatus(
                         onClick = {},
                         leadingIcon = {
                             Icon(
-                                imageVector = if (levels[index]) Icons.Outlined.Key else Icons.Outlined.Error,
+                                imageVector = if (levels[index]) Icons.Outlined.Key else Icons.Outlined.Close,
                                 contentDescription = null
                             )
                         },

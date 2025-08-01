@@ -125,7 +125,7 @@ fun HexPopup(
     val scope = rememberCoroutineScope()
     val rawHex = annotation.item.trim().lowercase()
     val isNegative = rawHex.startsWith("-")
-    val cleanedHex = rawHex.removePrefix("-").removePrefix("0x")
+    val cleanedHex = rawHex.removePrefix("-").removePrefix("0x").removeSuffix("l")
 
     val infoText = try {
         val unsignedValue = cleanedHex.toBigInteger(16)
@@ -147,7 +147,7 @@ fun HexPopup(
             else -> "$signedValue (dec)"
         }
     } catch (e: Exception) {
-        "Invalid hex: $rawHex"
+        "Invalid hex: $cleanedHex"
     }
 
     EditorAnnotationPopup(lastLayoutSnapshot, annotation, viewModel, {

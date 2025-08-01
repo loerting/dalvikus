@@ -1,6 +1,5 @@
 package me.lkl.dalvikus.ui.editor
 
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.sp
 import brut.androlib.res.data.ResResSpec
@@ -238,5 +238,46 @@ class EditorViewModel(private val tab: TabElement) {
         }
         return if (resIds.isEmpty()) "Resource not found"
         else resIds.joinToString(", ") { "R.${it.type.name}.${it.name}" }
+    }
+
+    fun getClippedHighlightedText(startLine: Int, endLine: Int): AnnotatedString {
+        val text = highlightedText.text
+        val length = text.length
+
+        val lineStartIndices = mutableListOf(0) // start index of each line; first line starts at 0
+
+        // Collect indices where lines start
+        for (i in text.indices) {
+            if (text[i] == '\n' && i + 1 < length) {
+                lineStartIndices.add(i + 1)
+            }
+        }
+
+        val totalLines = lineStartIndices.size
+
+        // Clamp startLine and endLine within valid range
+        val safeStartLine = startLine.coerceAtLeast(0).coerceAtMost(totalLines - 1)
+        val safeEndLine = endLine.coerceAtLeast(safeStartLine).coerceAtMost(totalLines - 1)
+
+        // Calculate start and end character indices for substring
+        val startIndex = lineStartIndices[safeStartLine]
+        val endIndex = if (safeEndLine + 1 < totalLines) {
+            lineStartIndices[safeEndLine + 1] - 1 // position of newline at end of line
+        } else {
+            length // end of text (last line)
+        }
+
+        // Number of lines before and after the clipped block
+        val linesBefore = safeStartLine
+        val linesAfter = totalLines - safeEndLine - 1
+
+        return buildAnnotatedString {
+            // Append empty lines before (with newlines to keep line count)
+            append("\n".repeat(linesBefore))
+            // Append the clipped visible lines, preserving formatting and spans
+            append(highlightedText, startIndex, endIndex)
+            // Append empty lines afte
+            append("\n".repeat(linesAfter))
+        }
     }
 }

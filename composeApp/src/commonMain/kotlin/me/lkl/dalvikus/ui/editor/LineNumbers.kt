@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,7 +14,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import me.lkl.dalvikus.theme.JetBrainsMono
+import me.lkl.dalvikus.theme.Monaspace
 
 
 @Composable
@@ -28,6 +29,7 @@ fun LineNumberColumn(
     val lineHeightDp = with(LocalDensity.current) { fontSize.toDp() * 1.5f }
     val maxNumDigits = lines.toString().length
 
+    // TODO we can do this lazily too.
     DisableSelection {
         Column(
             Modifier
@@ -58,9 +60,9 @@ fun LineNumberColumn(
 
 @Composable
 private fun LineNumber(number: String, modifier: Modifier, fontSize: TextUnit) {
-    androidx.compose.material.Text(
+    Text(
         text = number,
-        fontFamily = JetBrainsMono(),
+        fontFamily = Monaspace(),
         fontSize = fontSize,
         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
         modifier = modifier.padding(start = 12.dp)
