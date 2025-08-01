@@ -2,11 +2,7 @@
     <img src="docs/logo.svg" title="dalvikus" align="right" height="60" width="60" />
 </a>
 
-# dalvikus
-
-[![GitHub release](https://img.shields.io/github/v/release/loerting/dalvikus?style=flat-square)](https://github.com/loerting/dalvikus/releases)  
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0.html)  
-[![Kotlin](https://img.shields.io/badge/Kotlin-Compose%20Multiplatform-7F52FF?style=flat-square&logo=kotlin)](https://kotlinlang.org)
+# dalvikus [![GitHub release](https://img.shields.io/github/v/release/loerting/dalvikus?style=flat)](https://github.com/loerting/dalvikus/releases) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat)](https://www.gnu.org/licenses/gpl-3.0.html) [![Kotlin](https://img.shields.io/badge/Kotlin-Compose%20Multiplatform-7F52FF?style=flat&logo=kotlin)](https://kotlinlang.org)
 
 
 ## What is dalvikus?
@@ -33,6 +29,8 @@ Designed for developers and researchers who want to inspect, edit, and rebuild A
     <td align="center"><img src="docs/screenshots/search.png" width="400"/><br/><sub>Search literals, strings, references or names.</sub></td>
   </tr>
 </table>
+
+*Note: These might be subject to change as the project evolves.*
 
 ## Features
 
