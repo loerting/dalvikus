@@ -94,7 +94,7 @@ internal fun AppTheme(
         val isDark by isDarkState
         SystemAppearance(!isDark)
         MaterialTheme(
-            typography = Typography().withFontFamily(JetBrainsMono()),
+            typography = Typography().withFontFamily(Monaspace()),
             colorScheme = if (isDark) DarkColorScheme else LightColorScheme,
             content = { Surface(content = content) },
         )

@@ -81,7 +81,7 @@ fun ModernPopupContainer(
         shadowElevation = 8.dp,
         modifier = Modifier
             .wrapContentSize()
-            .background(color.copy(alpha = 0.05f), shape = RoundedCornerShape(12.dp))
+            .background(color.copy(alpha = 0.025f), shape = RoundedCornerShape(12.dp))
             .border(1.dp, color, RoundedCornerShape(12.dp))
     ) {
         Row(

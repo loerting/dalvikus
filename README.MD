@@ -42,6 +42,7 @@ Designed for developers and researchers who want to inspect, edit, and rebuild A
 - Integrated app signing using **apksig** for re-signing modified APKs
 - Built-in **ADB runner** to deploy and start apps on connected devices directly
 - Powerful search tools: **tree view, string constants, method and field references**
+- Analyze resource IDs, XML files, and more using **apktool** integration
 
 ## Getting Started
 

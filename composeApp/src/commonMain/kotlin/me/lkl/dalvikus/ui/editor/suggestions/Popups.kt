@@ -64,7 +64,8 @@ fun LookupPopup(
 
     val lookupText = when {
         fullPath == smaliTab.dexEntryClassNode.fullPath -> stringResource(Res.string.lookup_popup_current_class)
-        !hasEntry && (fullPath.startsWith("java") || fullPath.startsWith("android")) -> stringResource(Res.string.lookup_popup_runtime)
+        !hasEntry && (fullPath.startsWith("java")
+                || fullPath.startsWith("android") || fullPath.startsWith("dalvik")) -> stringResource(Res.string.lookup_popup_runtime)
         !hasEntry -> stringResource(Res.string.lookup_popup_not_found)
         else -> stringResource(Res.string.lookup_popup_open_definition, fullPath)
     }
@@ -120,6 +121,8 @@ fun HexPopup(
     lastLayoutSnapshot: LayoutSnapshot?,
     viewModel: EditorViewModel
 ) {
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
     val rawHex = annotation.item.trim().lowercase()
     val isNegative = rawHex.startsWith("-")
     val cleanedHex = rawHex.removePrefix("-").removePrefix("0x")
@@ -131,19 +134,17 @@ fun HexPopup(
         when (cleanedHex.length) {
             8 -> {
                 if(!isNegative && (cleanedHex.startsWith("7e") || cleanedHex.startsWith("7f"))) {
-                    "$cleanedHex (resource ID) = ${viewModel.tryResolveResIdText(unsignedValue)} (resolved) "
+                    "${viewModel.tryResolveResIdText(unsignedValue)} (resource)"
                 } else {
                     val floatValue = Float.fromBits(signedValue.toInt())
-                    "$signedValue (dec) = $floatValue (float)"
+                    "$signedValue (dec) / $floatValue (float)"
                 }
             }
-
             16 -> {
                 val doubleValue = Double.fromBits(signedValue.toLong())
-                "$signedValue (dec) = $doubleValue (double)"
+                "$signedValue (dec) / $doubleValue (double)"
             }
-
-            else -> "$rawHex (hex) = $signedValue (dec)"
+            else -> "$signedValue (dec)"
         }
     } catch (e: Exception) {
         "Invalid hex: $rawHex"
@@ -155,7 +156,13 @@ fun HexPopup(
             text = infoText,
             textStyle = textStyle,
             icon = Icons.Outlined.Info,
-        )
+            action = stringResource(Res.string.copy),
+            actionIcon = Icons.Default.ContentCopy,
+        ) {
+            scope.launch {
+                clipboard.setClipEntry(ClipEntry(StringSelection(infoText)))
+            }
+        }
     }, getTextWidth(infoText, textStyle))
 }
 

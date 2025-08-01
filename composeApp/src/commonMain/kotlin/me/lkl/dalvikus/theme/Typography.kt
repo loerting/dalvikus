@@ -9,23 +9,21 @@ import dalvikus.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.Font
 
 @Composable
-fun JetBrainsMono() = FontFamily(
-    Font(Res.font.JetBrainsMono_Bold, FontWeight.Bold, FontStyle.Normal),
-    Font(Res.font.JetBrainsMono_BoldItalic, FontWeight.Bold, FontStyle.Italic),
-    Font(Res.font.JetBrainsMono_ExtraBold, FontWeight.ExtraBold, FontStyle.Normal),
-    Font(Res.font.JetBrainsMono_ExtraBoldItalic, FontWeight.ExtraBold, FontStyle.Italic),
-    Font(Res.font.JetBrainsMono_ExtraLight, FontWeight.ExtraLight, FontStyle.Normal),
-    Font(Res.font.JetBrainsMono_ExtraLightItalic, FontWeight.ExtraLight, FontStyle.Italic),
-    Font(Res.font.JetBrainsMono_Italic, FontWeight.Normal, FontStyle.Italic),
-    Font(Res.font.JetBrainsMono_Light, FontWeight.Light, FontStyle.Normal),
-    Font(Res.font.JetBrainsMono_LightItalic, FontWeight.Light, FontStyle.Italic),
-    Font(Res.font.JetBrainsMono_Medium, FontWeight.Medium, FontStyle.Normal),
-    Font(Res.font.JetBrainsMono_MediumItalic, FontWeight.Medium, FontStyle.Italic),
-    Font(Res.font.JetBrainsMono_Regular, FontWeight.Normal, FontStyle.Normal),
-    Font(Res.font.JetBrainsMono_SemiBold, FontWeight.SemiBold, FontStyle.Normal),
-    Font(Res.font.JetBrainsMono_SemiBoldItalic, FontWeight.SemiBold, FontStyle.Italic),
-    Font(Res.font.JetBrainsMono_Thin, FontWeight.Thin, FontStyle.Normal),
-    Font(Res.font.JetBrainsMono_ThinItalic, FontWeight.Thin, FontStyle.Italic)
+fun Monaspace() = FontFamily(
+    Font(Res.font.MonaspaceNeonFrozen_Bold, FontWeight.Bold, FontStyle.Normal),
+    Font(Res.font.MonaspaceNeonFrozen_BoldItalic, FontWeight.Bold, FontStyle.Italic),
+    Font(Res.font.MonaspaceNeonFrozen_ExtraBold, FontWeight.ExtraBold, FontStyle.Normal),
+    Font(Res.font.MonaspaceNeonFrozen_ExtraBoldItalic, FontWeight.ExtraBold, FontStyle.Italic),
+    Font(Res.font.MonaspaceNeonFrozen_ExtraLight, FontWeight.ExtraLight, FontStyle.Normal),
+    Font(Res.font.MonaspaceNeonFrozen_ExtraLightItalic, FontWeight.ExtraLight, FontStyle.Italic),
+    Font(Res.font.MonaspaceNeonFrozen_Italic, FontWeight.Normal, FontStyle.Italic),
+    Font(Res.font.MonaspaceNeonFrozen_Light, FontWeight.Light, FontStyle.Normal),
+    Font(Res.font.MonaspaceNeonFrozen_LightItalic, FontWeight.Light, FontStyle.Italic),
+    Font(Res.font.MonaspaceNeonFrozen_Medium, FontWeight.Medium, FontStyle.Normal),
+    Font(Res.font.MonaspaceNeonFrozen_MediumItalic, FontWeight.Medium, FontStyle.Italic),
+    Font(Res.font.MonaspaceNeonFrozen_Regular, FontWeight.Normal, FontStyle.Normal),
+    Font(Res.font.MonaspaceNeonFrozen_SemiBold, FontWeight.SemiBold, FontStyle.Normal),
+    Font(Res.font.MonaspaceNeonFrozen_SemiBoldItalic, FontWeight.SemiBold, FontStyle.Italic),
 )
 
 fun Typography.withFontFamily(fontFamily: FontFamily): Typography {
