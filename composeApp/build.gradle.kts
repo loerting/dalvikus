@@ -70,11 +70,12 @@ compose.desktop {
             configurationFiles.from(
                 project.file("proguard-rules.pro")
             )
-            isEnabled.set(true)
+            // TODO enable when ready.
+            isEnabled.set(false)
         }
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb, TargetFormat.AppImage)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb)
             packageName = "dalvikus"
             packageVersion = "1.0.2"
             description = "Dalvikus is a versatile tool for working with Dalvik bytecode, APKs, and Android applications."
@@ -92,7 +93,6 @@ compose.desktop {
                 iconFile.set(project.file("desktopAppIcons/logo.ico"))
                 exePackageVersion = packageVersion
                 msiPackageVersion = packageVersion
-
             }
             macOS {
                 iconFile.set(project.file("desktopAppIcons/logo.icns"))
