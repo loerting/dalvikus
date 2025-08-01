@@ -62,6 +62,8 @@ kotlin {
     }
 }
 
+val appVersion = "1.0.2"
+
 compose.desktop {
     application {
         mainClass = "MainKt"
@@ -74,6 +76,8 @@ compose.desktop {
             isEnabled.set(false)
         }
 
+        jvmArgs("-Dapp.version=$appVersion")
+
         nativeDistributions {
             // add zipfs support for dex2jar
             modules(
@@ -81,7 +85,7 @@ compose.desktop {
             )
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb)
             packageName = "dalvikus"
-            packageVersion = "1.0.2"
+            packageVersion = appVersion
             description = "Dalvikus reverse engineering tool"
             vendor = "Leonhard Kohl-Loerting"
             copyright = "© 2025 Leonhard Kohl-Loerting - License: GPL-3.0"
@@ -89,27 +93,22 @@ compose.desktop {
 
             linux {
                 iconFile.set(project.file("desktopAppIcons/logo.png"))
-                debPackageVersion = packageVersion
+                debPackageVersion = appVersion
                 debMaintainer = "Leonhard Kohl-Loerting"
-
-                jvmArgs("-Dapp.version=$packageVersion")
             }
 
             windows {
                 iconFile.set(project.file("desktopAppIcons/logo.ico"))
-                exePackageVersion = packageVersion
-                msiPackageVersion = packageVersion
+                exePackageVersion = appVersion
+                msiPackageVersion = appVersion
 
                 menu = true
                 shortcut = true
 
-                jvmArgs("-Dapp.version=$packageVersion")
             }
             macOS {
                 iconFile.set(project.file("desktopAppIcons/logo.icns"))
                 bundleID = "me.lkl.dalvikus.desktopApp"
-
-                jvmArgs("-Dapp.version=$packageVersion")
             }
         }
     }
