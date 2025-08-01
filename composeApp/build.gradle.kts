@@ -82,7 +82,7 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb)
             packageName = "dalvikus"
             packageVersion = "1.0.2"
-            description = "Dalvikus is a versatile tool for working with Dalvik bytecode, APKs, and Android applications."
+            description = "Dalvikus reverse engineering tool"
             vendor = "Leonhard Kohl-Loerting"
             copyright = "© 2025 Leonhard Kohl-Loerting - License: GPL-3.0"
             licenseFile.set(project.file("../LICENSE"))
@@ -102,8 +102,6 @@ compose.desktop {
 
                 menu = true
                 shortcut = true
-                dirChooser = true
-                perUserInstall = true
 
                 jvmArgs("-Dapp.version=$packageVersion")
             }
