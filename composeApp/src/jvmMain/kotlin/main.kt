@@ -6,6 +6,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import me.lkl.dalvikus.App
 import me.lkl.dalvikus.keyActionMap
+import me.lkl.dalvikus.errorreport.handleUncaughtExceptions
 import me.lkl.dalvikus.util.ctrlShortcuts
 import java.awt.Dimension
 import javax.swing.UIManager
@@ -17,6 +18,7 @@ fun main() = application {
     } catch (e: Exception) {
         e.printStackTrace()
     }
+    handleUncaughtExceptions()
 
     val showExitDialog = remember { mutableStateOf(false) }
 
@@ -26,7 +28,7 @@ fun main() = application {
         onCloseRequest = {
             showExitDialog.value = true
         },
-        onKeyEvent = ctrlShortcuts(keyActionMap)
+        onKeyEvent = ctrlShortcuts(keyActionMap),
     ) {
         window.minimumSize = Dimension(350, 600)
         App(showExitDialog, onExitConfirmed = {

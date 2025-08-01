@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.Clipboard
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import me.lkl.dalvikus.errorreport.crtExHandler
 import me.lkl.dalvikus.util.toOneLiner
 import java.awt.datatransfer.StringSelection
 import java.io.PrintWriter
@@ -20,7 +21,7 @@ class SnackbarManager(
 ) {
 
     fun showError(throwable: Throwable) {
-        coroutineScope.launch {
+        coroutineScope.launch(crtExHandler) {
             val message = snackbarResources.snackFailed.format(throwable.toOneLiner())
             val result = snackbarHostState.showSnackbar(
                 message = message,
@@ -36,7 +37,7 @@ class SnackbarManager(
     }
 
     fun showMessage(message: String) {
-        coroutineScope.launch {
+        coroutineScope.launch(crtExHandler) {
             snackbarHostState.showSnackbar(
                 message = message,
                 duration = SnackbarDuration.Short,
@@ -47,7 +48,7 @@ class SnackbarManager(
 
     fun showSuccess() = showMessage(snackbarResources.snackSuccess)
     fun showAssembleError(errorLines: List<Int>) {
-        coroutineScope.launch {
+        coroutineScope.launch(crtExHandler) {
             val message = snackbarResources.snackAssembleError.format(errorLines.joinToString(", "))
             snackbarHostState.showSnackbar(
                 message = message,

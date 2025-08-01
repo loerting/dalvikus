@@ -21,6 +21,7 @@ import me.lkl.dalvikus.tree.archive.ApkNode
 import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
 import me.lkl.dalvikus.ui.editor.highlight.highlightCode
 import me.lkl.dalvikus.ui.editor.suggestions.AssistPopupState
+import me.lkl.dalvikus.errorreport.crtExHandler
 import me.lkl.dalvikus.ui.uiTreeRoot
 import java.math.BigInteger
 
@@ -202,7 +203,7 @@ class EditorViewModel(private val tab: TabElement) {
 
     fun saveCode(coroutineScope: CoroutineScope) {
         if (!isLoaded) throw IllegalArgumentException("code not initialized.")
-        coroutineScope.launch {
+        coroutineScope.launch(crtExHandler) {
             tab.contentProvider.updateContent(internalContent.text.toByteArray())
             tab.hasUnsavedChanges.value = false
         }

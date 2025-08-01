@@ -46,6 +46,7 @@ class PackagingViewModel() {
             verifier.verify()
         } catch (e: Exception) {
             Logger.e("Error verifying APK signature: ${e.message}", e)
+            snackbarManager?.showError(e)
             null
         }
     }

@@ -31,9 +31,9 @@ import kotlinx.coroutines.launch
 import me.lkl.dalvikus.snackbarManager
 import me.lkl.dalvikus.tabManager
 import me.lkl.dalvikus.tree.*
-import me.lkl.dalvikus.tree.archive.ApkNode
 import me.lkl.dalvikus.tree.filesystem.FileSystemFileNode
 import me.lkl.dalvikus.tree.root.HiddenRoot
+import me.lkl.dalvikus.errorreport.crtExHandler
 import me.lkl.dalvikus.ui.tree.FileSelectorDialog
 import me.lkl.dalvikus.ui.tree.TreeDragAndDropTarget
 import me.lkl.dalvikus.ui.tree.TreeView
@@ -202,7 +202,7 @@ internal fun LeftPanelContent() {
                     currentSelection = node
 
                     if (node is FileNode) {
-                        scope.launch {
+                        scope.launch(crtExHandler) {
                             val newTab = node.createTab()
                             tabManager.addOrSelectTab(newTab)
                         }

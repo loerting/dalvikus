@@ -35,6 +35,7 @@ import me.lkl.dalvikus.theme.AppTheme
 import me.lkl.dalvikus.theme.LocalThemeIsDark
 import me.lkl.dalvikus.tree.archive.ApkNode
 import me.lkl.dalvikus.ui.*
+import me.lkl.dalvikus.errorreport.crtExHandler
 import me.lkl.dalvikus.ui.nav.NavItem
 import me.lkl.dalvikus.ui.snackbar.SnackbarManager
 import me.lkl.dalvikus.ui.snackbar.SnackbarResources
@@ -281,14 +282,14 @@ fun TopBar() {
         },
         actions = {
             DeployButton { node ->
-                scope.launch {
+                scope.launch(crtExHandler) {
                     packagingViewModel.signApk(
                         keystoreInfo = packagingViewModel.getKeystoreInfo(),
                         apk = node.zipFile,
                         outputApk = node.zipFile,
                         onError = { snackbarManager?.showError(it) },
                         onSuccess = {
-                            scope.launch {
+                            scope.launch(crtExHandler) {
                                 packagingViewModel.deployApk(
                                     apk = node.zipFile,
                                     onError = { snackbarManager?.showError(it) },

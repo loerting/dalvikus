@@ -20,9 +20,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.launch
+import me.lkl.dalvikus.snackbarManager
 import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.tree.Node
 import me.lkl.dalvikus.tree.root.HiddenRoot
+import me.lkl.dalvikus.errorreport.crtExHandler
 
 @Composable
 fun TreeView(
@@ -92,13 +94,14 @@ fun TreeView(
                     indent = indent,
                     isExpanded = expandedState[node] == true,
                     onToggleExpand = { shouldExpand ->
-                        coroutineScope.launch {
+                        coroutineScope.launch(crtExHandler) {
                             if (node is ContainerNode) {
                                 if (shouldExpand) {
                                     try {
                                         node.loadChildren()
                                     } catch (ex: Exception) {
                                         Logger.e("Failed to load file", ex)
+                                        snackbarManager?.showError(ex)
                                     }
                                 }
                                 expandedState[node] = shouldExpand

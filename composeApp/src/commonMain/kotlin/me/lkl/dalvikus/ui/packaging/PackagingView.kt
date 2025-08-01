@@ -28,6 +28,7 @@ import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.snackbarManager
 import me.lkl.dalvikus.tree.archive.ApkNode
 import me.lkl.dalvikus.tree.archive.ZipNode
+import me.lkl.dalvikus.errorreport.crtExHandler
 import me.lkl.dalvikus.ui.uiTreeRoot
 import me.lkl.dalvikus.util.CollapseCard
 import me.lkl.dalvikus.util.CollapseCardMaxWidth
@@ -162,7 +163,7 @@ fun PackagingView(packagingViewModel: PackagingViewModel) {
                                         } else {
                                             TextButton(onClick = {
                                                 loadingApk.value = apk
-                                                scope.launch {
+                                                scope.launch(crtExHandler) {
                                                     packagingViewModel.signApk(
                                                         keystoreInfo = keystoreInfo,
                                                         apk = apk.zipFile,
@@ -188,7 +189,7 @@ fun PackagingView(packagingViewModel: PackagingViewModel) {
 
                                             TextButton(onClick = {
                                                 loadingApk.value = apk
-                                                scope.launch {
+                                                scope.launch(crtExHandler) {
                                                     packagingViewModel.deployApk(
                                                         apk = apk.zipFile,
                                                         onError = { throwable ->

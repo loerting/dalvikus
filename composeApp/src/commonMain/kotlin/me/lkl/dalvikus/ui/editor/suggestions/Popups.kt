@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import me.lkl.dalvikus.tabs.SmaliTab
 import me.lkl.dalvikus.ui.editor.EditorViewModel
 import me.lkl.dalvikus.ui.editor.LayoutSnapshot
+import me.lkl.dalvikus.errorreport.crtExHandler
 import me.lkl.dalvikus.ui.selectFileTreeNode
 import me.lkl.dalvikus.util.getTextWidth
 import org.jetbrains.compose.resources.stringResource
@@ -44,7 +45,7 @@ fun ErrorPopup(
             action = stringResource(Res.string.copy),
             actionIcon = Icons.Default.ContentCopy,
         ) {
-            scope.launch {
+            scope.launch(crtExHandler) {
                 clipboard.setClipEntry(ClipEntry(StringSelection(annotation.item)))
             }
         }
@@ -96,13 +97,13 @@ fun LookupPopup(
             actionIcon = actionIcon,
         ) {
 
-            scope.launch {
+            scope.launch(crtExHandler) {
                 val resolved = smaliTab.dexEntryClassNode.root.resolveChildrenPath(fullPath)
                 resolved?.let { selectFileTreeNode(it) }
             }
 
             if (hasEntry) {
-                scope.launch {
+                scope.launch(crtExHandler) {
                     val resolved = smaliTab.dexEntryClassNode.root.resolveChildrenPath(fullPath)
                     resolved?.let { selectFileTreeNode(it) }
                 }
@@ -159,7 +160,7 @@ fun HexPopup(
             action = stringResource(Res.string.copy),
             actionIcon = Icons.Default.ContentCopy,
         ) {
-            scope.launch {
+            scope.launch(crtExHandler) {
                 clipboard.setClipEntry(ClipEntry(StringSelection(infoText)))
             }
         }
