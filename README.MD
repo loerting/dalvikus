@@ -4,9 +4,6 @@
 
 # dalvikus [![GitHub release](https://img.shields.io/github/v/release/loerting/dalvikus?style=flat)](https://github.com/loerting/dalvikus/releases) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat)](https://www.gnu.org/licenses/gpl-3.0.html) [![Kotlin](https://img.shields.io/badge/Kotlin-Compose%20Multiplatform-7F52FF?style=flat&logo=kotlin)](https://kotlinlang.org)
 
-
-## What is dalvikus?
-
 **Dalvikus** is a modern Android reverse engineering and modification toolkit built with [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/).  
 Designed for developers and researchers who want to inspect, edit, and rebuild Android apps seamlessly.
 
@@ -35,14 +32,14 @@ Designed for developers and researchers who want to inspect, edit, and rebuild A
 ## Features
 
 - Open APK and DEX files, allowing direct editing of DEX files inside APKs **without unpacking**
-- Rich smali language editor with **syntax highlighting**
+- Rich and comfortable smali language editor with **syntax highlighting**
 - Assist popup for **code completion** while typing
 - Light and dark themes for comfortable editing
 - Support for **multiple decompilers** to analyze dalvik code
 - Integrated app signing using **apksig** for re-signing modified APKs
 - Built-in **ADB runner** to deploy and start apps on connected devices directly
 - Powerful search tools: **tree view, string constants, method and field references**
-- Analyze resource IDs, XML files, and more using **apktool** integration
+- Browse resource IDs, XML files, and more using integrated **apktool**
 
 ## Getting Started
 

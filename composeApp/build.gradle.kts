@@ -76,7 +76,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "dalvikus"
-            packageVersion = "1.0.0"
+            packageVersion = "1.0.1"
             description = "Dalvikus is a versatile tool for working with Dalvik bytecode, APKs, and Android applications."
             vendor = "Leonhard Kohl-Loerting"
             copyright = "© 2025 Leonhard Kohl-Loerting - License: GPL-3.0"
