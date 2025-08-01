@@ -66,7 +66,7 @@ fun WelcomeView() {
                     )
 
                     Text(
-                        stringResource(Res.string.app_name_version, dalvikusSettings.getVersion()),
+                        stringResource(Res.string.app_name),
                         style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Center

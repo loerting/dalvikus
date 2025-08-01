@@ -109,7 +109,7 @@ class DalvikusSettings() {
         }
 
         Logger.e("No valid ADB installation found. Please set ANDROID_HOME or ANDROID_SDK_ROOT environment variable or specify ADB path in settings.")
-        return File("/usr/bin/adb")
+        return fallbackAdb
     }
 
     init {
@@ -151,7 +151,7 @@ class DalvikusSettings() {
 
     fun getVersion(): String {
         val property = System.getProperty("app.version")
-        if (property != null) {
+        if (property != null && property != "null") {
             return property
         }
         // try to get implementation version from the resources

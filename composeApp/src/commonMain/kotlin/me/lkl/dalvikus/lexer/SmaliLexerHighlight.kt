@@ -87,7 +87,7 @@ fun getSmaliTokenStyle(tokenType: Int, colors: CodeHighlightColors): SpanStyle? 
         tokenName in listOf("COLON", "COMMA", "OPEN_PAREN", "CLOSE_PAREN") -> colors.onSurface.copy(alpha = 0.7f)
         tokenName == "LINE_COMMENT" -> colors.onSurface.copy(alpha = 0.5f)
         tokenName == "ANNOTATION_VISIBILITY" -> colors.primary
-        else -> return null
+        else -> colors.onSurface
     }
 
     val weight = when {
