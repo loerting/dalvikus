@@ -8,3 +8,4 @@
 -dontwarn sun.misc.**
 
 -keep class com.ibm.icu.** { *; }
+-keepattributes SourceFile,LineNumberTable
