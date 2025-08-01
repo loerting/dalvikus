@@ -6,6 +6,7 @@ import me.lkl.dalvikus.tree.backing.ZipBacking
 import me.lkl.dalvikus.tree.buildChildNodes
 import me.lkl.dalvikus.tree.dex.DexFileNode
 import me.lkl.dalvikus.theme.getFileExtensionMeta
+import me.lkl.dalvikus.theme.readableImageFormats
 import java.io.File
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -46,6 +47,7 @@ open class ZipNode(
                 when {
                     name.endsWith(".dex") -> DexFileNode(name, ZipBacking(path, this), this)
                     name.endsWith(".xml") && this is ApkNode -> ApkEntryXmlNode(name, path, this, this)
+                    name.substringAfterLast(".").lowercase() in readableImageFormats -> ZipEntryImageNode(name, path, this, this)
                     else -> ZipEntryFileNode(name, path, this, this)
                 }
             }

@@ -37,12 +37,14 @@ fun getSuggestionTypeIcon(type: SuggestionType): ImageVector {
     }
 }
 
+val readableImageFormats = listOf("png", "jpg", "jpeg", "bmp", "webp", "gif", "ico")
+
 fun getFileExtensionMeta(fileName: String): FileTypeMeta {
     val ext = fileName.substringAfterLast('.', "").lowercase()
 
     return when (ext) {
         "txt", "md", "log" -> FileTypeMeta(Icons.Outlined.Description)
-        "jpg", "jpeg", "png", "gif", "bmp", "webp", "svg" ->
+        in readableImageFormats ->
             FileTypeMeta(Icons.Outlined.Image, ImagePurple)
         "mp3", "wav", "ogg", "flac", "aac" ->
             FileTypeMeta(Icons.Outlined.MusicNote, AudioTeal)
