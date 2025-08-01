@@ -80,8 +80,7 @@ compose.desktop {
             description = "Dalvikus is a versatile tool for working with Dalvik bytecode, APKs, and Android applications."
             vendor = "Leonhard Kohl-Loerting"
             copyright = "© 2025 Leonhard Kohl-Loerting - License: GPL-3.0"
-            licenseFile.set(project.file("LICENSE"))
-
+            licenseFile.set(project.file("../LICENSE"))
 
             linux {
                 iconFile.set(project.file("desktopAppIcons/logo.png"))
