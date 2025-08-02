@@ -10,7 +10,7 @@
     <string name="app_gpl_button">GPLv3 license</string>
 
     <string name="tree_search_placeholder">Search</string>
-    <string name="tree_drop_placeholder">Drop file(s) here.</string>
+    <string name="tree_drop_placeholder">Drop any of %1$s.</string>
     <string name="tree_unsupported_file_type">This file type is not supported.</string>
 
     <string name="welcome_tab_name">Welcome!</string>

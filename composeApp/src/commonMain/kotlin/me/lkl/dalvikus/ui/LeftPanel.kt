@@ -41,7 +41,7 @@ import me.lkl.dalvikus.util.SearchOptions
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
 
-val editableFiles = listOf("apk", "apks", "aab", "jar", "zip", "xapk", "dex", "odex")
+val editableFiles = listOf("apk", "dex", "odex", "apks", "aab", "jar", "zip", "xapk")
 
 var showTreeAddFileDialog by mutableStateOf(false)
 
@@ -188,10 +188,10 @@ internal fun LeftPanelContent() {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        stringResource(Res.string.tree_drop_placeholder),
+                        stringResource(Res.string.tree_drop_placeholder, editableFiles.joinToString(", ")),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                        maxLines = 1
+                        modifier = Modifier.padding(16.dp)
                     )
                 }
                 return@Scaffold
@@ -235,7 +235,7 @@ private fun SearchResults(
     var results by remember { mutableStateOf<List<TreeSearchResult>>(emptyList()) }
 
     val allTypes = TreeSearchResultType.entries.toSet()
-    var selectedTypes by remember { mutableStateOf(allTypes) }
+    var selectedTypes by remember { mutableStateOf(setOf(allTypes.first())) }
 
     // Trigger search when query changes
     LaunchedEffect(query, searchOptions, selectedTypes) {
