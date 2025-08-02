@@ -65,7 +65,7 @@
     <string name="signature_settings_title">Keystore configuration</string>
     <string name="signature_keystore_password">Password for keystore file "%1$s"</string>
     <string name="signature_key_password">Password for key alias "%1$s"</string>
-    <string name="fab_create_keystore">Create keystore with keytool</string>
+    <string name="btn_create_keystore">Create PKCS12 keystore</string>
 
     <string name="signature_validity">Signature validity</string>
     <string name="signer_title">%1$s Signer(s)</string>

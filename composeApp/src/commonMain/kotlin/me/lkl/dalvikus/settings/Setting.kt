@@ -8,13 +8,16 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Android
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Coffee
 import androidx.compose.material.icons.filled.Draw
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.FileOpen
 import androidx.compose.material3.*
 import androidx.compose.material3.ExposedDropdownMenuDefaults.TrailingIcon
 import androidx.compose.runtime.*
@@ -270,13 +273,22 @@ class FileSetting(
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = if (isValid()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
             ),
+            isError = !isValid(),
+            leadingIcon = {
+                Icon(
+                    imageVector = if (isValid()) Icons.Default.Check else Icons.Default.Error,
+                    contentDescription = null,
+                    tint = if (isValid()) LocalContentColor.current else MaterialTheme.colorScheme.error
+                )
+            },
+
             trailingIcon = {
                 IconButton(
                     onClick = {
                         showFilePicker = true
                     }
                 ) {
-                    Icon(Icons.Default.FolderOpen, contentDescription = null)
+                    Icon(Icons.Outlined.FileOpen, contentDescription = null)
                 }
             }
         )

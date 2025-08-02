@@ -1,15 +1,19 @@
 package me.lkl.dalvikus.ui.tree
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.cancel
@@ -47,7 +51,10 @@ fun FileSelectorDialog(
                     Text(text = it)
                     Spacer(Modifier.size(8.dp))
                 }
-                Box(modifier = Modifier.size(500.dp, 400.dp)) {
+                Box(modifier = Modifier
+                    .size(800.dp, 600.dp)
+                    .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.12f), shape = RoundedCornerShape(4.dp))
+                ) {
                     TreeView(
                         root = treeRoot,
                         onFileSelected = { selectedFile = it },

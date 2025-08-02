@@ -65,6 +65,7 @@ class DalvikusSettings() {
             nameRes = Res.string.settings_adb_path,
             dialogRes = Res.string.dialog_select_adb,
             defaultPath = getDefaultAdbInstallation().absolutePath,
+            extensions = listOf("", "exe", "bat", "sh", "cmd"),
         ),
         FileSetting(
             key = "keystore_file",
@@ -72,7 +73,7 @@ class DalvikusSettings() {
             nameRes = Res.string.settings_keystore_path,
             dialogRes = Res.string.dialog_select_keystore_message,
             defaultPath = File(System.getProperty("user.home"), ".dalvikus.keystore").absolutePath,
-            extensions = listOf("jks", "keystore"),
+            extensions = listOf("jks", "keystore", "p12"),
         ),
         StringSetting(
             key = "key_alias",

@@ -30,12 +30,13 @@ import me.lkl.dalvikus.icons.ThreadUnread
 import me.lkl.dalvikus.settings.DalvikusSettings
 import me.lkl.dalvikus.settings.shortcutToggleEditorDecompiler
 import me.lkl.dalvikus.settings.shortcutTreeAdd
-import me.lkl.dalvikus.tabs.WelcomeTab
 import me.lkl.dalvikus.theme.AppTheme
 import me.lkl.dalvikus.theme.LocalThemeIsDark
 import me.lkl.dalvikus.tree.archive.ApkNode
 import me.lkl.dalvikus.ui.*
 import me.lkl.dalvikus.errorreport.crtExHandler
+import me.lkl.dalvikus.tools.AdbDeployer
+import me.lkl.dalvikus.tools.ApkSigner
 import me.lkl.dalvikus.ui.nav.NavItem
 import me.lkl.dalvikus.ui.snackbar.SnackbarManager
 import me.lkl.dalvikus.ui.snackbar.SnackbarResources
@@ -283,22 +284,26 @@ fun TopBar() {
         actions = {
             DeployButton { node ->
                 scope.launch(crtExHandler) {
-                    packagingViewModel.signApk(
+                    val apkSigner = ApkSigner()
+                    val adbDeployer = AdbDeployer()
+                    apkSigner.signApk(
                         keystoreInfo = packagingViewModel.getKeystoreInfo(),
                         apk = node.zipFile,
-                        outputApk = node.zipFile,
-                        onError = { snackbarManager?.showError(it) },
-                        onSuccess = {
+                        outputApk = node.zipFile
+                    ) { success ->
+                        if(success) {
                             scope.launch(crtExHandler) {
-                                packagingViewModel.deployApk(
+                                adbDeployer.deployApk(
                                     apk = node.zipFile,
-                                    onError = { snackbarManager?.showError(it) },
-                                    onSuccess = { snackbarManager?.showSuccess() },
                                     packageName = node.getAndroidPackageName()
-                                )
+                                ) {
+                                    if(it) {
+                                        snackbarManager?.showSuccess()
+                                    }
+                                }
                             }
                         }
-                    )
+                    }
                 }
             }
         },
@@ -323,7 +328,7 @@ fun DeployButton(deploy: (ApkNode) -> Unit) {
             .map { it as ApkNode }
     var checked by remember { mutableStateOf(false) }
     IconButton(
-        enabled = packagingViewModel.getKeystoreInfo().isValid() && apks.isNotEmpty(),
+        enabled = packagingViewModel.getKeystoreInfo().seemsValid() && packagingViewModel.getKeystoreInfo().passwordsFilled() && apks.isNotEmpty(),
         onClick = { checked = !checked },
     ) {
         Icon(Icons.Outlined.PlayCircle, contentDescription = stringResource(Res.string.sign_and_deploy))
