@@ -64,7 +64,7 @@
     <string name="unknown_source">Unknown source</string>
 
     <string name="signature_settings_title">Keystore configuration</string>
-    <string name="signature_keystore_password">Password for keystore file "%1$s"</string>
+    <string name="signature_keystore_password">Password for keystore (and key)</string>
     <string name="signature_key_password">Password for key alias "%1$s"</string>
     <string name="btn_create_keystore">Create PKCS12 keystore</string>
 

@@ -24,6 +24,15 @@ fun SettingsView() {
     val gridState = rememberLazyGridState()
 
     Box(modifier = Modifier.fillMaxSize()) {
+        Text(
+            text = stringResource(Res.string.credits_and_version, dalvikusSettings.getVersion()),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        )
+
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = CollapseCardMaxWidth),
             state = gridState,
@@ -59,13 +68,6 @@ fun SettingsView() {
                 .padding(vertical = 8.dp, horizontal = 8.dp)
         )
 
-        Text(
-            text = stringResource(Res.string.credits_and_version, dalvikusSettings.getVersion()),
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        )
     }
 }
 

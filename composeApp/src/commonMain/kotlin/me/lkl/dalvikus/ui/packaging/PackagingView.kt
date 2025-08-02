@@ -73,8 +73,7 @@ fun PackagingView(packagingViewModel: PackagingViewModel) {
                             Column(Modifier.padding(horizontal = settingPadHor)) {
                                 Text(
                                     stringResource(
-                                        Res.string.signature_keystore_password,
-                                        keystoreInfo.keystoreFile.name
+                                        Res.string.signature_keystore_password
                                     ),
                                     style = MaterialTheme.typography.bodyLarge
                                 )
@@ -205,7 +204,7 @@ fun SignatureStatus(
 ) {
     var signatureState by remember(apk) { mutableStateOf<ApkVerifier.Result?>(null) }
 
-    LaunchedEffect(apk, loadingApk) {
+    LaunchedEffect(apk, loadingApk.value) {
         if (loadingApk.value != null) return@LaunchedEffect
         signatureState = null
         signatureState = packagingViewModel.apkSigner.checkSignature(apk.zipFile)
