@@ -2,7 +2,7 @@
     <img src="docs/logo.svg" title="dalvikus" align="right" height="60" width="60" />
 </a>
 
-# dalvikus [![GitHub release](https://img.shields.io/github/v/release/loerting/dalvikus?style=flat)](https://github.com/loerting/dalvikus/releases) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat)](https://www.gnu.org/licenses/gpl-3.0.html) [![Kotlin](https://img.shields.io/badge/Kotlin-Compose%20Multiplatform-7F52FF?style=flat&logo=kotlin)](https://kotlinlang.org)
+# dalvikus [![GitHub release](https://img.shields.io/github/v/release/loerting/dalvikus?style=flat)](https://github.com/loerting/dalvikus/releases) [![Downloads](https://img.shields.io/github/downloads/loerting/dalvikus/total)](https://github.com/loerting/dalvikus/releases) [![Kotlin](https://img.shields.io/badge/Kotlin-Compose%20Multiplatform-7F52FF?style=flat&logo=kotlin)](https://www.jetbrains.com/compose-multiplatform/)
 
 **Dalvikus** is a modern Android reverse engineering and modification toolkit built with [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/).  
 Designed for developers and researchers who want to inspect, edit, and rebuild Android apps seamlessly.
@@ -59,3 +59,7 @@ git clone https://github.com/loerting/dalvikus.git
 cd dalvikus
 ./gradlew :composeApp:run
 ```
+
+## License
+
+This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for details.
