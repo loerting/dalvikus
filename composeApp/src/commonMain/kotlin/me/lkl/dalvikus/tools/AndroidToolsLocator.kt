@@ -62,7 +62,7 @@ class AndroidToolsLocator() {
             return fallbackFile
         }
 
-        Logger.e("No valid $toolName installation found. Please set ANDROID_HOME or ANDROID_SDK_ROOT environment variable or specify $toolName path in settings.")
+        Logger.w("No default $toolName installation found.")
         return fallbackFile
     }
 }
