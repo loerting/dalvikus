@@ -12,21 +12,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import me.lkl.dalvikus.theme.Monaspace
 
 
 @Composable
 fun LineNumberColumn(
     code: TextLayoutResult?,
     scrollState: ScrollState,
-    fontSize: TextUnit,
+    textContentPadding: PaddingValues,
+    textStyle: TextStyle,
 ) {
     // wait until the code is loaded
     if(code == null) return
     val lines = code.lineCount
-    val lineHeightDp = with(LocalDensity.current) { fontSize.toDp() * 1.5f }
+    val lineHeightDp = with(LocalDensity.current) {
+        textStyle.lineHeight.toDp()
+    }
     val maxNumDigits = lines.toString().length
 
     // TODO we can do this lazily too.
@@ -34,7 +36,10 @@ fun LineNumberColumn(
         Column(
             Modifier
                 .verticalScroll(scrollState)
-                .padding(top = 8.dp, end = 8.dp)
+                .padding(top = textContentPadding.calculateTopPadding(),
+                    bottom = textContentPadding.calculateBottomPadding(),
+                    start = 8.dp,
+                    end = 8.dp)
                 .width(IntrinsicSize.Min)
         ) {
             repeat(lines) { i ->
@@ -44,12 +49,12 @@ fun LineNumberColumn(
                     LineNumber(
                         number = "9".repeat(maxNumDigits),
                         modifier = Modifier.alpha(0f),
-                        fontSize = fontSize,
+                        textStyle = textStyle
                     )
                     LineNumber(
                         number = "${i + 1}",
                         modifier = Modifier.align(Alignment.CenterEnd),
-                        fontSize = fontSize,
+                        textStyle = textStyle,
                     )
                 }
 
@@ -59,12 +64,11 @@ fun LineNumberColumn(
 }
 
 @Composable
-private fun LineNumber(number: String, modifier: Modifier, fontSize: TextUnit) {
+private fun LineNumber(number: String, modifier: Modifier, textStyle: TextStyle) {
     Text(
         text = number,
-        fontFamily = Monaspace(),
-        fontSize = fontSize,
+        style = textStyle,
         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
-        modifier = modifier.padding(start = 12.dp)
+        modifier = modifier
     )
 }

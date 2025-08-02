@@ -28,6 +28,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.editor_cannot_open
@@ -119,7 +120,14 @@ fun EditorView(tabElement: TabElement) {
     Scaffold(
         containerColor = Color.Transparent,
         floatingActionButton = {
-            if (viewModel.hasUnsavedChanges() && !viewModel.isSaving)
+            if(viewModel.isSaving) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(48.dp).padding(bottom = 8.dp, end = 8.dp),
+                    color = MaterialTheme.colorScheme.primary
+                )
+                return@Scaffold
+            }
+            if (viewModel.hasUnsavedChanges())
                 ExtendedFloatingActionButton(
                     modifier = Modifier.padding(bottom = 8.dp, end = 8.dp),
                     onClick = { viewModel.saveCode(coroutine) },
@@ -136,11 +144,19 @@ fun EditorView(tabElement: TabElement) {
         },
         modifier = Modifier.fillMaxSize().then(viewModel.popupKeyEvents)
     ) {
+        val textContentPadding = PaddingValues(
+            start = 1.dp,
+            top = 4.dp,
+            end = 32.dp,
+            bottom = 32.dp
+        )
+
         Row {
             LineNumberColumn(
                 lastLayoutSnapshot?.layout,
                 scrollState = vertState,
-                fontSize = viewModel.fontSize
+                textContentPadding = textContentPadding,
+                textStyle = textStyle
             )
 
             Spacer(
@@ -149,12 +165,10 @@ fun EditorView(tabElement: TabElement) {
                     .fillMaxHeight()
                     .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
             )
-
             BoxWithConstraints(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize()
-                    .padding(end = 12.dp, bottom = 12.dp)
             ) {
                 val viewportHeight = constraints.maxHeight.toFloat()
                 Box(
@@ -162,7 +176,6 @@ fun EditorView(tabElement: TabElement) {
                         .horizontalScroll(horState)
                         .verticalScroll(vertState)
                         .fillMaxSize()
-                        .padding(8.dp)
                         .drawBehind {
                             if (viewModel.highlightedText.isEmpty()) return@drawBehind
                             val scrollY = vertState.value
@@ -181,7 +194,7 @@ fun EditorView(tabElement: TabElement) {
 
                                 drawText(
                                     textLayoutResult = layoutResult,
-                                    topLeft = Offset(0f, 0f),
+                                    topLeft = Offset(textContentPadding.calculateLeftPadding(LayoutDirection.Ltr).toPx(), textContentPadding.calculateTopPadding().toPx()),
                                     brush = SolidColor(Color.Black),
                                     alpha = 1f,
                                     shadow = null,
@@ -203,6 +216,7 @@ fun EditorView(tabElement: TabElement) {
                             viewModel.changeContent(newText, coroutine)
                         },
                         modifier = Modifier
+                            .padding(textContentPadding)
                             .fillMaxSize()
                             .focusRequester(focusRequester)
                             .handleFocusedCtrlShortcuts(
@@ -257,7 +271,7 @@ fun EditorView(tabElement: TabElement) {
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .fillMaxHeight()
-                        .padding(end = 0.dp, top = 8.dp)
+                        .padding(bottom = 8.dp, end = 8.dp)
                 )
 
                 HorizontalScrollbar(
@@ -265,7 +279,7 @@ fun EditorView(tabElement: TabElement) {
                     modifier = Modifier
                         .align(Alignment.BottomStart)
                         .fillMaxWidth()
-                        .padding(bottom = 0.dp, start = 8.dp)
+                        .padding(bottom = 8.dp, end = 8.dp)
                 )
             }
         }
@@ -285,6 +299,7 @@ fun EditorCannotOpen() {
                 contentDescription = stringResource(Res.string.editor_cannot_open),
                 modifier = Modifier.size(48.dp)
             )
+            Spacer(Modifier.height(16.dp))
             Text(
                 stringResource(Res.string.editor_cannot_open),
                 style = MaterialTheme.typography.bodyLarge,

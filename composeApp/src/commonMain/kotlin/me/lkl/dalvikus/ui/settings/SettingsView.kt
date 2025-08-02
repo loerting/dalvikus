@@ -82,7 +82,7 @@ fun SettingRow(setting: Setting<*>) {
         Text(
             text = stringResource(setting.nameRes),
             style = MaterialTheme.typography.bodyLarge,
-            softWrap = false
+
         )
         setting.Editor()
         Spacer(modifier = Modifier.height(settingPadVer))
