@@ -8,6 +8,7 @@ import me.lkl.dalvikus.tree.dex.DexFileNode
 import me.lkl.dalvikus.theme.getFileExtensionMeta
 import me.lkl.dalvikus.theme.readableImageFormats
 import java.io.File
+import java.util.zip.CRC32
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
@@ -73,8 +74,15 @@ open class ZipNode(
             for ((path, data) in entries) {
                 val entry = ZipEntry(path)
 
-                if(path == "resources.arsc" || (path.startsWith("lib/") && path.endsWith(".so"))) {
+                if (this is ApkNode && (path == "resources.arsc" || (path.startsWith("lib/") && path.endsWith(".so")))) {
                     entry.method = ZipEntry.STORED
+
+                    val crc = CRC32()
+                    crc.update(data)
+
+                    entry.size = data.size.toLong()
+                    entry.compressedSize = data.size.toLong()
+                    entry.crc = crc.value
                 }
 
                 zos.putNextEntry(entry)

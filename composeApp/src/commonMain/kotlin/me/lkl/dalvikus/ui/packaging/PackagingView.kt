@@ -218,9 +218,10 @@ fun SignatureStatus(
             result.isVerifiedUsingV2Scheme,
             result.isVerifiedUsingV3Scheme,
             result.isVerifiedUsingV31Scheme,
-            result.isVerifiedUsingV4Scheme
+            result.isVerifiedUsingV4Scheme,
+            result.isSourceStampVerified
         )
-        val texts = listOf("V1", "V2", "V3", "V3.1", "V4")
+        val texts = listOf("V1", "V2", "V3", "V3.1", "V4", "SourceStamp")
 
         Column {
             Text(stringResource(Res.string.signature_validity), style = MaterialTheme.typography.titleSmall)
@@ -245,6 +246,23 @@ fun SignatureStatus(
                 }
             }
 
+
+            Spacer(modifier = Modifier.height(12.dp))
+            if(result.errors.isNotEmpty()) {
+                result.errors.forEach { error ->
+                    SelectionContainer {
+                        Text(
+                            text = error.toString(),
+                            style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.error)
+                        )
+                    }
+                }
+            } else {
+                Text(
+                    text = stringResource(Res.string.signature_no_errors),
+                    style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurface)
+                )
+            }
             Spacer(modifier = Modifier.height(12.dp))
 
             SignatureSchemeSection("V1", result.v1SchemeSigners.mapNotNull { it.certificate })
