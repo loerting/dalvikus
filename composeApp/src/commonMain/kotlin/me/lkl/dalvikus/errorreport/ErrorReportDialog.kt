@@ -9,20 +9,43 @@ import java.awt.Desktop
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.Font
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.net.URI
 import java.net.URLEncoder
 import javax.swing.*
 
+
+import java.util.concurrent.atomic.AtomicReference
+import javax.swing.SwingUtilities
+
+private val activeErrorDialogRef = AtomicReference<ErrorReportDialog?>(null)
+
+fun showErrorDialog(exception: Exception) {
+    SwingUtilities.invokeLater {
+        val existingDialog = activeErrorDialogRef.get()
+
+        if (existingDialog == null || !existingDialog.isShowing) {
+            val dialog = ErrorReportDialog(exception)
+            if (activeErrorDialogRef.compareAndSet(existingDialog, dialog)) {
+                dialog.isVisible = true
+
+                dialog.addWindowListener(object : WindowAdapter() {
+                    override fun windowClosed(e: WindowEvent?) {
+                        activeErrorDialogRef.compareAndSet(dialog, null)
+                    }
+                })
+            }
+        }
+    }
+}
+
 val crtExHandler = CoroutineExceptionHandler { context, throwable ->
     if (throwable is Exception) {
         Logger.e(throwable) { "Caught exception in coroutine: $context" }
-        SwingUtilities.invokeLater {
-            ErrorReportDialog(throwable).apply {
-                isVisible = true
-            }
-        }
+        showErrorDialog(throwable)
     } else {
         throw throwable
     }
@@ -32,11 +55,7 @@ fun handleUncaughtExceptions() {
     Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
         if (throwable is Exception) {
             Logger.e(throwable) { "Caught exception in thread: ${Thread.currentThread().name}" }
-            SwingUtilities.invokeLater {
-                ErrorReportDialog(throwable).apply {
-                    isVisible = true
-                }
-            }
+            showErrorDialog(throwable)
         } else {
             // This does not re-trigger the uncaught exception handler
             throw throwable
