@@ -24,8 +24,8 @@
 
     <string name="dialog_select_file">Select a file</string>
 
-    <string name="dialog_select_adb">Please select your ADB installation</string>
-    <string name="dialog_select_keystore_message">Please select a keystore file (JKS) to sign the application.</string>
+    <string name="dialog_select_executable">Please select an installation executable.</string>
+    <string name="dialog_select_keystore_message">Please select a keystore file (type PKCS12) to sign the application.</string>
 
     <string name="unsaved_changes_title">Unsaved changes</string>
     <string name="unsaved_changes_message">"%1$s" has unsaved changes that will be lost when closed. Discard anyway?</string>
@@ -54,6 +54,7 @@
     <string name="settings_keystore_path">Keystore file path for signing</string>
     <string name="settings_keystore_alias">Key alias for signing</string>
     <string name="settings_adb_path">Installation path of Android Debug Bridge (adb)</string>
+    <string name="settings_zipalign_path">Installation path of zipalign</string>
 
     <string name="tooltip_deploy_title">Deploy application</string>
     <string name="tooltip_deploy_message">Sign and deploy the last selected Android archive using adb. (%1$s)</string>

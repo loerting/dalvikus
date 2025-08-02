@@ -71,7 +71,13 @@ open class ZipNode(
         val tmp = File.createTempFile("rebuild", ".zip")
         ZipOutputStream(tmp.outputStream()).use { zos ->
             for ((path, data) in entries) {
-                zos.putNextEntry(ZipEntry(path))
+                val entry = ZipEntry(path)
+
+                if(path == "resources.arsc" || (path.startsWith("lib/") && path.endsWith(".so"))) {
+                    entry.method = ZipEntry.STORED
+                }
+
+                zos.putNextEntry(entry)
                 zos.write(data)
                 zos.closeEntry()
             }

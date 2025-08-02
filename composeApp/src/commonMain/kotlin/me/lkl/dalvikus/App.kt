@@ -328,7 +328,7 @@ fun DeployButton(deploy: (ApkNode) -> Unit) {
             .map { it as ApkNode }
     var checked by remember { mutableStateOf(false) }
     IconButton(
-        enabled = packagingViewModel.getKeystoreInfo().seemsValid() && packagingViewModel.getKeystoreInfo().passwordsFilled() && apks.isNotEmpty(),
+        enabled = packagingViewModel.getKeystoreInfo().seemsValid() && packagingViewModel.getKeystoreInfo().isPasswordFilled() && apks.isNotEmpty(),
         onClick = { checked = !checked },
     ) {
         Icon(Icons.Outlined.PlayCircle, contentDescription = stringResource(Res.string.sign_and_deploy))

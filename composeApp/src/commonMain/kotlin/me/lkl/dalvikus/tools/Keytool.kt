@@ -8,7 +8,6 @@ import java.io.File
 class Keytool() {
     fun createKeystore(
         keystorePassword: String,
-        keyPassword: String,
         distinguishedName: String = "CN=dalvikus"
     ) {
         if (!isKeytoolAvailable()) {
@@ -36,9 +35,8 @@ class Keytool() {
             "-keysize", "2048",
             "-validity", "10000",
             "-alias", keyAlias,
-            "-storetype", "JKS",
+            "-storetype", "PKCS12",
             "-storepass", keystorePassword,
-            "-keypass", keyPassword,
             "-dname", distinguishedName
         )
 

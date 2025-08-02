@@ -15,9 +15,6 @@ class PackagingViewModel() {
     private val _keystorePassword = MutableStateFlow("")
     val keystorePassword: StateFlow<String> = _keystorePassword
 
-    private val _keyPassword = MutableStateFlow("")
-    val keyPassword: StateFlow<String> = _keyPassword
-
     val adbDeployer = AdbDeployer()
     val apkSigner = ApkSigner()
     val keytool = Keytool()
@@ -26,21 +23,15 @@ class PackagingViewModel() {
         _keystorePassword.value = value
     }
 
-    fun updateKeyPassword(value: String) {
-        _keyPassword.value = value
-    }
-
     fun getKeystoreInfo(): KeystoreInfo {
         val keystoreFile = dalvikusSettings["keystore_file"] as File
         val keyAlias = dalvikusSettings["key_alias"] as String
         val keystorePassword = _keystorePassword
-        val keyPassword = _keyPassword
 
         return KeystoreInfo(
             keystoreFile = keystoreFile,
             keyAlias = keyAlias,
-            keystorePassword = keystorePassword,
-            keyPassword = keyPassword
+            keystorePassword = keystorePassword
         )
     }
 }
@@ -48,8 +39,7 @@ class PackagingViewModel() {
 data class KeystoreInfo(
     val keystoreFile: File,
     val keyAlias: String,
-    val keystorePassword: MutableStateFlow<String>,
-    val keyPassword: MutableStateFlow<String>
+    val keystorePassword: MutableStateFlow<String>
 ) {
     @Composable
     fun seemsValid(): Boolean {
@@ -58,10 +48,8 @@ data class KeystoreInfo(
     }
 
     @Composable
-    fun passwordsFilled(): Boolean {
+    fun isPasswordFilled(): Boolean {
         val keystorePassword by keystorePassword.collectAsState()
-        val keyPassword by keyPassword.collectAsState()
-
-        return keystorePassword.length >= 6 && keyPassword.length >= 6
+        return keystorePassword.length >= 6
     }
 }

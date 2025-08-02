@@ -35,13 +35,12 @@ class ApkSigner() {
             val keystoreFile = keystoreInfo.keystoreFile
             val keyAlias = keystoreInfo.keyAlias
             val keystorePassword = keystoreInfo.keystorePassword.value.toCharArray()
-            val keyPassword = keystoreInfo.keyPassword.value.toCharArray()
 
-            val ks = KeyStore.getInstance("JKS").apply {
+            val ks = KeyStore.getInstance("PKCS12").apply {
                 load(keystoreFile.inputStream(), keystorePassword)
             }
 
-            val privateKey = ks.getKey(keyAlias, keyPassword) as? PrivateKey
+            val privateKey = ks.getKey(keyAlias, keystorePassword) as? PrivateKey
                 ?: throw IllegalArgumentException("Private key not found or wrong password")
 
             val certs = ks.getCertificateChain(keyAlias)

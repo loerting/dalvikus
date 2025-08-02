@@ -37,7 +37,6 @@ import java.security.cert.X509Certificate
 @Composable
 fun PackagingView(packagingViewModel: PackagingViewModel) {
     val keystorePassword by packagingViewModel.keystorePassword.collectAsState()
-    val keyPassword by packagingViewModel.keyPassword.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize().padding(8.dp)
@@ -70,6 +69,7 @@ fun PackagingView(packagingViewModel: PackagingViewModel) {
                     ) {
                         Column {
                             SettingRow(dalvikusSettings.getSetting("keystore_file"))
+                            SettingRow(dalvikusSettings.getSetting("key_alias"))
                             Column(Modifier.padding(horizontal = settingPadHor)) {
                                 Text(
                                     stringResource(
@@ -86,21 +86,6 @@ fun PackagingView(packagingViewModel: PackagingViewModel) {
                                 )
                                 Spacer(modifier = Modifier.height(settingPadVer))
                             }
-
-                            SettingRow(dalvikusSettings.getSetting("key_alias"))
-                            Column(Modifier.padding(horizontal = settingPadHor)) {
-                                Text(
-                                    stringResource(Res.string.signature_key_password, keystoreInfo.keyAlias),
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                                PasswordField(
-                                    password = keyPassword,
-                                    onPasswordChange = packagingViewModel::updateKeyPassword,
-                                    isError = keyPassword.length < 6,
-                                    errorMessage = stringResource(Res.string.error_password_min_length)
-                                )
-                                Spacer(modifier = Modifier.height(settingPadVer))
-                            }
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -110,9 +95,9 @@ fun PackagingView(packagingViewModel: PackagingViewModel) {
                                 if(!keystoreInfo.seemsValid()) {
                                     TextButton(
                                         onClick = {
-                                            packagingViewModel.keytool.createKeystore(keystorePassword, keyPassword)
+                                            packagingViewModel.keytool.createKeystore(keystorePassword)
                                         },
-                                        enabled = keystoreInfo.passwordsFilled()
+                                        enabled = keystoreInfo.isPasswordFilled()
                                     ) {
                                         Icon(
                                             imageVector = Icons.Outlined.Key,
