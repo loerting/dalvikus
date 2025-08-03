@@ -56,7 +56,7 @@ class AdbDeployer() {
         }
     }
 
-    private suspend fun initializeAdbBridge(): AndroidDebugBridge {
+    private fun initializeAdbBridge(): AndroidDebugBridge {
         AndroidDebugBridge.init(false)
 
         val adbExecutable = dalvikusSettings["adb_path"] as? File
@@ -66,10 +66,8 @@ class AdbDeployer() {
             throw IllegalStateException("ADB executable not found or not executable: ${adbExecutable.absolutePath}.")
         }
 
-        return withTimeout(10_000) {
-            AndroidDebugBridge.createBridge(adbExecutable.absolutePath, false)
+        return AndroidDebugBridge.createBridge(adbExecutable.absolutePath, false, 10000, TimeUnit.MILLISECONDS)
                 ?: throw IllegalStateException("Failed to create ADB bridge.")
-        }
     }
 
     private suspend fun waitForConnection(bridge: AndroidDebugBridge): Boolean {

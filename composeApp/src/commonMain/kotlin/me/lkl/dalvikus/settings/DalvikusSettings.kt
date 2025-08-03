@@ -28,12 +28,6 @@ class DalvikusSettings() {
             step = 1,
             unit = "sp"
         ),
-        BooleanSetting(
-            key = "save_automatically",
-            category = SettingsCategory.EDITOR,
-            nameRes = Res.string.settings_save_automatically,
-            defaultValue = false
-        ),
         IntSetting(
             key = "api_level",
             category = SettingsCategory.SMALI,

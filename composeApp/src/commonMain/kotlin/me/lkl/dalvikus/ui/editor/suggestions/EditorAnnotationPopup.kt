@@ -3,7 +3,6 @@ package me.lkl.dalvikus.ui.editor.suggestions
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -11,11 +10,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowCircleRight
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,23 +27,24 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
-import me.lkl.dalvikus.ui.editor.EditorViewModel
 import me.lkl.dalvikus.ui.editor.LayoutSnapshot
-import java.awt.Desktop
 
 @Composable
 fun EditorAnnotationPopup(
     lastLayoutSnapshot: LayoutSnapshot?,
     annotation: AnnotatedString.Range<String>,
-    viewModel: EditorViewModel,
     content: @Composable () -> Unit,
     contentWidthEstimate: Int
 ) {
     val density = LocalDensity.current
     val layoutResult = lastLayoutSnapshot?.layout ?: return
-    val start = annotation.start
-    val boxStart = layoutResult.getBoundingBox(start)
-    val boxEnd = layoutResult.getBoundingBox(annotation.end.coerceAtMost(viewModel.highlightedText.length - 1))
+
+    val layoutTextLength = layoutResult.layoutInput.text.length
+    val safeStart = annotation.start.coerceIn(0, layoutTextLength - 1)
+    val safeEnd = annotation.end.coerceIn(0, layoutTextLength - 1)
+
+    val boxStart = layoutResult.getBoundingBox(safeStart)
+    val boxEnd = layoutResult.getBoundingBox(safeEnd)
 
     Popup(
         offset = with(density) {

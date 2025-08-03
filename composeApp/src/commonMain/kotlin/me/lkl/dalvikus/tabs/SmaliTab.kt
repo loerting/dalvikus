@@ -15,6 +15,7 @@ import me.lkl.dalvikus.decompiler.VineflowerDecompiler
 import me.lkl.dalvikus.selectedNavItem
 import me.lkl.dalvikus.tabs.contentprovider.DualContentProvider
 import me.lkl.dalvikus.tree.dex.DexEntryClassNode
+import me.lkl.dalvikus.ui.editor.EditorViewModel
 
 class SmaliTab(
     override val tabId: String,
@@ -41,4 +42,17 @@ class SmaliTab(
     @Composable
     override fun tabName(): String = dexEntryClassNode.getClassDef().type.removeSurrounding("L", ";").substringAfterLast('/')
     override val tabIcon: ImageVector = Icons.Filled.DeployedCode
+
+    var smaliEditorViewModel : EditorViewModel? = null
+    var decompiledEditorViewModel : EditorViewModel? = null
+
+    override var editorViewModel: EditorViewModel?
+        get() = if (selectedNavItem == "Decompiler") decompiledEditorViewModel else smaliEditorViewModel
+        set(value) {
+            if (selectedNavItem == "Decompiler") {
+                decompiledEditorViewModel = value
+            } else {
+                smaliEditorViewModel = value
+            }
+        }
 }

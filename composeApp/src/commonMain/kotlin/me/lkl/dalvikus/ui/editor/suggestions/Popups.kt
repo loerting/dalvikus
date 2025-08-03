@@ -36,7 +36,7 @@ fun ErrorPopup(
     val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
 
-    EditorAnnotationPopup(lastLayoutSnapshot, annotation, viewModel, {
+    EditorAnnotationPopup(lastLayoutSnapshot, annotation, {
         ModernPopupContainer(
             color = MaterialTheme.colorScheme.error,
             icon = Icons.Default.ErrorOutline,
@@ -87,7 +87,7 @@ fun LookupPopup(
             else -> null
         }
 
-    EditorAnnotationPopup(lastLayoutSnapshot, annotation, viewModel, {
+    EditorAnnotationPopup(lastLayoutSnapshot, annotation, {
         ModernPopupContainer(
             color = MaterialTheme.colorScheme.primary,
             icon = Icons.Outlined.Info,
@@ -151,7 +151,7 @@ fun HexPopup(
         "Invalid hex: $cleanedHex"
     }
 
-    EditorAnnotationPopup(lastLayoutSnapshot, annotation, viewModel, {
+    EditorAnnotationPopup(lastLayoutSnapshot, annotation, {
         ModernPopupContainer(
             color = MaterialTheme.colorScheme.secondary,
             text = infoText,

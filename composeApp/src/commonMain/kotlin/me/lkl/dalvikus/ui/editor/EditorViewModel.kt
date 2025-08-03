@@ -11,6 +11,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.sp
 import brut.androlib.res.data.ResResSpec
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,7 +38,8 @@ class EditorViewModel(private val tab: TabElement) {
     var highlightedText by mutableStateOf(AnnotatedString(tab.contentProvider.contentFlow.value.decodeToString()))
         private set
 
-    val fontSize = (dalvikusSettings["font_size"] as Int).sp
+    val fontSize
+        get() = (dalvikusSettings["font_size"] as Int).sp
 
     var internalContent by mutableStateOf(TextFieldValue())
         private set
@@ -92,8 +94,10 @@ class EditorViewModel(private val tab: TabElement) {
     }
 
     suspend fun loadCode() {
+        Logger.i("Loading code for tab: ${tab.tabId}")
         withContext(Dispatchers.Default) {
             tab.contentProvider.loadContent()
+
             internalContent = internalContent.copy(text = tab.contentProvider.contentFlow.value.decodeToString())
 
             if (internalContent.text.lines().size > maxEditorLines) {
@@ -161,14 +165,8 @@ class EditorViewModel(private val tab: TabElement) {
         // Update the internal content with the new text
         internalContent = newTextFieldValue.copy(text = newText)
 
-
-        if (dalvikusSettings["save_automatically"]) {
-            saveCode(coroutineScope)
-        } else {
-            // TODO this does not take into account the case where the text is by selection replacement, but i don't want a O(n) equals check here
-            if (newText.length != oldText.length)
-                tab.hasUnsavedChanges.value = true
-        }
+        if (!tab.hasUnsavedChanges.value && newText != oldText)
+            tab.hasUnsavedChanges.value = true
     }
 
     /**
@@ -208,8 +206,12 @@ class EditorViewModel(private val tab: TabElement) {
         if (!isLoaded) throw IllegalArgumentException("code not initialized.")
         isSaving = true
         coroutineScope.launch(Dispatchers.Default + crtExHandler) {
-            tab.contentProvider.updateContent(internalContent.text.toByteArray())
-            tab.hasUnsavedChanges.value = false
+            try {
+                tab.contentProvider.updateContent(internalContent.text.toByteArray())
+                tab.hasUnsavedChanges.value = false
+            } catch (e: Exception) {
+                Logger.e("Failed to save code for tab: ${tab.tabId}", e)
+            }
             withContext(Dispatchers.Main) {
                 isSaving = false
             }

@@ -31,7 +31,7 @@ Designed for developers and researchers who want to inspect, edit, and rebuild A
 
 ## Features
 
-- Open APK and DEX files, allowing direct editing of DEX files inside APKs **without unpacking**
+- Open APK and DEX files, allowing direct editing of DEX files inside APKs **without unpacking manually**
 - Rich and comfortable smali language editor with **syntax highlighting**
 - Assist popup for **code completion** while typing
 - Light and dark themes for comfortable editing

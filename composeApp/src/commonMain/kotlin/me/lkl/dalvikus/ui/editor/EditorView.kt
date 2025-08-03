@@ -55,9 +55,12 @@ fun EditorView(tabElement: TabElement) {
 
     val isDarkState: MutableState<Boolean> = LocalThemeIsDark.current
 
-    val viewModel = remember(tabElement) { EditorViewModel(tabElement) }
+    // val viewModel = remember(tabElement) { EditorViewModel(tabElement) }
+    val viewModel = tabElement.editorViewModel ?: run {
+        tabElement.editorViewModel = EditorViewModel(tabElement)
+        return@run tabElement.editorViewModel!!
+    }
     viewModel.highlightColors = defaultCodeHighlightColors(isDarkState.value)
-
 
     if (!viewModel.openable) {
         EditorCannotOpen()
@@ -70,12 +73,9 @@ fun EditorView(tabElement: TabElement) {
 
     val coroutine = rememberCoroutineScope()
 
-    var firstLoad by remember(tabElement) { mutableStateOf(true) }
-
     LaunchedEffect(tabElement) {
-        if (firstLoad) {
+        if (!viewModel.isLoaded) {
             viewModel.loadCode()
-            firstLoad = false
         }
     }
 
@@ -120,7 +120,7 @@ fun EditorView(tabElement: TabElement) {
     Scaffold(
         containerColor = Color.Transparent,
         floatingActionButton = {
-            if(viewModel.isSaving) {
+            if (viewModel.isSaving) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(48.dp).padding(bottom = 8.dp, end = 8.dp),
                     color = MaterialTheme.colorScheme.primary
@@ -194,7 +194,10 @@ fun EditorView(tabElement: TabElement) {
 
                                 drawText(
                                     textLayoutResult = layoutResult,
-                                    topLeft = Offset(textContentPadding.calculateLeftPadding(LayoutDirection.Ltr).toPx(), textContentPadding.calculateTopPadding().toPx()),
+                                    topLeft = Offset(
+                                        textContentPadding.calculateLeftPadding(LayoutDirection.Ltr).toPx(),
+                                        textContentPadding.calculateTopPadding().toPx()
+                                    ),
                                     brush = SolidColor(Color.Black),
                                     alpha = 1f,
                                     shadow = null,
