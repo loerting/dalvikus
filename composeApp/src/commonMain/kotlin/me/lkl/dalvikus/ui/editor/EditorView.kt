@@ -235,9 +235,9 @@ fun EditorView(tabElement: TabElement) {
                                 .fillMaxSize()
                                 .focusRequester(focusRequester)
                                 .handleFocusedCtrlShortcuts(
-                                    enabled = viewModel.editable,
+                                    enabled = true,
                                     mapOf(
-                                        shortcutSave to { viewModel.saveCode(coroutine) },
+                                        shortcutSave to { if (viewModel.editable) viewModel.saveCode(coroutine) },
                                         shortcutFind to {
                                             viewModel.isSearchActive = true
                                         })
