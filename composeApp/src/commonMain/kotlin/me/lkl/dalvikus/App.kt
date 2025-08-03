@@ -5,6 +5,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.Coffee
@@ -27,7 +28,9 @@ import dalvikus.composeapp.generated.resources.*
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.icons.FamilyHistory
 import me.lkl.dalvikus.icons.ThreadUnread
 import me.lkl.dalvikus.settings.DalvikusSettings
@@ -43,8 +46,10 @@ import me.lkl.dalvikus.tools.ApkSigner
 import me.lkl.dalvikus.ui.nav.NavItem
 import me.lkl.dalvikus.ui.snackbar.SnackbarManager
 import me.lkl.dalvikus.ui.snackbar.SnackbarResources
+import me.lkl.dalvikus.ui.tabs.LinkButton
 import me.lkl.dalvikus.ui.tabs.TabManager
 import me.lkl.dalvikus.ui.tree.TreeDragAndDropTarget
+import me.lkl.dalvikus.util.getLatestReleaseTag
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.splitpane.ExperimentalSplitPaneApi
 import org.jetbrains.compose.splitpane.HorizontalSplitPane
@@ -246,6 +251,17 @@ internal fun Content() {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TopBar() {
+    val version = dalvikusSettings.getVersion()
+
+    val latestVersionState = produceState<String?>(initialValue = null) {
+        withContext(Dispatchers.IO) {
+            if(!(dalvikusSettings["check_for_updates"] as Boolean)) return@withContext
+            value = getLatestReleaseTag("loerting", "dalvikus")
+        }
+    }
+
+    val updateAvailable = version != "(dev)" && latestVersionState.value != null && !latestVersionState.value!!.contains(version, ignoreCase = true)
+
     val scope = rememberCoroutineScope()
     rememberTooltipState(isPersistent = true)
     CenterAlignedTopAppBar(
@@ -293,6 +309,20 @@ fun TopBar() {
             }
         },
         actions = {
+            if(updateAvailable) {
+                val buttonShape = RoundedCornerShape(16.dp)
+                val buttonColors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.primary
+                )
+                LinkButton(
+                    text = stringResource(Res.string.update_to, latestVersionState.value ?: "?"),
+                    uri = DalvikusSettings.getRepoURI(),
+                    icon = Icons.Outlined.Update,
+                    shape = buttonShape,
+                    colors = buttonColors
+                )
+            }
+
             DeployButton { node ->
                 scope.launch(crtExHandler) {
                     val apkSigner = ApkSigner()

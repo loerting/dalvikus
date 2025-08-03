@@ -28,6 +28,12 @@ class DalvikusSettings() {
             step = 1,
             unit = "sp"
         ),
+        BooleanSetting(
+            key = "check_for_updates",
+            category = SettingsCategory.GENERAL,
+            nameRes = Res.string.settings_check_for_updates,
+            defaultValue = true
+        ),
         IntSetting(
             key = "api_level",
             category = SettingsCategory.SMALI,

@@ -55,6 +55,7 @@
     <string name="settings_keystore_alias">Key alias for signing</string>
     <string name="settings_adb_path">Installation path of Android Debug Bridge (adb)</string>
     <string name="settings_zipalign_path">Installation path of zipalign (Android build-tools)</string>
+    <string name="settings_check_for_updates">Check for updates on startup</string>
 
     <string name="tooltip_deploy_title">Deploy application</string>
     <string name="tooltip_deploy_message">Sign and deploy the last selected Android archive using adb. (%1$s)</string>
@@ -92,6 +93,9 @@
     <string name="sign">Sign</string>
     <string name="dismiss">Dismiss</string>
     <string name="copy">Copy</string>
+    <string name="update">Update</string>
+    <string name="update_to">Update to %1$s</string>
+
     <string name="browse_web">Browse web</string>
     <string name="all_elements">All elements</string>
 
