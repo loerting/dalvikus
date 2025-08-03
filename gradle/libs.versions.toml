@@ -16,6 +16,7 @@ cfr = "0.152"
 dex2jarNicoMexis = "2.4.28"
 vineflower = "1.11.1"
 apktoolLib = "2.12.0"
+haze = "1.6.9"
 
 [libraries]
 
@@ -37,6 +38,8 @@ cfr = { module = "org.benf:cfr", version.ref = "cfr" }
 dex2jarNicoMexis = { module = "de.femtopedia.dex2jar:dex2jar", version.ref = "dex2jarNicoMexis" }
 vineflower = { module = "org.vineflower:vineflower", version.ref = "vineflower" }
 apktoolLib = { module = "org.apktool:apktool-lib", version.ref = "apktoolLib" }
+haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
+hazeMaterials = { module = "dev.chrisbanes.haze:haze-materials", version.ref = "haze" }
 
 [plugins]
 

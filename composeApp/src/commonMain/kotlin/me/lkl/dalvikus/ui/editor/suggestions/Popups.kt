@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import dalvikus.composeapp.generated.resources.*
+import dev.chrisbanes.haze.HazeState
 import kotlinx.coroutines.launch
 import me.lkl.dalvikus.tabs.SmaliTab
 import me.lkl.dalvikus.ui.editor.EditorViewModel
@@ -31,7 +32,8 @@ fun ErrorPopup(
     lastLayoutSnapshot: LayoutSnapshot?,
     annotation: AnnotatedString.Range<String>,
     viewModel: EditorViewModel,
-    textStyle: TextStyle
+    textStyle: TextStyle,
+    hazeState: HazeState
 ) {
     val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
@@ -42,6 +44,7 @@ fun ErrorPopup(
             icon = Icons.Default.ErrorOutline,
             text = annotation.item,
             textStyle = textStyle,
+            hazeState = hazeState,
             action = stringResource(Res.string.copy),
             actionIcon = Icons.Default.ContentCopy,
         ) {
@@ -58,7 +61,8 @@ fun LookupPopup(
     lastLayoutSnapshot: LayoutSnapshot?,
     annotation: AnnotatedString.Range<String>,
     viewModel: EditorViewModel,
-    textStyle: TextStyle
+    textStyle: TextStyle,
+    hazeState: HazeState
 ) {
     val fullPath = annotation.item
     val hasEntry = smaliTab.dexEntryClassNode.root.hasClass(fullPath)
@@ -93,6 +97,7 @@ fun LookupPopup(
             icon = Icons.Outlined.Info,
             text = lookupText,
             textStyle = textStyle,
+            hazeState = hazeState,
             action = actionText,
             actionIcon = actionIcon,
         ) {
@@ -120,7 +125,8 @@ fun HexPopup(
     annotation: AnnotatedString.Range<String>,
     textStyle: TextStyle,
     lastLayoutSnapshot: LayoutSnapshot?,
-    viewModel: EditorViewModel
+    viewModel: EditorViewModel,
+    hazeState: HazeState
 ) {
     val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
@@ -156,6 +162,7 @@ fun HexPopup(
             color = MaterialTheme.colorScheme.secondary,
             text = infoText,
             textStyle = textStyle,
+            hazeState = hazeState,
             icon = Icons.Outlined.Info,
             action = stringResource(Res.string.copy),
             actionIcon = Icons.Default.ContentCopy,

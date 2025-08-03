@@ -23,10 +23,13 @@ kotlin {
 
             implementation(compose.materialIconsExtended)
             implementation(libs.splitPaneDesktop)
+            implementation(libs.haze)
+            implementation(libs.hazeMaterials)
+            implementation(libs.materialKolor)
 
             implementation(libs.kermit)
             implementation(libs.multiplatformSettings)
-            implementation(libs.materialKolor)
+
             implementation(libs.kotlinxCoroutinesSwing)
 
             implementation(libs.smali)

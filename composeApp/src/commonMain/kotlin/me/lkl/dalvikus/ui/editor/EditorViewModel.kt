@@ -1,5 +1,6 @@
 package me.lkl.dalvikus.ui.editor
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -17,13 +18,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.lkl.dalvikus.dalvikusSettings
+import me.lkl.dalvikus.errorreport.crtExHandler
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.archive.ApkNode
 import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
 import me.lkl.dalvikus.ui.editor.highlight.highlightCode
 import me.lkl.dalvikus.ui.editor.suggestions.AssistPopupState
-import me.lkl.dalvikus.errorreport.crtExHandler
+import me.lkl.dalvikus.ui.editor.suggestions.MaximumAssistSuggestions
 import me.lkl.dalvikus.ui.uiTreeRoot
+import me.lkl.dalvikus.util.SearchOptions
+import me.lkl.dalvikus.util.createSearchMatcher
 import java.math.BigInteger
 
 const val maxEditorFileSize = 128 * 1024 // 128 KiB
@@ -55,6 +59,9 @@ class EditorViewModel(private val tab: TabElement) {
     mutableStateOf(tab.contentProvider.getSizeEstimate() < maxEditorFileSize && tab.contentProvider.isDisplayable())
         private set
 
+    var isSearchActive by mutableStateOf(false)
+    var searchOptions by mutableStateOf(SearchOptions())
+
     val popupKeyEvents = Modifier.onPreviewKeyEvent { event ->
         val apState = assistPopupState.value
 
@@ -67,15 +74,18 @@ class EditorViewModel(private val tab: TabElement) {
             }
             return@onPreviewKeyEvent false
         }
+        val max = MaximumAssistSuggestions // total suggestions count
 
         return@onPreviewKeyEvent when (event.key) {
             Key.DirectionDown -> {
-                assistPopupState.value = apState.copy(selectedIndex = apState.selectedIndex + 1)
+                val newIndex = (apState.selectedIndex + 1) % max
+                assistPopupState.value = apState.copy(selectedIndex = newIndex)
                 true
             }
 
             Key.DirectionUp -> {
-                assistPopupState.value = apState.copy(selectedIndex = apState.selectedIndex - 1)
+                val newIndex = (apState.selectedIndex - 1 + max) % max
+                assistPopupState.value = apState.copy(selectedIndex = newIndex)
                 true
             }
 
@@ -91,6 +101,7 @@ class EditorViewModel(private val tab: TabElement) {
 
             else -> false
         }
+
     }
 
     suspend fun loadCode() {
@@ -290,4 +301,53 @@ class EditorViewModel(private val tab: TabElement) {
             append("\n".repeat(linesAfter))
         }
     }
+
+    fun searchAndSelect(
+        searchText: String,
+        direction: SearchDirection,
+        lineHeightPx: Float,
+        verticalScrollState: ScrollState,
+        coroutine: CoroutineScope
+    ): Int {
+        if (!isLoaded || searchText.isEmpty()) return 0
+
+        val matcher = createSearchMatcher(searchText, this.searchOptions)
+        val text = internalContent.text
+        val caretPosition = internalContent.selection.start
+
+        val matches = mutableListOf<IntRange>()
+        var index = 0
+        while (index < text.length) {
+            val start = text.indexOf(searchText, index, ignoreCase = !searchOptions.caseSensitive)
+            if (start == -1) break
+
+            val candidate = text.substring(start, start + searchText.length)
+            if (matcher(candidate)) {
+                matches.add(start until (start + searchText.length))
+            }
+            index = start + 1
+        }
+
+        if (matches.isEmpty()) {
+            return 0
+        }
+
+        val matchRange = when (direction) {
+            SearchDirection.NEXT -> matches.firstOrNull { it.first > caretPosition } ?: matches.first()
+            SearchDirection.PREVIOUS -> matches.lastOrNull { it.last < caretPosition } ?: matches.last()
+        }
+
+        internalContent = internalContent.copy(
+            selection = TextRange(matchRange.first, matchRange.last + 1)
+        )
+
+        coroutine.launch(Dispatchers.Main) {
+            val textUpToMatch = internalContent.text.substring(0, matchRange.first)
+            val lineIndex = textUpToMatch.count { it == '\n' }
+            verticalScrollState.animateScrollTo(((lineIndex - 10) * lineHeightPx).toInt())
+        }
+
+        return matches.size
+    }
+
 }

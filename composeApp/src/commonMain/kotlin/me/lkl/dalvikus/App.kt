@@ -24,6 +24,9 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.launch
 import me.lkl.dalvikus.icons.FamilyHistory
 import me.lkl.dalvikus.icons.ThreadUnread
@@ -49,6 +52,8 @@ import org.jetbrains.compose.splitpane.rememberSplitPaneState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
+val LocalHazeState = compositionLocalOf { HazeState() }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
@@ -57,16 +62,22 @@ internal fun App(
     onExitConfirmed: () -> Unit
 ) = AppTheme {
     InitializeSnackbar()
-    Scaffold(
-        topBar = { TopBar() },
-        snackbarHost = { SnackbarHost(hostState = snackbarManager!!.snackbarHostState) }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            Content()
+
+    val hazeState = rememberHazeState()
+
+    CompositionLocalProvider(LocalHazeState provides hazeState) {
+        Scaffold(
+            topBar = { TopBar() },
+            snackbarHost = { SnackbarHost(hostState = snackbarManager!!.snackbarHostState) },
+            modifier = Modifier.hazeSource(hazeState)
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                Content()
+            }
         }
     }
 

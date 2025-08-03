@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -33,7 +34,11 @@ import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.editor_cannot_open
 import dalvikus.composeapp.generated.resources.fab_save_and_assemble
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.delay
+import me.lkl.dalvikus.LocalHazeState
+import me.lkl.dalvikus.settings.shortcutFind
 import me.lkl.dalvikus.settings.shortcutSave
 import me.lkl.dalvikus.tabs.SmaliTab
 import me.lkl.dalvikus.tabs.TabElement
@@ -51,8 +56,6 @@ data class LayoutSnapshot(val layout: TextLayoutResult, val textFieldValue: Text
 
 @Composable
 fun EditorView(tabElement: TabElement) {
-
-
     val isDarkState: MutableState<Boolean> = LocalThemeIsDark.current
 
     // val viewModel = remember(tabElement) { EditorViewModel(tabElement) }
@@ -117,6 +120,7 @@ fun EditorView(tabElement: TabElement) {
         focusRequester.requestFocus()
     }
 
+
     Scaffold(
         containerColor = Color.Transparent,
         floatingActionButton = {
@@ -143,148 +147,188 @@ fun EditorView(tabElement: TabElement) {
                 )
         },
         modifier = Modifier.fillMaxSize().then(viewModel.popupKeyEvents)
-    ) {
-        val textContentPadding = PaddingValues(
-            start = 1.dp,
-            top = 4.dp,
-            end = 32.dp,
-            bottom = 32.dp
-        )
-
-        Row {
-            LineNumberColumn(
-                lastLayoutSnapshot?.layout,
-                scrollState = vertState,
-                textContentPadding = textContentPadding,
-                textStyle = textStyle
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            val textContentPadding = PaddingValues(
+                start = 1.dp,
+                top = 4.dp,
+                end = 32.dp,
+                bottom = 32.dp
             )
 
-            Spacer(
-                modifier = Modifier
-                    .width(1.dp)
-                    .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
-            )
-            BoxWithConstraints(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxSize()
-            ) {
-                val viewportHeight = constraints.maxHeight.toFloat()
-                Box(
+            val hazeState = rememberHazeState()
+
+            Row(modifier = Modifier.hazeSource(hazeState)) {
+                LineNumberColumn(
+                    lastLayoutSnapshot?.layout,
+                    scrollState = vertState,
+                    textContentPadding = textContentPadding,
+                    textStyle = textStyle
+                )
+
+                Spacer(
                     modifier = Modifier
-                        .horizontalScroll(horState)
-                        .verticalScroll(vertState)
-                        .fillMaxSize()
-                        .drawBehind {
-                            if (viewModel.highlightedText.isEmpty()) return@drawBehind
-                            val scrollY = vertState.value
-                            val lineHeight = textStyle.lineHeight.toPx()
-                            val startLine = (scrollY / lineHeight).toInt()
-                            val endLine = ((scrollY + viewportHeight) / lineHeight).toInt()
-
-                            clipRect {
-                                // This is a crazy hack, but it works fine.
-                                val annotatedText = viewModel.getClippedHighlightedText(startLine - 1, endLine + 1)
-                                val layoutResult = textMeasurer.measure(
-                                    text = annotatedText,
-                                    style = textStyle,
-                                    constraints = Constraints(maxWidth = size.width.toInt()),
-                                )
-
-                                drawText(
-                                    textLayoutResult = layoutResult,
-                                    topLeft = Offset(
-                                        textContentPadding.calculateLeftPadding(LayoutDirection.Ltr).toPx(),
-                                        textContentPadding.calculateTopPadding().toPx()
-                                    ),
-                                    brush = SolidColor(Color.Black),
-                                    alpha = 1f,
-                                    shadow = null,
-                                    textDecoration = null,
-                                    drawStyle = null,
-                                    blendMode = BlendMode.SrcOver
-                                )
-                            }
-                        }
-                ) {
-                    BasicTextField(
-                        value = viewModel.internalContent,
-                        readOnly = !viewModel.editable,
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.None,
-                            keyboardType = KeyboardType.Ascii
-                        ),
-                        onValueChange = { newText ->
-                            viewModel.changeContent(newText, coroutine)
-                        },
-                        modifier = Modifier
-                            .padding(textContentPadding)
-                            .fillMaxSize()
-                            .focusRequester(focusRequester)
-                            .handleFocusedCtrlShortcuts(
-                                enabled = viewModel.editable,
-                                mapOf(shortcutSave to { viewModel.saveCode(coroutine) })
-                            ),
-
-                        textStyle = textStyle.copy(
-                            color = Color.Transparent
-                        ),
-                        onTextLayout = {
-                            lastLayoutSnapshot = LayoutSnapshot(
-                                layout = it,
-                                textFieldValue = viewModel.internalContent
-                            )
-                        },
-                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary)
-                    )
-                    if (tabElement is SmaliTab) {
-                        AssistPopup(
-                            assistPopupState = viewModel.assistPopupState,
-                            viewModel = viewModel,
-                            lastLayoutSnapshot = lastLayoutSnapshot,
-                            textStyle = textStyle,
-                            highlightColors = viewModel.highlightColors
-                        )
-                    }
-                    val start = viewModel.internalContent.selection.start
-                    val end = viewModel.internalContent.selection.end
-
-                    // these are annotated in the smali highlighter
-                    listOf("error", "class", "hex").forEach { tag ->
-                        viewModel.highlightedText.getStringAnnotations(tag, start, end).firstOrNull()?.let {
-                            when (tag) {
-                                "error" -> ErrorPopup(lastLayoutSnapshot, it, viewModel, textStyle)
-                                "class" -> {
-                                    if (tabElement is SmaliTab) {
-                                        LookupPopup(tabElement, lastLayoutSnapshot, it, viewModel, textStyle)
-                                    }
-                                }
-
-                                "hex" -> HexPopup(it, textStyle, lastLayoutSnapshot, viewModel)
-                            }
-                            return@forEach // stops after showing the first popup
-                        }
-                    }
-
-                }
-
-                VerticalScrollbar(
-                    adapter = rememberScrollbarAdapter(vertState),
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
+                        .width(1.dp)
                         .fillMaxHeight()
-                        .padding(bottom = 8.dp, end = 8.dp)
+                        .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
                 )
-
-                HorizontalScrollbar(
-                    adapter = rememberScrollbarAdapter(horState),
+                BoxWithConstraints(
                     modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp, end = 8.dp)
-                )
+                        .weight(1f)
+                        .fillMaxSize()
+                ) {
+
+                    val viewportHeight = constraints.maxHeight.toFloat()
+                    Box(
+                        modifier = Modifier
+                            .horizontalScroll(horState)
+                            .verticalScroll(vertState)
+                            .fillMaxSize()
+                            .drawBehind {
+                                if (viewModel.highlightedText.isEmpty()) return@drawBehind
+                                val scrollY = vertState.value
+                                val lineHeight = textStyle.lineHeight.toPx()
+                                val startLine = (scrollY / lineHeight).toInt()
+                                val endLine = ((scrollY + viewportHeight) / lineHeight).toInt()
+
+                                clipRect {
+                                    // This is a crazy hack, but it works fine.
+                                    val annotatedText = viewModel.getClippedHighlightedText(startLine - 1, endLine + 1)
+                                    val layoutResult = textMeasurer.measure(
+                                        text = annotatedText,
+                                        style = textStyle,
+                                        constraints = Constraints(maxWidth = size.width.toInt()),
+                                    )
+
+                                    drawText(
+                                        textLayoutResult = layoutResult,
+                                        topLeft = Offset(
+                                            textContentPadding.calculateLeftPadding(LayoutDirection.Ltr).toPx(),
+                                            textContentPadding.calculateTopPadding().toPx()
+                                        ),
+                                        brush = SolidColor(Color.Black),
+                                        alpha = 1f,
+                                        shadow = null,
+                                        textDecoration = null,
+                                        drawStyle = null,
+                                        blendMode = BlendMode.SrcOver
+                                    )
+                                }
+                            }
+                    ) {
+                        BasicTextField(
+                            value = viewModel.internalContent,
+                            readOnly = !viewModel.editable,
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.None,
+                                keyboardType = KeyboardType.Ascii
+                            ),
+                            onValueChange = { newText ->
+                                viewModel.changeContent(newText, coroutine)
+                            },
+                            modifier = Modifier
+                                .padding(textContentPadding)
+                                .fillMaxSize()
+                                .focusRequester(focusRequester)
+                                .handleFocusedCtrlShortcuts(
+                                    enabled = viewModel.editable,
+                                    mapOf(
+                                        shortcutSave to { viewModel.saveCode(coroutine) },
+                                        shortcutFind to {
+                                            viewModel.isSearchActive = true
+                                        })
+                                ),
+
+                            textStyle = textStyle.copy(
+                                color = Color.Transparent
+                            ),
+                            onTextLayout = {
+                                lastLayoutSnapshot = LayoutSnapshot(
+                                    layout = it,
+                                    textFieldValue = viewModel.internalContent
+                                )
+                            },
+                            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary)
+                        )
+
+                        val fullHazeState = LocalHazeState.current
+
+                        if (tabElement is SmaliTab) {
+                            AssistPopup(
+                                assistPopupState = viewModel.assistPopupState,
+                                viewModel = viewModel,
+                                lastLayoutSnapshot = lastLayoutSnapshot,
+                                textStyle = textStyle,
+                                hazeState = fullHazeState,
+                                highlightColors = viewModel.highlightColors
+                            )
+                        }
+                        val start = viewModel.internalContent.selection.start
+                        val end = viewModel.internalContent.selection.end
+
+                        // these are annotated in the smali highlighter
+                        listOf("error", "class", "hex").forEach { tag ->
+                            viewModel.highlightedText.getStringAnnotations(tag, start, end).firstOrNull()?.let {
+                                when (tag) {
+                                    "error" -> ErrorPopup(lastLayoutSnapshot, it, viewModel, textStyle, fullHazeState)
+                                    "class" -> {
+                                        if (tabElement is SmaliTab) {
+                                            LookupPopup(
+                                                tabElement,
+                                                lastLayoutSnapshot,
+                                                it,
+                                                viewModel,
+                                                textStyle,
+                                                fullHazeState
+                                            )
+                                        }
+                                    }
+
+                                    "hex" -> HexPopup(it, textStyle, lastLayoutSnapshot, viewModel, fullHazeState)
+                                }
+                                return@forEach // stops after showing the first popup
+                            }
+                        }
+                    }
+
+                    VerticalScrollbar(
+                        adapter = rememberScrollbarAdapter(vertState),
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .fillMaxHeight()
+                            .padding(bottom = 8.dp, end = 8.dp)
+                    )
+
+                    HorizontalScrollbar(
+                        adapter = rememberScrollbarAdapter(horState),
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp, end = 8.dp)
+                    )
+                }
             }
+
+            if (viewModel.isSearchActive) {
+                val lineHeightPx = with(LocalDensity.current) { textStyle.lineHeight.toPx() }
+                EditorSearchOverlay(
+                    hazeState = hazeState,
+                    viewModel = viewModel
+                ) { searchText, direction ->
+                    viewModel.searchAndSelect(
+                        searchText = searchText.toString(),
+                        direction = direction,
+                        coroutine = coroutine,
+                        verticalScrollState = vertState,
+                        lineHeightPx = lineHeightPx
+                    )
+                }
+            }
+
         }
     }
 }

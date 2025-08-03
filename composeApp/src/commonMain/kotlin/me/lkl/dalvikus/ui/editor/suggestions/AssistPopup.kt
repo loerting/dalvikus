@@ -1,10 +1,10 @@
 package me.lkl.dalvikus.ui.editor.suggestions
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -15,6 +15,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -25,10 +27,13 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeEffect
 import me.lkl.dalvikus.theme.getSuggestionTypeIcon
 import me.lkl.dalvikus.ui.editor.EditorViewModel
 import me.lkl.dalvikus.ui.editor.LayoutSnapshot
 import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
+import me.lkl.dalvikus.util.defaultHazeStyle
 import me.lkl.dalvikus.util.getTextWidth
 
 data class AssistPopupState(
@@ -38,12 +43,15 @@ data class AssistPopupState(
     val enterRequest: Boolean = false,
 )
 
+const val MaximumAssistSuggestions = 5
+
 @Composable
 fun AssistPopup(
     assistPopupState: MutableState<AssistPopupState>,
     viewModel: EditorViewModel,
     lastLayoutSnapshot: LayoutSnapshot?,
     textStyle: TextStyle,
+    hazeState: HazeState,
     highlightColors: CodeHighlightColors
 ) {
     if (lastLayoutSnapshot == null || !viewModel.isLoaded) return
@@ -58,7 +66,7 @@ fun AssistPopup(
     if (cursorRect == Rect.Zero) return
     // add a \n as a little hack to ensure the token text on the last line is not empty
     val codeSuggester = CodeSuggester(cursorIndex, lastLayoutSnapshot.textFieldValue.text + "\n", highlightColors)
-    val suggestions = codeSuggester.suggestNext()
+    val suggestions = codeSuggester.suggestNext().take(MaximumAssistSuggestions)
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -91,7 +99,7 @@ fun AssistPopup(
     }
     val negativeOffset = getTextWidth(codeSuggester.currentToken.text.substring(0, cursorOffset), textStyle)
 
-
+    val color = highlightColors.senary
     val density = LocalDensity.current
     Popup(
         offset = with(density) {
@@ -112,15 +120,18 @@ fun AssistPopup(
         }
     ) {
         Surface(
+            color = Color.Transparent,
             modifier = Modifier
                 .heightIn(min = 0.dp, max = 200.dp)
-                .widthIn(max = 400.dp),
-            shadowElevation = 2.dp,
-            shape = RoundedCornerShape(4.dp)
+                .widthIn(max = 400.dp)
+                .hazeEffect(
+                    state = hazeState,
+                    style = defaultHazeStyle(lerp(color, MaterialTheme.colorScheme.surface, 0.9f))
+                )
+                .border(1.dp, color.copy(alpha = 0.8f))
         ) {
             LazyColumn(
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surface)
             ) {
                 itemsIndexed(suggestions) { index, suggestion ->
                     val isSelected = index == selectedIndex
@@ -129,7 +140,7 @@ fun AssistPopup(
                             .fillMaxWidth()
                             .background(
                                 if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                                else MaterialTheme.colorScheme.surface
+                                else Color.Transparent
                             )
                             .padding(3.dp),
                         verticalAlignment = Alignment.CenterVertically

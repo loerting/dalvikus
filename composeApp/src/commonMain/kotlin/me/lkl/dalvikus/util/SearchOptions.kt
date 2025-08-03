@@ -1,11 +1,13 @@
 package me.lkl.dalvikus.util
 
+import co.touchlab.kermit.Logger
+
 data class SearchOptions(
     val caseSensitive: Boolean = false,
     val useRegex: Boolean = false
 )
 
-fun createSearchMatcher(query: String, options: SearchOptions): ((String) -> Boolean)? {
+fun createSearchMatcher(query: String, options: SearchOptions): ((String) -> Boolean) {
     return if (options.useRegex) {
         try {
             val regex = if (options.caseSensitive) {
@@ -15,7 +17,7 @@ fun createSearchMatcher(query: String, options: SearchOptions): ((String) -> Boo
             }
             { input -> regex.containsMatchIn(input) }
         } catch (e: Exception) {
-            null // Invalid regex
+            { input: String -> false }
         }
     } else {
         { input -> input.contains(query, ignoreCase = !options.caseSensitive) }
