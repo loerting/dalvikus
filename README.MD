@@ -36,7 +36,7 @@ Designed for developers and researchers who want to inspect, edit, and rebuild A
 - Assist popup for **code completion** while typing
 - Light and dark themes for comfortable editing
 - Support for **multiple decompilers** to analyze dalvik code
-- Integrated app signing using **apksig** for re-signing modified APKs
+- Integrated app signing using **apksig** and **zipalign** for re-signing modified APKs
 - Built-in **ADB runner** to deploy and start apps on connected devices directly
 - Powerful search tools: **tree view, string constants, method and field references**
 - Browse resource IDs, XML files, and more using integrated **apktool**
@@ -46,6 +46,7 @@ Designed for developers and researchers who want to inspect, edit, and rebuild A
 ### Requirements
 
 - JDK 11 or higher
+- Android SDK (build-tools and platform-tools, ADB and APK signing features)
 - Supported OS: Windows, Linux, macOS
 
 ### Installation
