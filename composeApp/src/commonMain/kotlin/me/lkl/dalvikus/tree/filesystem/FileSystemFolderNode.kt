@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.ui.graphics.vector.ImageVector
 import me.lkl.dalvikus.tree.ContainerNode
+import me.lkl.dalvikus.tree.Metadata
 import me.lkl.dalvikus.tree.Node
 import java.io.File
 
@@ -29,5 +30,11 @@ class FileSystemFolderNode(
 
     override suspend fun rebuild() {
         // Folders usually don't need rebuilding — NOP
+    }
+
+    override fun getMetadata(): Set<Pair<Metadata, Any>> {
+        return setOf(
+            Metadata.LAST_EDITED to file.lastModified(),
+        )
     }
 }

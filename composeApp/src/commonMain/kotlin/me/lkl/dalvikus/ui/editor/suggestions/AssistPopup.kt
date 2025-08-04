@@ -2,6 +2,8 @@ package me.lkl.dalvikus.ui.editor.suggestions
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -17,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -103,7 +106,7 @@ fun AssistPopup(
     val density = LocalDensity.current
     Popup(
         offset = with(density) {
-            val iconWidth = 26.dp.roundToPx()
+            val iconWidth = 30.dp.roundToPx()
             IntOffset(
                 cursorRect.left.toInt() + 1 - iconWidth - negativeOffset,
                 cursorRect.bottom.toInt() + 1
@@ -142,9 +145,26 @@ fun AssistPopup(
                                 if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                                 else Color.Transparent
                             )
+                            .clickable {
+                                assistPopupState.value = assistPopupState.value.copy(
+                                    selectedIndex = index,
+                                    enterRequest = false
+                                )
+                            }
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onDoubleTap = {
+                                        assistPopupState.value = assistPopupState.value.copy(
+                                            selectedIndex = index,
+                                            enterRequest = true
+                                        )
+                                    }
+                                )
+                            }
                             .padding(3.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        Spacer(modifier = Modifier.width(4.dp))
                         Icon(
                             getSuggestionTypeIcon(suggestion.type), contentDescription = null,
                             modifier = Modifier.size(16.dp)

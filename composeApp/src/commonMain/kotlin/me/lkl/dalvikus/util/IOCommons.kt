@@ -68,3 +68,22 @@ fun guessIfEditableTextually(
         weirdCharRatio < threshold
     }
 }
+
+fun formatFileSize(sizeInBytes: Long): String {
+    if (sizeInBytes < 0) return "Invalid size"
+
+    val units = arrayOf("B", "KB", "MB", "GB", "TB", "PB")
+    var size = sizeInBytes.toDouble()
+    var unitIndex = 0
+    while (size >= 1024 && unitIndex < units.size - 1) {
+        size /= 1024
+        unitIndex++
+    }
+    return String.format("%.2f %s", size, units[unitIndex])
+}
+
+fun formatFileDate(timestamp: Long): String {
+    val date = java.util.Date(timestamp)
+    val formatter = java.text.SimpleDateFormat("yy-MM-dd HH:mm:ss")
+    return formatter.format(date)
+}

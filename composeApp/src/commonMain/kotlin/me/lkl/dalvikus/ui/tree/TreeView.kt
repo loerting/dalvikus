@@ -8,8 +8,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.ExpandMore
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -19,13 +20,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import co.touchlab.kermit.Logger
+import dalvikus.composeapp.generated.resources.Res
+import dalvikus.composeapp.generated.resources.tree_field_count
+import dalvikus.composeapp.generated.resources.tree_method_count
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import me.lkl.dalvikus.errorreport.crtExHandler
 import me.lkl.dalvikus.snackbarManager
 import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.tree.Node
+import me.lkl.dalvikus.tree.Metadata
 import me.lkl.dalvikus.tree.root.HiddenRoot
-import me.lkl.dalvikus.errorreport.crtExHandler
+import me.lkl.dalvikus.util.formatFileDate
+import me.lkl.dalvikus.util.formatFileSize
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TreeView(
@@ -95,19 +104,19 @@ fun TreeView(
                     indent = indent,
                     isExpanded = expandedState[node] == true,
                     onToggleExpand = { shouldExpand ->
-                        coroutineScope.launch(Dispatchers.IO + crtExHandler) {
-                            if (node is ContainerNode) {
-                                if (shouldExpand) {
-                                    try {
-                                        node.loadChildren()
-                                    } catch (ex: Exception) {
-                                        Logger.e("Failed to load file", ex)
-                                        snackbarManager?.showError(ex)
-                                    }
+
+                        if (node is ContainerNode) {
+                            if (shouldExpand) {
+                                try {
+                                    node.loadChildren()
+                                } catch (ex: Exception) {
+                                    Logger.e("Failed to load file", ex)
+                                    snackbarManager?.showError(ex)
                                 }
-                                expandedState[node] = shouldExpand
                             }
+                            expandedState[node] = shouldExpand
                         }
+
                     },
                     onClick = { onFileSelected?.invoke(node) },
                     selected = (node == selectedElement)
@@ -122,18 +131,18 @@ fun TreeView(
         )
     }
 }
-
+/*
 @Composable
 private fun TreeRow(
     node: Node,
     indent: Int,
     isExpanded: Boolean,
-    onToggleExpand: (Boolean) -> Unit,
+    onToggleExpand: suspend (Boolean) -> Unit,
     onClick: () -> Unit,
     selected: Boolean
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val isContainer = node is ContainerNode
-    var loading by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
@@ -148,21 +157,15 @@ private fun TreeRow(
             .clickable {
                 onClick()
                 if (isContainer) {
-                    loading = true
-                    onToggleExpand(!isExpanded)
-                    loading = false
+                    coroutineScope.launch(Dispatchers.IO + crtExHandler) {
+                        onToggleExpand(!isExpanded)
+                    }
                 }
             }
             .padding(start = (4 + indent * 16).dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         when {
-            loading -> CircularProgressIndicator(
-                modifier = Modifier.size(20.dp),
-                strokeWidth = 3.dp,
-                color = MaterialTheme.colorScheme.primary
-            )
-
             isContainer -> Icon(
                 imageVector = if (isExpanded) Icons.Outlined.ExpandMore else Icons.Outlined.ChevronRight,
                 contentDescription = null,
@@ -194,3 +197,91 @@ private fun TreeRow(
 }
 
 
+*/
+
+@Composable
+private fun TreeRow(
+    node: Node,
+    indent: Int,
+    isExpanded: Boolean,
+    onToggleExpand: suspend (Boolean) -> Unit,
+    onClick: () -> Unit,
+    selected: Boolean
+) {
+    val coroutineScope = rememberCoroutineScope()
+    val isContainer = node is ContainerNode
+
+    val backgroundModifier = if (selected) {
+        Modifier.background(MaterialTheme.colorScheme.primary.copy(alpha = 0.25f))
+    } else {
+        Modifier
+    }
+
+    ListItem(
+        colors = ListItemDefaults.colors(
+            containerColor = Color.Transparent
+        ),
+        modifier = backgroundModifier
+            .fillMaxWidth()
+            .clickable {
+                onClick()
+                if (isContainer) {
+                    coroutineScope.launch(Dispatchers.IO + crtExHandler) {
+                        onToggleExpand(!isExpanded)
+                    }
+                }
+            }
+            .padding(start = (4 + indent * 16).dp),
+        leadingContent = {
+            if (isContainer) {
+                Icon(
+                    imageVector = if (isExpanded) Icons.Outlined.ExpandMore else Icons.Outlined.ChevronRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            } else {
+                Spacer(modifier = Modifier.size(24.dp))
+            }
+        },
+        headlineContent = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = node.icon,
+                    contentDescription = node.name,
+                    tint = node.color ?: MaterialTheme.colorScheme.onSurface
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = node.name,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = node.color ?: MaterialTheme.colorScheme.onSurface
+                )
+            }
+        },
+        supportingContent = {
+            val metadataStrings = node.getMetadata().map { (label, value) ->
+                when (label) {
+                    Metadata.FILE_SIZE -> formatFileSize(value as Long)
+                    Metadata.LAST_EDITED -> formatFileDate(value as Long)
+                    Metadata.METHOD_COUNT -> stringResource(Res.string.tree_method_count, value.toString())
+                    Metadata.FIELD_COUNT -> stringResource(Res.string.tree_field_count, value.toString())
+                }
+            }
+
+            val metadataText = metadataStrings.joinToString(separator = ", ")
+
+            if (metadataText.isNotEmpty()) {
+                Text(
+                    text = metadataText,
+                    style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    )
+}

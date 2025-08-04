@@ -6,6 +6,7 @@ import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.tree.FileNode
 import me.lkl.dalvikus.theme.getFileExtensionMeta
+import me.lkl.dalvikus.tree.Metadata
 import me.lkl.dalvikus.util.guessIfEditableTextually
 import java.io.File
 
@@ -40,4 +41,11 @@ class FileSystemFileNode(
 
     override fun isDisplayable(): Boolean = isEditable()
     override fun isEditable(): Boolean = guessIfEditableTextually(file.inputStream())
+
+    override fun getMetadata(): Set<Pair<Metadata, Any>> {
+        return setOf(
+            Metadata.FILE_SIZE to file.length(),
+            Metadata.LAST_EDITED to file.lastModified(),
+        )
+    }
 }

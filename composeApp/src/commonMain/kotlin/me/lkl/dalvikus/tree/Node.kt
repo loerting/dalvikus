@@ -10,6 +10,13 @@ import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.root.HiddenRoot
 import me.lkl.dalvikus.theme.getFileExtensionMeta
 
+enum class Metadata {
+    FILE_SIZE,
+    LAST_EDITED,
+    METHOD_COUNT,
+    FIELD_COUNT,
+}
+
 sealed interface Node {
     val name: String
     val icon: ImageVector // path or identifier
@@ -22,6 +29,10 @@ sealed interface Node {
         get() = getFileExtensionMeta(name).color // Default color, can be overridden
 
     suspend fun notifyChanged()
+
+    fun getMetadata(): Set<Pair<Metadata, Any>> {
+        return setOf()
+    }
 }
 
 abstract class ContainerNode : Node {

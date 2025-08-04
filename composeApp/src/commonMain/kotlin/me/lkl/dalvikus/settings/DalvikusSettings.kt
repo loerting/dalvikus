@@ -22,7 +22,7 @@ class DalvikusSettings() {
             key = "font_size",
             category = SettingsCategory.EDITOR,
             nameRes = Res.string.settings_font_size,
-            defaultValue = 14,
+            defaultValue = 16,
             min = 8,
             max = 30,
             step = 1,

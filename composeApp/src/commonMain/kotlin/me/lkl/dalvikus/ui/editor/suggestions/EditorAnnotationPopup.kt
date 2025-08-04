@@ -75,7 +75,7 @@ fun ModernPopupContainer(
             .wrapContentSize()
             .hazeEffect(
                 state = hazeState,
-                style = defaultHazeStyle(lerp(color, MaterialTheme.colorScheme.surface, 0.9f))
+                style = defaultHazeStyle(lerp(color, MaterialTheme.colorScheme.surface, 0.8f))
             )
             .border(1.dp, color.copy(alpha = 0.8f))
     ) {

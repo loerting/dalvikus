@@ -18,6 +18,7 @@ import me.lkl.dalvikus.tabs.SmaliTab
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.tree.FileNode
+import me.lkl.dalvikus.tree.Metadata
 import org.antlr.runtime.CommonTokenStream
 import org.antlr.runtime.tree.CommonTree
 import org.antlr.runtime.tree.CommonTreeNodeStream
@@ -120,4 +121,11 @@ class DexEntryClassNode(
     override fun getSizeEstimate(): Long = 64 * 1024 // 64 kB
     override fun isDisplayable(): Boolean = true
     override fun isEditable(): Boolean = true
+
+    override fun getMetadata(): Set<Pair<Metadata, Any>> {
+        return setOf(
+            Metadata.METHOD_COUNT to getClassDef().methods.count(),
+            Metadata.FIELD_COUNT to getClassDef().fields.count()
+        )
+    }
 }
