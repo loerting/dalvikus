@@ -66,7 +66,7 @@ internal fun App(
     showExitDialog: MutableState<Boolean>,
     onExitConfirmed: () -> Unit
 ) = AppTheme {
-    InitializeSnackbar()
+    UpdateSnackbar()
 
     val hazeState = rememberHazeState()
 
@@ -122,9 +122,9 @@ internal fun App(
 }
 
 @Composable
-fun InitializeSnackbar() {
-    if (snackbarManager != null) return
+fun UpdateSnackbar() {
     val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     val clipboard = LocalClipboard.current
 
     val resources = SnackbarResources(
@@ -134,7 +134,7 @@ fun InitializeSnackbar() {
         snackAssembleError = stringResource(Res.string.snack_assemble_error),
     )
 
-    snackbarManager = SnackbarManager(SnackbarHostState(), clipboard, coroutineScope, resources)
+    snackbarManager = remember { SnackbarManager(snackbarHostState, clipboard, coroutineScope, resources) }
 }
 
 internal var snackbarManager: SnackbarManager? = null
