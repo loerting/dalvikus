@@ -340,7 +340,9 @@ class CodeSuggester(
     private var currentTokenIndex: Int
     private var estimatedMethodRange: IntRange
     private var tokenList: List<Token>
+
     var currentToken: CommonToken
+    var cleanedText: String
 
     init {
         val lexer = smaliFlexLexer(currentText.reader(), dalvikusSettings["api_level"] as Int)
@@ -362,14 +364,21 @@ class CodeSuggester(
             currentToken = tokenList.getOrNull(currentTokenIndex) as CommonToken
             estimatedMethodRange = getEstimatedMethodRange(tokenList, currentTokenIndex)
         }
+
+        cleanedText = currentToken.text
+            .substringAfterLast("(")
+            .substringAfterLast("{")
+            .substringBeforeLast(")")
+            .substringBeforeLast("}")
+            .substringBeforeLast(";")
     }
 
     fun suggestNext(): List<AssistSuggestion> {
-        if (currentToken.text.isEmpty()) return emptyList()
+        if (cleanedText.isEmpty()) return emptyList()
         val suggestions = mutableListOf<AssistSuggestion>()
 
         when {
-            currentToken.text.startsWith(".") -> {
+            cleanedText.startsWith(".") -> {
                 val spanStyle = getSmaliTokenStyle(
                     smaliParser.METHOD_DIRECTIVE, highlightColors
                 )
@@ -382,7 +391,7 @@ class CodeSuggester(
                 }
             }
 
-            !currentToken.text.isEmpty() -> {
+            !cleanedText.isEmpty() -> {
                 findAllTokensOfType(
                     smaliParser.SIMPLE_NAME,
                     smaliParser.CLASS_DESCRIPTOR,
@@ -401,14 +410,14 @@ class CodeSuggester(
         }
 
         if (!estimatedMethodRange.isEmpty()) {
-            if (currentToken.text.startsWith("v") || currentToken.text.startsWith("p")) {
+            if (cleanedText.startsWith("v") || cleanedText.startsWith("p")) {
                 val spanStyle = getSmaliTokenStyle(
                     smaliParser.REGISTER, highlightColors
                 )
                 val registerCount = getRegisterCount()
                 if (registerCount > 0) {
                     for (i in 0 until registerCount) {
-                        val registerName = currentToken.text.substring(0, 1) + i
+                        val registerName = cleanedText.substring(0, 1) + i
                         if (startsWithNotEquals(registerName)) {
                             suggestions.add(
                                 AssistSuggestion(
@@ -454,8 +463,9 @@ class CodeSuggester(
         return suggestions
     }
 
-    private fun startsWithNotEquals(directive: String): Boolean =
-        directive.startsWith(currentToken.text) && !directive.equals(currentToken.text, ignoreCase = true)
+    private fun startsWithNotEquals(directive: String): Boolean {
+        return directive.startsWith(cleanedText) && !directive.equals(cleanedText, ignoreCase = true)
+    }
 
     private fun findAllTokensOfType(vararg tokenType: Int): List<CommonToken> {
         return tokenList.filterIsInstance<CommonToken>()

@@ -30,9 +30,6 @@ import me.lkl.dalvikus.util.SearchOptions
 import me.lkl.dalvikus.util.createSearchMatcher
 import java.math.BigInteger
 
-const val maxEditorFileSize = 128 * 1024 // 128 KiB
-const val maxEditorLines = 10000 // 10,000 lines
-
 class EditorViewModel(private val tab: TabElement) {
     var isLoaded by mutableStateOf(false)
         private set
@@ -56,8 +53,10 @@ class EditorViewModel(private val tab: TabElement) {
         private set
 
     var openable by
-    mutableStateOf(tab.contentProvider.getSizeEstimate() < maxEditorFileSize && tab.contentProvider.isDisplayable())
+    mutableStateOf(tab.contentProvider.getSizeEstimate() < getMaxFileBytes() && tab.contentProvider.isDisplayable())
         private set
+
+    private fun getMaxFileBytes(): Int = ((dalvikusSettings["max_file_size"] as Int) * 1024)
 
     var isSearchActive by mutableStateOf(false)
     var searchOptions by mutableStateOf(SearchOptions())
@@ -111,7 +110,11 @@ class EditorViewModel(private val tab: TabElement) {
 
             internalContent = internalContent.copy(text = tab.contentProvider.contentFlow.value.decodeToString())
 
-            if (internalContent.text.lines().size > maxEditorLines) {
+            val charCount = internalContent.text.length
+
+            Logger.i("Loaded ${tab.contentProvider.getFileType()} with $charCount characters.")
+
+            if (charCount * 2 > getMaxFileBytes()) {
                 openable = false
                 return@withContext
             }
@@ -127,7 +130,11 @@ class EditorViewModel(private val tab: TabElement) {
         }
     }
 
-    fun changeContent(newTextFieldValue: TextFieldValue, coroutineScope: CoroutineScope, checkNewline: Boolean = true) {
+    fun changeContent(
+        newTextFieldValue: TextFieldValue,
+        coroutineScope: CoroutineScope,
+        editorAdditions: Boolean = true
+    ) {
         val oldText = internalContent.text
         val newText = newTextFieldValue.text
 
@@ -143,27 +150,57 @@ class EditorViewModel(private val tab: TabElement) {
         val safeNewSuffixStart = maxOf(newSuffixStart, diffIndex)
         val insertedText = newText.substring(diffIndex, safeNewSuffixStart)
 
-        val isNewlineInserted = insertedText == "\n"
-
-        if (checkNewline && isNewlineInserted) {
+        if (editorAdditions) {
             val caretPosition = newTextFieldValue.selection.start
             if (caretPosition > 0) {
-                val beforeNewline = newText.substring(0, caretPosition - 1)
-                val currentLineStart = beforeNewline.lastIndexOf('\n') + 1
-                val currentLine = beforeNewline.substring(currentLineStart)
-                val leadingIndent = currentLine.takeWhile { it == ' ' || it == '\t' }
+                fun insertTextAtCaret(suffix: String, moveCaretBack: Boolean = true) {
+                    val updatedText =
+                        newText.substring(0, caretPosition) + suffix + newText.substring(caretPosition)
+                    val updatedSelection = TextRange(
+                        caretPosition - if (moveCaretBack) 0 else -suffix.length
+                    )
 
-                val updatedText = newText.substring(0, caretPosition) + leadingIndent + newText.substring(caretPosition)
-                val updatedSelection = TextRange(caretPosition + leadingIndent.length)
+                    changeContent(
+                        newTextFieldValue.copy(text = updatedText, selection = updatedSelection),
+                        coroutineScope,
+                        editorAdditions = false
+                    )
+                }
 
-                changeContent(
-                    newTextFieldValue.copy(text = updatedText, selection = updatedSelection),
-                    coroutineScope,
-                    checkNewline = false
-                )
-                return
+                when (insertedText) {
+                    "\n" -> {
+                        val beforeNewline = newText.substring(0, caretPosition - 1)
+                        val currentLineStart = beforeNewline.lastIndexOf('\n') + 1
+                        val currentLine = beforeNewline.substring(currentLineStart)
+                        val leadingIndent = currentLine.takeWhile { it == ' ' || it == '\t' }
+
+                        insertTextAtCaret(leadingIndent, moveCaretBack = false)
+                        return
+                    }
+
+                    "{" -> {
+                        insertTextAtCaret("}")
+                        return
+                    }
+
+                    "(" -> {
+                        insertTextAtCaret(")")
+                        return
+                    }
+
+                    "L" -> {
+                        insertTextAtCaret(";")
+                        return
+                    }
+
+                    "\"" -> {
+                        insertTextAtCaret("\"")
+                        return
+                    }
+                }
             }
         }
+
 
         mimicOldHighlight(newText, diffIndex, newSuffixStart, oldSuffixStart, insertedText)
 

@@ -47,6 +47,7 @@
     <string name="settings_category_signing">Sign &amp; Deploy settings</string>
 
     <string name="settings_font_size">Font size</string>
+    <string name="settings_max_file_size">Maximum allowed file size</string>
     <string name="settings_api_level">Dalvik Opcodes API level</string>
     <string name="settings_decompiler_verbose">Verbose decompiler output</string>
     <string name="settings_decompiler_implementation">Decompiler implementation</string>
@@ -108,7 +109,7 @@
 
     <string name="error_password_min_length">Password must be at least 6 characters</string>
 
-    <string name="editor_cannot_open">The file is either too large, not a valid ASCII file or has too many lines. Please use a different editor to open it.</string>
+    <string name="editor_cannot_open">The file is either too large, not a valid ASCII file or has too many lines. Please use a different editor to open it or change the maximum allowed file size.</string>
     <string name="editor_search_placeholder">Search text...</string>
     <string name="editor_search_no_results">No results</string>
     <string name="editor_search_results_found">%1$d results</string>
@@ -118,6 +119,7 @@
     <string name="tree_search_result_type_string">String constant</string>
     <string name="tree_search_result_type_literal">Literal</string>
     <string name="tree_search_result_type_reference">Method or field reference</string>
+    <string name="tree_search_result_type_class_by_parent">Class by direct parent</string>
     <string name="tree_method_count">%1$s methods</string>
     <string name="tree_field_count">%1$s fields</string>
 

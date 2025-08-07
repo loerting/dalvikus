@@ -2,6 +2,7 @@ package me.lkl.dalvikus.tree
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Abc
+import androidx.compose.material.icons.filled.EscalatorWarning
 import androidx.compose.material.icons.filled.Route
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.android.tools.smali.dexlib2.iface.Annotation
@@ -24,7 +25,8 @@ enum class TreeSearchResultType {
     TREE_NODE,
     STRING_VALUE,
     LITERAL,
-    REFERENCE;
+    REFERENCE,
+    CLASS_BY_PARENT;
 
     val icon: ImageVector
         get() = when (this) {
@@ -32,6 +34,7 @@ enum class TreeSearchResultType {
             STRING_VALUE -> Icons.Default.Abc
             LITERAL -> Icons.Default.ThreadUnread
             REFERENCE -> Icons.Default.Route
+            CLASS_BY_PARENT -> Icons.Default.EscalatorWarning
         }
 }
 
@@ -67,6 +70,14 @@ fun searchTreeBFS(
 
         if (current is DexEntryClassNode) {
             val classDef = current.getClassDef()
+
+            // Check parent class
+            classDef.superclass?.let { parentClass ->
+                if (matcher(parentClass)) {
+                    emit(TreeSearchResult(current, ".super $parentClass", TreeSearchResultType.CLASS_BY_PARENT))
+                    resultsFound++
+                }
+            }
 
             // Search string constants
             classDef.getStringPool().forEach { string ->

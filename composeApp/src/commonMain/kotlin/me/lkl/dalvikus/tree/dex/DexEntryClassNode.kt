@@ -118,7 +118,7 @@ class DexEntryClassNode(
         )
     }
 
-    override fun getSizeEstimate(): Long = 64 * 1024 // 64 kB
+    override fun getSizeEstimate(): Long = 8 * 1024 // 8 kB
     override fun isDisplayable(): Boolean = true
     override fun isEditable(): Boolean = true
 

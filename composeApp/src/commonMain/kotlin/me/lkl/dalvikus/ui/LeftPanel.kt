@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Search
@@ -34,6 +35,7 @@ import me.lkl.dalvikus.tree.*
 import me.lkl.dalvikus.tree.filesystem.FileSystemFileNode
 import me.lkl.dalvikus.tree.root.HiddenRoot
 import me.lkl.dalvikus.errorreport.crtExHandler
+import me.lkl.dalvikus.selectedNavItem
 import me.lkl.dalvikus.ui.tree.FileSelectorDialog
 import me.lkl.dalvikus.ui.tree.TreeDragAndDropTarget
 import me.lkl.dalvikus.ui.tree.TreeView
@@ -165,7 +167,7 @@ internal fun LeftPanelContent() {
             ExtendedFloatingActionButton(
                 onClick = { showTreeAddFileDialog = true },
                 icon = {
-                    Icon(Icons.Default.FolderOpen, contentDescription = stringResource(Res.string.fab_load_file))
+                    Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.fab_load_file))
                 },
                 text = {
                     Text(stringResource(Res.string.fab_load_file), maxLines = 1)
@@ -202,6 +204,12 @@ internal fun LeftPanelContent() {
                     currentSelection = node
 
                     if (node is FileNode) {
+
+                        if(node.name.equals("resources.arsc", true)) {
+                            selectedNavItem = "Resources"
+                            return@TreeView
+                        }
+
                         scope.launch(crtExHandler) {
                             val newTab = node.createTab()
                             tabManager.addOrSelectTab(newTab)
@@ -257,6 +265,7 @@ private fun SearchResults(
             TreeSearchResultType.STRING_VALUE -> Res.string.tree_search_result_type_string
             TreeSearchResultType.REFERENCE -> Res.string.tree_search_result_type_reference
             TreeSearchResultType.LITERAL -> Res.string.tree_search_result_type_literal
+            TreeSearchResultType.CLASS_BY_PARENT -> Res.string.tree_search_result_type_class_by_parent
         }
     )
 
@@ -303,6 +312,7 @@ private fun SearchResults(
                             TreeSearchResultType.STRING_VALUE -> MaterialTheme.colorScheme.primary
                             TreeSearchResultType.REFERENCE -> MaterialTheme.colorScheme.secondary
                             TreeSearchResultType.LITERAL -> MaterialTheme.colorScheme.tertiary
+                            TreeSearchResultType.CLASS_BY_PARENT -> MaterialTheme.colorScheme.onSurfaceVariant
                         },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis

@@ -28,6 +28,16 @@ class DalvikusSettings() {
             step = 1,
             unit = "sp"
         ),
+        IntSetting(
+            key = "max_file_size",
+            category = SettingsCategory.EDITOR,
+            nameRes = Res.string.settings_max_file_size,
+            defaultValue = 64,
+            min = 0,
+            max = 1024,
+            step = 1024,
+            unit = "kB"
+        ),
         BooleanSetting(
             key = "check_for_updates",
             category = SettingsCategory.GENERAL,

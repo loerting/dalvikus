@@ -4,6 +4,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Article
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Api
+import androidx.compose.material.icons.filled.Approval
+import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Class
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Directions
@@ -40,27 +42,49 @@ fun getSuggestionTypeIcon(type: SuggestionType): ImageVector {
 val readableImageFormats = listOf("png", "jpg", "jpeg", "bmp", "webp", "gif", "ico")
 
 fun getFileExtensionMeta(fileName: String): FileTypeMeta {
-    val ext = fileName.substringAfterLast('.', "").lowercase()
+    when (fileName) {
+        "AndroidManifest.xml" -> {
+            return FileTypeMeta(Icons.Filled.Book, CodeBlue)
+        }
+        "resources.arsc" -> {
+            return FileTypeMeta(Icons.Filled.Android, AndroidGreen)
+        }
+        "MANIFEST.MF" -> {
+            return FileTypeMeta(Icons.Filled.Api, PackageOrange)
+        }
+        "CERT.RSA", "CERT.SF", "SIGNER.SF", "SIGNER.RSA" -> {
+            return FileTypeMeta(Icons.Filled.Approval, PackageOrange)
+        }
+        else -> {
+            val ext = fileName.substringAfterLast('.', "").lowercase()
 
-    return when (ext) {
-        "txt", "md", "log" -> FileTypeMeta(Icons.Outlined.Description)
-        in readableImageFormats ->
-            FileTypeMeta(Icons.Outlined.Image, ImagePurple)
-        "mp3", "wav", "ogg", "flac", "aac" ->
-            FileTypeMeta(Icons.Outlined.MusicNote, AudioTeal)
-        "mp4", "avi", "mov", "mkv", "webm" ->
-            FileTypeMeta(Icons.Outlined.Movie, VideoRed)
-        "pdf" -> FileTypeMeta(Icons.Outlined.PictureAsPdf, PdfRed)
-        "zip", "jar", "rar", "7z", "tar", "gz" ->
-            FileTypeMeta(Icons.Filled.FolderZip, ArchiveGray)
-        "doc", "docx" -> FileTypeMeta(Icons.AutoMirrored.Outlined.Article, WordBlue)
-        "xls", "xlsx" -> FileTypeMeta(Icons.Outlined.TableChart, ExcelGreen)
-        "ppt", "pptx" -> FileTypeMeta(Icons.Outlined.Slideshow, PowerPointOrange)
-        "html", "xml", "json", "yaml", "yml" ->
-            FileTypeMeta(Icons.Outlined.Code, CodeBlue)
-        "apk", "apks", "aab", "xapk", "dex", "odex" ->
-            FileTypeMeta(Icons.Filled.Android, AndroidGreen)
-        else -> FileTypeMeta(Icons.Outlined.Description)
+            return when (ext) {
+                "txt", "md", "log" -> FileTypeMeta(Icons.Outlined.Description)
+                in readableImageFormats ->
+                    FileTypeMeta(Icons.Outlined.Image, ImagePurple)
+
+                "mp3", "wav", "ogg", "flac", "aac" ->
+                    FileTypeMeta(Icons.Outlined.MusicNote, AudioTeal)
+
+                "mp4", "avi", "mov", "mkv", "webm" ->
+                    FileTypeMeta(Icons.Outlined.Movie, VideoRed)
+
+                "pdf" -> FileTypeMeta(Icons.Outlined.PictureAsPdf, PdfRed)
+                "zip", "jar", "rar", "7z", "tar", "gz" ->
+                    FileTypeMeta(Icons.Filled.FolderZip, ArchiveGray)
+
+                "doc", "docx" -> FileTypeMeta(Icons.AutoMirrored.Outlined.Article, WordBlue)
+                "xls", "xlsx" -> FileTypeMeta(Icons.Outlined.TableChart, ExcelGreen)
+                "ppt", "pptx" -> FileTypeMeta(Icons.Outlined.Slideshow, PowerPointOrange)
+                "html", "xml", "json", "yaml", "yml" ->
+                    FileTypeMeta(Icons.Outlined.Code, CodeBlue)
+
+                "apk", "apks", "aab", "xapk", "dex", "odex" ->
+                    FileTypeMeta(Icons.Filled.Android, AndroidGreen)
+
+                else -> FileTypeMeta(Icons.Outlined.Description)
+            }
+        }
     }
 }
 

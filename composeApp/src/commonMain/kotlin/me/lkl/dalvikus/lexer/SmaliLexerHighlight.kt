@@ -77,23 +77,24 @@ fun getSmaliTokenStyle(tokenType: Int, colors: CodeHighlightColors): SpanStyle? 
     val tokenName = getSmaliTokenName(tokenType) ?: return null
 
     val color = when {
-        tokenName.endsWith("_DIRECTIVE") -> colors.primary
-        tokenName == "REGISTER" -> colors.secondary
-        tokenName.endsWith("_LITERAL") -> colors.tertiary
-        tokenName == "CLASS_DESCRIPTOR" || tokenName == "PRIMITIVE_TYPE" || tokenName == "ARRAY_TYPE_PREFIX" -> colors.quaternary
-        tokenName == "SIMPLE_NAME" -> colors.quinary
-        tokenName == "ACCESS_SPEC" -> colors.septenary
         tokenName.startsWith("INSTRUCTION_") -> colors.senary
+        tokenName.endsWith("_DIRECTIVE") -> colors.primary
+        tokenName.endsWith("_LITERAL") -> colors.tertiary
+        tokenName.endsWith("_TYPE") || tokenName == "CLASS_DESCRIPTOR" || tokenName == "ARRAY_TYPE_PREFIX" -> colors.quaternary
+        tokenName.endsWith("_NAME") -> colors.quinary
+
+        tokenName == "REGISTER" -> colors.secondary
+        tokenName == "ACCESS_SPEC" || tokenName == "ANNOTATION_VISIBILITY" -> colors.septenary
+
         tokenName in listOf("COLON", "COMMA", "OPEN_PAREN", "CLOSE_PAREN") -> colors.onSurface.copy(alpha = 0.7f)
         tokenName == "LINE_COMMENT" -> colors.onSurface.copy(alpha = 0.5f)
-        tokenName == "ANNOTATION_VISIBILITY" -> colors.primary
         else -> colors.onSurface
     }
 
     val weight = when {
         tokenName == "ARROW" -> FontWeight.Bold
         tokenName.startsWith("INSTRUCTION_") -> FontWeight.Medium
-        tokenName == "ACCESS_SPEC" -> FontWeight.SemiBold
+        tokenName == "ACCESS_SPEC" || tokenName == "ANNOTATION_VISIBILITY" -> FontWeight.SemiBold
         tokenName.endsWith("_DIRECTIVE") -> FontWeight.SemiBold
 
         else -> FontWeight.Normal
