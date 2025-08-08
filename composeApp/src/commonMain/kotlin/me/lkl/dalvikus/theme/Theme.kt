@@ -3,99 +3,38 @@ package me.lkl.dalvikus.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
+import com.materialkolor.DynamicMaterialExpressiveTheme
+import com.materialkolor.PaletteStyle
+import me.lkl.dalvikus.dalvikusSettings
 
-private val LightColorScheme = lightColorScheme(
-    primary = PrimaryLight,
-    onPrimary = OnPrimaryLight,
-    primaryContainer = PrimaryContainerLight,
-    onPrimaryContainer = OnPrimaryContainerLight,
-    secondary = SecondaryLight,
-    onSecondary = OnSecondaryLight,
-    secondaryContainer = SecondaryContainerLight,
-    onSecondaryContainer = OnSecondaryContainerLight,
-    tertiary = TertiaryLight,
-    onTertiary = OnTertiaryLight,
-    tertiaryContainer = TertiaryContainerLight,
-    onTertiaryContainer = OnTertiaryContainerLight,
-    error = ErrorLight,
-    onError = OnErrorLight,
-    errorContainer = ErrorContainerLight,
-    onErrorContainer = OnErrorContainerLight,
-    background = BackgroundLight,
-    onBackground = OnBackgroundLight,
-    surface = SurfaceLight,
-    onSurface = OnSurfaceLight,
-    surfaceVariant = SurfaceVariantLight,
-    onSurfaceVariant = OnSurfaceVariantLight,
-    outline = OutlineLight,
-    outlineVariant = OutlineVariantLight,
-    scrim = ScrimLight,
-    inverseSurface = InverseSurfaceLight,
-    inverseOnSurface = InverseOnSurfaceLight,
-    inversePrimary = InversePrimaryLight,
-    surfaceDim = SurfaceDimLight,
-    surfaceBright = SurfaceBrightLight,
-    surfaceContainerLowest = SurfaceContainerLowestLight,
-    surfaceContainerLow = SurfaceContainerLowLight,
-    surfaceContainer = SurfaceContainerLight,
-    surfaceContainerHigh = SurfaceContainerHighLight,
-    surfaceContainerHighest = SurfaceContainerHighestLight,
-)
-
-private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryDark,
-    onPrimary = OnPrimaryDark,
-    primaryContainer = PrimaryContainerDark,
-    onPrimaryContainer = OnPrimaryContainerDark,
-    secondary = SecondaryDark,
-    onSecondary = OnSecondaryDark,
-    secondaryContainer = SecondaryContainerDark,
-    onSecondaryContainer = OnSecondaryContainerDark,
-    tertiary = TertiaryDark,
-    onTertiary = OnTertiaryDark,
-    tertiaryContainer = TertiaryContainerDark,
-    onTertiaryContainer = OnTertiaryContainerDark,
-    error = ErrorDark,
-    onError = OnErrorDark,
-    errorContainer = ErrorContainerDark,
-    onErrorContainer = OnErrorContainerDark,
-    background = BackgroundDark,
-    onBackground = OnBackgroundDark,
-    surface = SurfaceDark,
-    onSurface = OnSurfaceDark,
-    surfaceVariant = SurfaceVariantDark,
-    onSurfaceVariant = OnSurfaceVariantDark,
-    outline = OutlineDark,
-    outlineVariant = OutlineVariantDark,
-    scrim = ScrimDark,
-    inverseSurface = InverseSurfaceDark,
-    inverseOnSurface = InverseOnSurfaceDark,
-    inversePrimary = InversePrimaryDark,
-    surfaceDim = SurfaceDimDark,
-    surfaceBright = SurfaceBrightDark,
-    surfaceContainerLowest = SurfaceContainerLowestDark,
-    surfaceContainerLow = SurfaceContainerLowDark,
-    surfaceContainer = SurfaceContainerDark,
-    surfaceContainerHigh = SurfaceContainerHighDark,
-    surfaceContainerHighest = SurfaceContainerHighestDark,
-)
+internal val SeedColor = Color(0xFF924A92)
 
 internal val LocalThemeIsDark = compositionLocalOf { mutableStateOf(true) }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun AppTheme(
     content: @Composable () -> Unit
 ) {
     val systemIsDark = isSystemInDarkTheme()
     val isDarkState = remember(systemIsDark) { mutableStateOf(systemIsDark) }
+
+    val selectedPaletteStyle = dalvikusSettings["theme_palette_style"] as String
+
     CompositionLocalProvider(
         LocalThemeIsDark provides isDarkState
     ) {
         val isDark by isDarkState
         SystemAppearance(!isDark)
-        MaterialTheme(
+        DynamicMaterialExpressiveTheme(
             typography = Typography().withFontFamily(Monaspace()),
-            colorScheme = if (isDark) DarkColorScheme else LightColorScheme,
+            seedColor = SeedColor,
+            style = PaletteStyle.entries.firstOrNull { it.name == selectedPaletteStyle }
+                ?: PaletteStyle.TonalSpot,
+            motionScheme = MotionScheme.expressive(),
+            isDark = isDark,
+            animate = true,
             content = { Surface(content = content) },
         )
     }

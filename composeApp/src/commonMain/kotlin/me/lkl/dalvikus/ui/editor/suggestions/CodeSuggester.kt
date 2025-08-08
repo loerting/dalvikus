@@ -4,7 +4,7 @@ import com.android.tools.smali.smali.smaliFlexLexer
 import com.android.tools.smali.smali.smaliParser
 import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.lexer.getSmaliTokenStyle
-import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
+import me.lkl.dalvikus.theme.CodeHighlightColors
 import org.antlr.runtime.CommonToken
 import org.antlr.runtime.CommonTokenStream
 import org.antlr.runtime.Token

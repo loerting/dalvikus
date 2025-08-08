@@ -58,6 +58,7 @@
     <string name="settings_adb_path">Installation path of Android Debug Bridge (adb)</string>
     <string name="settings_zipalign_path">Installation path of zipalign (Android build-tools)</string>
     <string name="settings_check_for_updates">Check for updates on startup</string>
+    <string name="settings_theme_palette_style">Theme palette style</string>
 
     <string name="tooltip_deploy_title">Deploy application</string>
     <string name="tooltip_deploy_message">Sign and deploy the last selected Android archive using adb. (%1$s)</string>

@@ -44,7 +44,7 @@ import me.lkl.dalvikus.tabs.SmaliTab
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.theme.LocalThemeIsDark
 import me.lkl.dalvikus.theme.Monaspace
-import me.lkl.dalvikus.ui.editor.highlight.defaultCodeHighlightColors
+import me.lkl.dalvikus.theme.defaultCodeHighlightColors
 import me.lkl.dalvikus.ui.editor.suggestions.AssistPopup
 import me.lkl.dalvikus.ui.editor.suggestions.ErrorPopup
 import me.lkl.dalvikus.ui.editor.suggestions.HexPopup
@@ -134,7 +134,7 @@ fun EditorView(tabElement: TabElement) {
             }
             if (viewModel.hasUnsavedChanges())
                 FloatingActionButton(
-                    modifier = Modifier.padding(bottom = 10.dp, end = 10.dp),
+                    modifier = Modifier.padding(bottom = 8.dp, end = 8.dp),
                     onClick = { viewModel.saveCode(coroutine, snackbarManager) }) {
                     Icon(
                         Icons.Default.SaveAs,

@@ -1,6 +1,7 @@
 package me.lkl.dalvikus.settings
 
 import com.android.tools.smali.dexlib2.Opcodes
+import com.materialkolor.PaletteStyle
 import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
 import dalvikus.composeapp.generated.resources.*
@@ -37,6 +38,15 @@ class DalvikusSettings() {
             max = 1024,
             step = 1024,
             unit = "kB"
+        ),
+        StringOptionSetting(
+            key = "theme_palette_style",
+            category = SettingsCategory.GENERAL,
+            nameRes = Res.string.settings_theme_palette_style,
+            PaletteStyle.TonalSpot.name,
+            options = PaletteStyle.entries.map { style ->
+                Pair(style.name, style.name.camelCaseToWords())
+            }
         ),
         BooleanSetting(
             key = "check_for_updates",
@@ -154,4 +164,8 @@ class DalvikusSettings() {
             return URI("https://github.com/loerting/dalvikus")
         }
     }
+}
+
+fun String.camelCaseToWords(): String {
+    return this.replace(Regex("([a-z])([A-Z])"), "$1 $2")
 }

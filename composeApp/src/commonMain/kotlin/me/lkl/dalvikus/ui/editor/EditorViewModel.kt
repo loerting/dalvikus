@@ -22,7 +22,7 @@ import me.lkl.dalvikus.errorreport.crtExHandler
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.archive.ApkNode
 import me.lkl.dalvikus.tree.dex.AssemblyException
-import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
+import me.lkl.dalvikus.theme.CodeHighlightColors
 import me.lkl.dalvikus.ui.editor.highlight.highlightCode
 import me.lkl.dalvikus.ui.editor.suggestions.AssistPopupState
 import me.lkl.dalvikus.ui.editor.suggestions.MaximumAssistSuggestions

@@ -35,7 +35,7 @@ import dev.chrisbanes.haze.hazeEffect
 import me.lkl.dalvikus.theme.getSuggestionTypeIcon
 import me.lkl.dalvikus.ui.editor.EditorViewModel
 import me.lkl.dalvikus.ui.editor.LayoutSnapshot
-import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
+import me.lkl.dalvikus.theme.CodeHighlightColors
 import me.lkl.dalvikus.util.defaultHazeStyle
 import me.lkl.dalvikus.util.getTextWidth
 

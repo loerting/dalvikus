@@ -7,7 +7,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
-import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
+import me.lkl.dalvikus.theme.CodeHighlightColors
 
 actual fun highlightXmlCode(code: String, colors: CodeHighlightColors): AnnotatedString {
     val lexer = XMLLexer(CharStreams.fromString(code))
