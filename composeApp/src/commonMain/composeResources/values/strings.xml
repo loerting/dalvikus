@@ -9,7 +9,7 @@
     <string name="app_dalvik_button">Dalvik reference</string>
     <string name="app_gpl_button">GPLv3 license</string>
 
-    <string name="tree_search_placeholder">Search</string>
+    <string name="tree_search_placeholder">Search a file or class</string>
     <string name="tree_drop_placeholder">Drop any of %1$s.</string>
     <string name="tree_unsupported_file_type">This file type is not supported.</string>
 
@@ -34,9 +34,10 @@
     <string name="nav_editor">Editor</string>
     <string name="nav_decompiler">Decompiler</string>
     <string name="nav_settings">Settings</string>
-    <string name="nav_signing">Sign &amp; Deploy</string>
-    <string name="nav_file_tree">File Tree</string>
+    <string name="nav_signing">Packaging</string>
+    <string name="nav_file_tree">Files</string>
     <string name="nav_resources">Resources</string>
+    <string name="nav_search">Search</string>
 
     <string name="wrong_mode">This feature is unavailable in the current mode.</string>
 
@@ -44,7 +45,7 @@
     <string name="settings_category_smali">Smali (dis-)assembler settings</string>
     <string name="settings_category_decompiler">Decompiler settings</string>
     <string name="settings_category_editor">Editor settings</string>
-    <string name="settings_category_signing">Sign &amp; Deploy settings</string>
+    <string name="settings_category_signing">Packaging settings</string>
 
     <string name="settings_font_size">Font size</string>
     <string name="settings_max_file_size">Maximum allowed file size</string>
@@ -115,11 +116,11 @@
     <string name="editor_search_results_found">%1$d results</string>
 
     <string name="tree_search_no_results">No results found</string>
-    <string name="tree_search_result_type_node">File or class name</string>
-    <string name="tree_search_result_type_string">String constant</string>
-    <string name="tree_search_result_type_literal">Literal</string>
-    <string name="tree_search_result_type_reference">Method or field reference</string>
-    <string name="tree_search_result_type_class_by_parent">Class by direct parent</string>
+    <string name="tree_search_result_type_node">By file name</string>
+    <string name="tree_search_result_type_string">Uses string constant</string>
+    <string name="tree_search_result_type_literal">Uses literal or resource</string>
+    <string name="tree_search_result_type_reference">Calls method or field</string>
+    <string name="tree_search_result_type_class_by_parent">Has parent class</string>
     <string name="tree_method_count">%1$s methods</string>
     <string name="tree_field_count">%1$s fields</string>
 

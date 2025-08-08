@@ -8,10 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
-import androidx.compose.material.icons.filled.Coffee
-import androidx.compose.material.icons.filled.Draw
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -20,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -31,6 +29,7 @@ import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.lkl.dalvikus.errorreport.crtExHandler
 import me.lkl.dalvikus.icons.FamilyHistory
 import me.lkl.dalvikus.icons.ThreadUnread
 import me.lkl.dalvikus.settings.DalvikusSettings
@@ -38,13 +37,13 @@ import me.lkl.dalvikus.settings.shortcutToggleEditorDecompiler
 import me.lkl.dalvikus.settings.shortcutTreeAdd
 import me.lkl.dalvikus.theme.AppTheme
 import me.lkl.dalvikus.theme.LocalThemeIsDark
-import me.lkl.dalvikus.tree.archive.ApkNode
-import me.lkl.dalvikus.ui.*
-import me.lkl.dalvikus.errorreport.crtExHandler
 import me.lkl.dalvikus.tools.AdbDeployer
 import me.lkl.dalvikus.tools.ApkSigner
+import me.lkl.dalvikus.tree.archive.ApkNode
+import me.lkl.dalvikus.ui.*
 import me.lkl.dalvikus.ui.nav.NavItem
 import me.lkl.dalvikus.ui.packaging.getKeystoreInfo
+import me.lkl.dalvikus.ui.search.SearchView
 import me.lkl.dalvikus.ui.snackbar.SnackbarManager
 import me.lkl.dalvikus.ui.snackbar.SnackbarResources
 import me.lkl.dalvikus.ui.tabs.LinkButton
@@ -160,7 +159,7 @@ internal val tabManager: TabManager by lazy {
 
 var selectedNavItem by mutableStateOf("Editor")
 
-@OptIn(ExperimentalSplitPaneApi::class)
+@OptIn(ExperimentalSplitPaneApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun Content() {
     val splitPaneState = rememberSplitPaneState(0.25f)
@@ -169,16 +168,20 @@ internal fun Content() {
         NavItem("Editor", Icons.Default.Edit, Res.string.nav_editor),
         NavItem("Decompiler", Icons.Default.Coffee, Res.string.nav_decompiler),
         NavItem("Resources", Icons.Default.ThreadUnread, Res.string.nav_resources),
-        NavItem("Packaging", Icons.Default.Draw, Res.string.nav_signing),
+        NavItem("Packaging", Icons.Default.Key, Res.string.nav_signing),
         NavItem("Settings", Icons.Default.Settings, Res.string.nav_settings),
     )
     var showTree by remember { mutableStateOf(false) }
     var showTreeEverPressed by remember { mutableStateOf(false) }
 
+    val scope = rememberCoroutineScope()
+
     val snackbarManager = LocalSnackbarManager.current
 
     val unsupportedFileText = stringResource(Res.string.tree_unsupported_file_type)
     val dragAndDropTarget = remember(snackbarManager) { TreeDragAndDropTarget(snackbarManager, unsupportedFileText) }
+
+    val searchBarState = rememberSearchBarState()
 
     Row {
         Column(
@@ -200,6 +203,23 @@ internal fun Content() {
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
+                NavigationRailItem(
+                    selected = false,
+                    onClick = {
+                        scope.launch {
+                            searchBarState.animateToExpanded()
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = stringResource(Res.string.nav_search)
+                        )
+
+                    },
+                    label = { Text(stringResource(Res.string.nav_search)) },
+                    modifier = Modifier.onGloballyPositioned { searchBarState.collapsedCoords = it }
+                )
                 NavigationRailItem(
                     selected = false,
                     onClick = {
@@ -257,6 +277,8 @@ internal fun Content() {
             }
         }
     }
+
+    SearchView(searchBarState)
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -267,12 +289,16 @@ fun TopBar() {
 
     val latestVersionState = produceState<String?>(initialValue = null) {
         withContext(Dispatchers.IO) {
-            if(!(dalvikusSettings["check_for_updates"] as Boolean)) return@withContext
+            if (!(dalvikusSettings["check_for_updates"] as Boolean)) return@withContext
             value = getLatestReleaseTag("loerting", "dalvikus")
         }
     }
 
-    val updateAvailable = version != "(dev)" && latestVersionState.value != null && !latestVersionState.value!!.contains(version, ignoreCase = true)
+    val updateAvailable =
+        version != "(dev)" && latestVersionState.value != null && !latestVersionState.value!!.contains(
+            version,
+            ignoreCase = true
+        )
 
     val scope = rememberCoroutineScope()
     rememberTooltipState(isPersistent = true)
@@ -321,7 +347,7 @@ fun TopBar() {
             }
         },
         actions = {
-            if(updateAvailable) {
+            if (updateAvailable) {
                 val buttonShape = RoundedCornerShape(16.dp)
                 val buttonColors = ButtonDefaults.textButtonColors(
                     contentColor = MaterialTheme.colorScheme.primary
@@ -344,13 +370,13 @@ fun TopBar() {
                         apk = node.zipFile,
                         outputApk = node.zipFile
                     ) { success ->
-                        if(success) {
+                        if (success) {
                             scope.launch(crtExHandler) {
                                 adbDeployer.deployApk(
                                     apk = node.zipFile,
                                     packageName = node.getAndroidPackageName()
                                 ) {
-                                    if(it) {
+                                    if (it) {
                                         snackbarManager.showSuccess()
                                     }
                                 }
