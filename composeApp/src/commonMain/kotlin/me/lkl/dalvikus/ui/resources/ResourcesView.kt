@@ -19,17 +19,19 @@ import androidx.compose.material.icons.automirrored.outlined.ViewList
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.QuestionMark
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.all_elements
+import dalvikus.composeapp.generated.resources.resources_not_all_types
 import dalvikus.composeapp.generated.resources.resources_search_placeholder
 import io.github.composegears.valkyrie.MatchCase
 import io.github.composegears.valkyrie.RegularExpression
@@ -114,26 +116,31 @@ fun ResourcesView() {
 }
 
 val resourceTypesIcons = mapOf(
-    "anim" to Icons.Outlined.PlayArrow,
+    // ordered by importance
+    "string" to Icons.Outlined.TextFields,
+    "plurals" to Icons.Outlined.FormatListNumbered,
+    "layout" to Icons.Outlined.ViewAgenda,
+    "id" to Icons.Outlined.Badge,
+    "raw" to Icons.AutoMirrored.Outlined.InsertDriveFile,
+    "drawable" to Icons.Outlined.Image,
+    "color" to Icons.Outlined.Palette,
+    "bool" to Icons.Outlined.CheckBox,
+    "integer" to Icons.Outlined.Dialpad,
+    "array" to Icons.AutoMirrored.Outlined.ViewList,
+
+   /* "anim" to Icons.Outlined.PlayArrow,
     "animator" to Icons.Outlined.Movie,
     "attr" to Icons.Outlined.Tune,
-    "array" to Icons.AutoMirrored.Outlined.ViewList,
-    "bool" to Icons.Outlined.CheckBox,
-    "color" to Icons.Outlined.Palette,
     "dimen" to Icons.Outlined.FormatListNumbered,
-    "drawable" to Icons.Outlined.Image,
-    "integer" to Icons.Outlined.Dialpad,
-    "layout" to Icons.Outlined.ViewAgenda,
     "menu" to Icons.Outlined.Menu,
     "mipmap" to Icons.Outlined.Apps,
-    "plurals" to Icons.Outlined.FormatListNumbered,
-    "raw" to Icons.AutoMirrored.Outlined.InsertDriveFile,
-    "string" to Icons.Outlined.TextFields,
+
     "style" to Icons.Outlined.Style,
     "xml" to Icons.Outlined.Code,
-    "font" to Icons.Outlined.FontDownload,
-    "id" to Icons.Outlined.Badge,
+    "font" to Icons.Outlined.FontDownload, */
 )
+
+
 
 @Composable
 private fun ApkResourceCards(searchFieldState: TextFieldState, searchOptions: SearchOptions) {
@@ -152,7 +159,8 @@ private fun ApkResourceCards(searchFieldState: TextFieldState, searchOptions: Se
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            itemVerticalAlignment = Alignment.CenterVertically,
         ) {
             FilterChip(
                 // TODO remove elevation = null when https://youtrack.jetbrains.com/issue/CMP-2868 is fixed.
@@ -176,6 +184,13 @@ private fun ApkResourceCards(searchFieldState: TextFieldState, searchOptions: Se
                     label = { Text(type) }
                 )
             }
+            Text(
+                text = stringResource(Res.string.resources_not_all_types),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
+                fontStyle = FontStyle.Italic
+            )
         }
 
         Box(modifier = Modifier.fillMaxSize()) {

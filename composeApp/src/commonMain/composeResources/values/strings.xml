@@ -130,5 +130,6 @@
     <string name="lookup_popup_runtime">Likely an Android or Java runtime class.</string>
 
     <string name="resources_search_placeholder">Filter by id or name</string>
+    <string name="resources_not_all_types">(Not all types)</string>
 
 </resources>
