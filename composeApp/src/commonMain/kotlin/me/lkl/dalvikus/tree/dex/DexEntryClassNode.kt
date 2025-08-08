@@ -13,7 +13,6 @@ import com.android.tools.smali.smali.smaliTreeWalker
 import io.github.composegears.valkyrie.DeployedCode
 import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.smali.ErrorHandlingSmaliParser
-import me.lkl.dalvikus.snackbarManager
 import me.lkl.dalvikus.tabs.SmaliTab
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.ContainerNode
@@ -69,8 +68,7 @@ class DexEntryClassNode(
                         "Lexer errors: ${lexer.numberOfSyntaxErrors}, " +
                         "Parser errors: ${parser.numberOfSyntaxErrors}")
 
-            snackbarManager?.showAssembleError(parser.errorLines)
-            return
+            throw AssemblyException(parser.errorLines, lexer.numberOfSyntaxErrors, parser.numberOfSyntaxErrors)
         }
 
         val t: CommonTree = result.getTree()
@@ -129,3 +127,10 @@ class DexEntryClassNode(
         )
     }
 }
+
+class AssemblyException(
+    val errorLines: List<Int>,
+    val lexerErrors: Int,
+    val parserErrors: Int
+) : Exception("Assembly failed with ${lexerErrors} lexer errors and ${parserErrors} parser errors. " +
+              "Error lines: ${errorLines.joinToString(", ")}")

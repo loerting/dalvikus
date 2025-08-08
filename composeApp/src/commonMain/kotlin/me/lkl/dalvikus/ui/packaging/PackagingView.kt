@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.dp
 import com.android.apksig.ApkVerifier
 import dalvikus.composeapp.generated.resources.*
 import kotlinx.coroutines.launch
+import me.lkl.dalvikus.LocalSnackbarManager
 import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.errorreport.crtExHandler
-import me.lkl.dalvikus.snackbarManager
 import me.lkl.dalvikus.tools.sha256Fingerprint
 import me.lkl.dalvikus.tree.archive.ApkNode
 import me.lkl.dalvikus.tree.archive.ZipNode
@@ -35,13 +35,15 @@ import java.security.cert.X509Certificate
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun PackagingView(packagingViewModel: PackagingViewModel) {
-    val keystorePassword by packagingViewModel.keystorePassword.collectAsState()
+fun PackagingView() {
+    val snackbarManager = LocalSnackbarManager.current
+
+    val packagingViewModel = remember { PackagingViewModel(snackbarManager) }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(8.dp)
     ) {
-        val keystoreInfo = packagingViewModel.getKeystoreInfo()
+        val keystoreInfo = getKeystoreInfo()
         val treeRootChildren by uiTreeRoot.childrenFlow.collectAsState()
         val apks =
             treeRootChildren
@@ -78,9 +80,9 @@ fun PackagingView(packagingViewModel: PackagingViewModel) {
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                                 PasswordField(
-                                    password = keystorePassword,
-                                    onPasswordChange = packagingViewModel::updateKeystorePassword,
-                                    isError = keystorePassword.length < 6,
+                                    password = keystorePasswordField.concatToString(),
+                                    onPasswordChange = { keystorePasswordField = it.toCharArray() },
+                                    isError = keystorePasswordField.size < 6,
                                     errorMessage = stringResource(Res.string.error_password_min_length)
                                 )
                                 Spacer(modifier = Modifier.height(settingPadVer))
@@ -94,7 +96,7 @@ fun PackagingView(packagingViewModel: PackagingViewModel) {
                                 if(!keystoreInfo.seemsValid()) {
                                     TextButton(
                                         onClick = {
-                                            packagingViewModel.keytool.createKeystore(keystorePassword)
+                                            packagingViewModel.keytool.createKeystore(keystorePasswordField)
                                         },
                                         enabled = keystoreInfo.isPasswordFilled()
                                     ) {
@@ -110,6 +112,7 @@ fun PackagingView(packagingViewModel: PackagingViewModel) {
                         }
                     }
                 }
+
                 apks.forEach { apk ->
                     item {
                         CollapseCard(
@@ -143,7 +146,7 @@ fun PackagingView(packagingViewModel: PackagingViewModel) {
                                                     apk = apk.zipFile,
                                                     outputApk = apk.zipFile,
                                                 ) {
-                                                    if (it) snackbarManager?.showSuccess()
+                                                    if (it) snackbarManager.showSuccess()
                                                     loadingApk.value = null
                                                 }
                                             }
@@ -163,7 +166,7 @@ fun PackagingView(packagingViewModel: PackagingViewModel) {
                                                     apk = apk.zipFile,
                                                     packageName = apk.getAndroidPackageName()
                                                 ) {
-                                                    if (it) snackbarManager?.showSuccess()
+                                                    if (it) snackbarManager.showSuccess()
                                                     loadingApk.value = null
                                                 }
                                             }

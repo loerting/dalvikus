@@ -12,11 +12,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import me.lkl.dalvikus.dalvikusSettings
-import me.lkl.dalvikus.snackbarManager
+import me.lkl.dalvikus.ui.snackbar.SnackbarManager
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-class AdbDeployer() {
+class AdbDeployer(val snackbarManager: SnackbarManager) {
 
     suspend fun deployApk(
         apk: File,

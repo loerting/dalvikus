@@ -29,13 +29,14 @@ import io.github.composegears.valkyrie.RegularExpression
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import me.lkl.dalvikus.snackbarManager
+import me.lkl.dalvikus.LocalSnackbarManager
 import me.lkl.dalvikus.tabManager
 import me.lkl.dalvikus.tree.*
 import me.lkl.dalvikus.tree.filesystem.FileSystemFileNode
 import me.lkl.dalvikus.tree.root.HiddenRoot
 import me.lkl.dalvikus.errorreport.crtExHandler
 import me.lkl.dalvikus.selectedNavItem
+import me.lkl.dalvikus.ui.snackbar.SnackbarManager
 import me.lkl.dalvikus.ui.tree.FileSelectorDialog
 import me.lkl.dalvikus.ui.tree.TreeDragAndDropTarget
 import me.lkl.dalvikus.ui.tree.TreeView
@@ -59,6 +60,7 @@ internal var scrollAndExpandSelection = mutableStateOf(false)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 internal fun LeftPanelContent() {
+    val snackbarManager = LocalSnackbarManager.current
     val unsupportedFileText = stringResource(Res.string.tree_unsupported_file_type)
     if (showTreeAddFileDialog) {
         FileSelectorDialog(
@@ -69,7 +71,7 @@ internal fun LeftPanelContent() {
                 showTreeAddFileDialog = false
             }) { node ->
             if (node !is FileSystemFileNode) return@FileSelectorDialog
-            addFileToTree(node.file, unsupportedFileText)
+            addFileToTree(node.file, snackbarManager, unsupportedFileText)
             showTreeAddFileDialog = false
         }
     }
@@ -134,7 +136,7 @@ internal fun LeftPanelContent() {
             )
         }
 
-    val dragAndDropTarget = remember { TreeDragAndDropTarget(unsupportedFileText) }
+    val dragAndDropTarget = remember(snackbarManager) { TreeDragAndDropTarget(snackbarManager, unsupportedFileText) }
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -223,12 +225,12 @@ internal fun LeftPanelContent() {
     }
 }
 
-fun addFileToTree(file: File, unsupportedFileText: String) {
+fun addFileToTree(file: File, snackbarManager: SnackbarManager, unsupportedFileText: String) {
     val node = NodeFactory.createNode(file, uiTreeRoot)
     if (node !is FileSystemFileNode) {
         uiTreeRoot.addChild(node)
     } else {
-        snackbarManager?.showMessage(unsupportedFileText)
+        snackbarManager.showMessage(unsupportedFileText)
     }
 }
 

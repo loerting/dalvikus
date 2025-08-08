@@ -5,10 +5,11 @@ import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.draganddrop.awtTransferable
 import me.lkl.dalvikus.ui.addFileToTree
+import me.lkl.dalvikus.ui.snackbar.SnackbarManager
 import java.io.File
 import java.net.URI
 
-class TreeDragAndDropTarget(val unsupportedFileText: String) : DragAndDropTarget {
+class TreeDragAndDropTarget(val snackbarManager: SnackbarManager, val unsupportedFileText: String) : DragAndDropTarget {
     @OptIn(ExperimentalComposeUiApi::class)
     override fun onDrop(event: DragAndDropEvent): Boolean {
         val flavors = event.awtTransferable.transferDataFlavors
@@ -17,7 +18,7 @@ class TreeDragAndDropTarget(val unsupportedFileText: String) : DragAndDropTarget
             if (flavor.isMimeTypeEqual("application/x-java-file-list")) {
                 val files = event.awtTransferable.getTransferData(flavor) as? List<*>
                 files?.filterIsInstance<File>()?.forEach { file ->
-                    addFileToTree(file, unsupportedFileText)
+                    addFileToTree(file, snackbarManager, unsupportedFileText)
                 }
                 return true
             }
@@ -38,7 +39,7 @@ class TreeDragAndDropTarget(val unsupportedFileText: String) : DragAndDropTarget
 
                 uris.forEach { file ->
                     if (file.exists()) {
-                        addFileToTree(file, unsupportedFileText)
+                        addFileToTree(file, snackbarManager, unsupportedFileText)
                     }
                 }
 

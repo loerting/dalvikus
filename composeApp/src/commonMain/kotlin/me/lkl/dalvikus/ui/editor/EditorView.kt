@@ -38,6 +38,7 @@ import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.delay
 import me.lkl.dalvikus.LocalHazeState
+import me.lkl.dalvikus.LocalSnackbarManager
 import me.lkl.dalvikus.settings.shortcutFind
 import me.lkl.dalvikus.settings.shortcutSave
 import me.lkl.dalvikus.tabs.SmaliTab
@@ -120,6 +121,7 @@ fun EditorView(tabElement: TabElement) {
         focusRequester.requestFocus()
     }
 
+    val snackbarManager = LocalSnackbarManager.current
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -134,7 +136,7 @@ fun EditorView(tabElement: TabElement) {
             if (viewModel.hasUnsavedChanges())
                 ExtendedFloatingActionButton(
                     modifier = Modifier.padding(bottom = 8.dp, end = 8.dp),
-                    onClick = { viewModel.saveCode(coroutine) },
+                    onClick = { viewModel.saveCode(coroutine, snackbarManager) },
                     icon = {
                         Icon(
                             Icons.Default.SaveAs,
@@ -237,7 +239,12 @@ fun EditorView(tabElement: TabElement) {
                                 .handleFocusedCtrlShortcuts(
                                     enabled = true,
                                     mapOf(
-                                        shortcutSave to { if (viewModel.editable) viewModel.saveCode(coroutine) },
+                                        shortcutSave to {
+                                            if (viewModel.editable) viewModel.saveCode(
+                                                coroutine,
+                                                snackbarManager
+                                            )
+                                        },
                                         shortcutFind to {
                                             viewModel.isSearchActive = true
                                         })

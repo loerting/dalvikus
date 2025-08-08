@@ -6,7 +6,7 @@ import brut.androlib.res.data.ResID
 import brut.androlib.res.data.ResResSpec
 import brut.androlib.res.data.ResTable
 import brut.directory.ExtFile
-import me.lkl.dalvikus.snackbarManager
+import co.touchlab.kermit.Logger
 import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.tree.Node
 import me.lkl.dalvikus.util.getApkToolConfig
@@ -29,7 +29,7 @@ class ApkNode(
             if(!resTable.isMainPackageLoaded && resTable.apkInfo.hasResources())
                 resTable.loadMainPackage()
         } catch (ale: AndrolibException) {
-            snackbarManager?.showError(ale)
+            Logger.e("Failed to load resources from APK: ${ale.message}", ale)
         }
 
         return super.loadChildrenInternal()

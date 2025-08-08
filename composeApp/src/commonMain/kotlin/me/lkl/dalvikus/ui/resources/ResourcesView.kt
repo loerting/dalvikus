@@ -199,8 +199,7 @@ private fun ApkResourceCards(searchFieldState: TextFieldState, searchOptions: Se
                             if (resSpecList == null) return@CollapseCard
                             val resourceSpecs = resSpecList.filter { resourceSpec ->
                                 resourceSpec != null && (selectedResType == "all" || resourceSpec.type.name == selectedResType)
-                                        && (searchMatcher == null || searchMatcher!!(resourceSpec.name)
-                                        || searchMatcher!!(resourceSpec.id.toLong().toString()) || searchMatcher!!(resourceSpec.id.toLong().to0xHex()))
+                                        && (searchMatcher(resourceSpec.name) || searchMatcher(resourceSpec.id.toLong().toString()) || searchMatcher(resourceSpec.id.toLong().to0xHex()))
                             }
 
                             val innerListState = rememberLazyListState()

@@ -4,10 +4,10 @@ import co.touchlab.kermit.Logger
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
-import java.net.URL
+import java.net.URI
 
 fun getLatestReleaseTag(owner: String, repo: String): String? {
-    val url = URL("https://api.github.com/repos/$owner/$repo/releases/latest")
+    val url = URI("https://api.github.com/repos/$owner/$repo/releases/latest").toURL()
     val connection = url.openConnection() as HttpURLConnection
 
     connection.requestMethod = "GET"

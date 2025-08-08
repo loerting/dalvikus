@@ -44,6 +44,7 @@ import me.lkl.dalvikus.errorreport.crtExHandler
 import me.lkl.dalvikus.tools.AdbDeployer
 import me.lkl.dalvikus.tools.ApkSigner
 import me.lkl.dalvikus.ui.nav.NavItem
+import me.lkl.dalvikus.ui.packaging.getKeystoreInfo
 import me.lkl.dalvikus.ui.snackbar.SnackbarManager
 import me.lkl.dalvikus.ui.snackbar.SnackbarResources
 import me.lkl.dalvikus.ui.tabs.LinkButton
@@ -66,26 +67,26 @@ internal fun App(
     showExitDialog: MutableState<Boolean>,
     onExitConfirmed: () -> Unit
 ) = AppTheme {
-    UpdateSnackbar()
-
     val hazeState = rememberHazeState()
 
     CompositionLocalProvider(LocalHazeState provides hazeState) {
-        Scaffold(
-            topBar = { TopBar() },
-            snackbarHost = { SnackbarHost(hostState = snackbarManager!!.snackbarHostState) },
-            modifier = Modifier.hazeSource(hazeState)
-        ) { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                Content()
+        ProvideSnackbar {
+            val snackbarManager = LocalSnackbarManager.current
+            Scaffold(
+                topBar = { TopBar() },
+                snackbarHost = { SnackbarHost(hostState = snackbarManager.snackbarHostState) },
+                modifier = Modifier.hazeSource(hazeState)
+            ) { innerPadding ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+                    Content()
+                }
             }
         }
     }
-
 
     if (showExitDialog.value) {
         AlertDialog(
@@ -122,7 +123,7 @@ internal fun App(
 }
 
 @Composable
-fun UpdateSnackbar() {
+fun ProvideSnackbar(content: @Composable () -> Unit) {
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val clipboard = LocalClipboard.current
@@ -134,11 +135,19 @@ fun UpdateSnackbar() {
         snackAssembleError = stringResource(Res.string.snack_assemble_error),
     )
 
-    snackbarManager = remember { SnackbarManager(snackbarHostState, clipboard, coroutineScope, resources) }
+    val snackbarManager = remember {
+        SnackbarManager(snackbarHostState, clipboard, coroutineScope, resources)
+    }
+
+    CompositionLocalProvider(LocalSnackbarManager provides snackbarManager) {
+        content()
+    }
 }
 
-internal var snackbarManager: SnackbarManager? = null
-    private set
+
+val LocalSnackbarManager = staticCompositionLocalOf<SnackbarManager> {
+    error("No SnackbarManager provided")
+}
 
 internal val dalvikusSettings: DalvikusSettings by lazy {
     DalvikusSettings()
@@ -166,8 +175,10 @@ internal fun Content() {
     var showTree by remember { mutableStateOf(false) }
     var showTreeEverPressed by remember { mutableStateOf(false) }
 
+    val snackbarManager = LocalSnackbarManager.current
+
     val unsupportedFileText = stringResource(Res.string.tree_unsupported_file_type)
-    val dragAndDropTarget = remember { TreeDragAndDropTarget(unsupportedFileText) }
+    val dragAndDropTarget = remember(snackbarManager) { TreeDragAndDropTarget(snackbarManager, unsupportedFileText) }
 
     Row {
         Column(
@@ -251,6 +262,7 @@ internal fun Content() {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TopBar() {
+    val snackbarManager = LocalSnackbarManager.current
     val version = dalvikusSettings.getVersion()
 
     val latestVersionState = produceState<String?>(initialValue = null) {
@@ -325,10 +337,10 @@ fun TopBar() {
 
             DeployButton { node ->
                 scope.launch(crtExHandler) {
-                    val apkSigner = ApkSigner()
-                    val adbDeployer = AdbDeployer()
+                    val apkSigner = ApkSigner(snackbarManager)
+                    val adbDeployer = AdbDeployer(snackbarManager)
                     apkSigner.signApk(
-                        keystoreInfo = packagingViewModel.getKeystoreInfo(),
+                        keystoreInfo = getKeystoreInfo(),
                         apk = node.zipFile,
                         outputApk = node.zipFile
                     ) { success ->
@@ -339,7 +351,7 @@ fun TopBar() {
                                     packageName = node.getAndroidPackageName()
                                 ) {
                                     if(it) {
-                                        snackbarManager?.showSuccess()
+                                        snackbarManager.showSuccess()
                                     }
                                 }
                             }
@@ -368,8 +380,9 @@ fun DeployButton(deploy: (ApkNode) -> Unit) {
             .filter { it is ApkNode }
             .map { it as ApkNode }
     var checked by remember { mutableStateOf(false) }
+    val keystoreInfo = getKeystoreInfo()
     IconButton(
-        enabled = packagingViewModel.getKeystoreInfo().seemsValid() && packagingViewModel.getKeystoreInfo().isPasswordFilled() && apks.isNotEmpty(),
+        enabled = keystoreInfo.seemsValid() && keystoreInfo.isPasswordFilled() && apks.isNotEmpty(),
         onClick = { checked = !checked },
     ) {
         Icon(Icons.Outlined.PlayCircle, contentDescription = stringResource(Res.string.sign_and_deploy))

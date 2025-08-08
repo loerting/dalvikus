@@ -115,7 +115,7 @@
     <string name="editor_search_results_found">%1$d results</string>
 
     <string name="tree_search_no_results">No results found</string>
-    <string name="tree_search_result_type_node">Tree node</string>
+    <string name="tree_search_result_type_node">File or class name</string>
     <string name="tree_search_result_type_string">String constant</string>
     <string name="tree_search_result_type_literal">Literal</string>
     <string name="tree_search_result_type_reference">Method or field reference</string>

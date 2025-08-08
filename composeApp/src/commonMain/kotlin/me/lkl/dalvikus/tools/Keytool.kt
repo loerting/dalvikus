@@ -2,28 +2,28 @@ package me.lkl.dalvikus.tools
 
 import co.touchlab.kermit.Logger
 import me.lkl.dalvikus.dalvikusSettings
-import me.lkl.dalvikus.snackbarManager
+import me.lkl.dalvikus.ui.snackbar.SnackbarManager
 import java.io.File
 
-class Keytool() {
+class Keytool(val snackbarManager: SnackbarManager) {
     fun createKeystore(
-        keystorePassword: String,
+        keystorePassword: CharArray,
         distinguishedName: String = "CN=dalvikus"
     ) {
         if (!isKeytoolAvailable()) {
-            snackbarManager?.showMessage("Keytool is not installed or not found in PATH.")
+            snackbarManager.showMessage("Keytool is not installed or not found in PATH.")
             return
         }
 
         val keystoreFile = dalvikusSettings["keystore_file"] as? File
             ?: run {
-                snackbarManager?.showMessage("Keystore file not configured.")
+                snackbarManager.showMessage("Keystore file not configured.")
                 return
             }
 
         val keyAlias = dalvikusSettings["key_alias"] as? String
             ?: run {
-                snackbarManager?.showMessage("Key alias not configured.")
+                snackbarManager.showMessage("Key alias not configured.")
                 return
             }
 
@@ -36,7 +36,7 @@ class Keytool() {
             "-validity", "10000",
             "-alias", keyAlias,
             "-storetype", "PKCS12",
-            "-storepass", keystorePassword,
+            "-storepass", keystorePassword.concatToString(),
             "-dname", distinguishedName
         )
 
@@ -59,10 +59,10 @@ class Keytool() {
                 "$output\nPlease make sure keytool is installed."
             } else output
 
-            snackbarManager?.showMessage(finalOutput)
+            snackbarManager.showMessage(finalOutput)
         } catch (e: Exception) {
             Logger.e("Failed to run keytool", e)
-            snackbarManager?.showError(e)
+            snackbarManager.showError(e)
         }
     }
 
@@ -72,7 +72,7 @@ class Keytool() {
                 .redirectErrorStream(true)
                 .start()
 
-            val output = process.inputStream.bufferedReader().use { it.readText() }
+            process.inputStream.bufferedReader().use { it.readText() }
             val exitCode = process.waitFor()
 
             exitCode == 0

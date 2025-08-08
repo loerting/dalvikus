@@ -25,8 +25,8 @@ import dalvikus.composeapp.generated.resources.tree_field_count
 import dalvikus.composeapp.generated.resources.tree_method_count
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import me.lkl.dalvikus.LocalSnackbarManager
 import me.lkl.dalvikus.errorreport.crtExHandler
-import me.lkl.dalvikus.snackbarManager
 import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.tree.Node
 import me.lkl.dalvikus.tree.Metadata
@@ -91,6 +91,7 @@ fun TreeView(
 
     recomputeVisibleNodes()
 
+    val snackbarManager = LocalSnackbarManager.current
 
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn(
@@ -111,7 +112,7 @@ fun TreeView(
                                     node.loadChildren()
                                 } catch (ex: Exception) {
                                     Logger.e("Failed to load file", ex)
-                                    snackbarManager?.showError(ex)
+                                    snackbarManager.showError(ex)
                                 }
                             }
                             expandedState[node] = shouldExpand

@@ -13,8 +13,6 @@ import me.lkl.dalvikus.ui.resources.ResourcesView
 import me.lkl.dalvikus.ui.tabs.TabView
 import me.lkl.dalvikus.util.DefaultCard
 
-val packagingViewModel = PackagingViewModel()
-
 @Composable
 internal fun RightPanelContent() {
     Box(
@@ -24,7 +22,7 @@ internal fun RightPanelContent() {
             when (targetTab) {
                 "Editor", "Decompiler" -> DefaultCard { TabView() }
                 "Resources" -> ResourcesView()
-                "Packaging" -> PackagingView(packagingViewModel)
+                "Packaging" -> PackagingView()
                 "Settings" -> SettingsView()
                 else -> throw IllegalArgumentException(
                     "Unsupported selectedNavItem: $selectedNavItem. "

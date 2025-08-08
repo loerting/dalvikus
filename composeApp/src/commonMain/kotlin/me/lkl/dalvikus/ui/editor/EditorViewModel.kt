@@ -21,10 +21,12 @@ import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.errorreport.crtExHandler
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tree.archive.ApkNode
+import me.lkl.dalvikus.tree.dex.AssemblyException
 import me.lkl.dalvikus.ui.editor.highlight.CodeHighlightColors
 import me.lkl.dalvikus.ui.editor.highlight.highlightCode
 import me.lkl.dalvikus.ui.editor.suggestions.AssistPopupState
 import me.lkl.dalvikus.ui.editor.suggestions.MaximumAssistSuggestions
+import me.lkl.dalvikus.ui.snackbar.SnackbarManager
 import me.lkl.dalvikus.ui.uiTreeRoot
 import me.lkl.dalvikus.util.SearchOptions
 import me.lkl.dalvikus.util.createSearchMatcher
@@ -250,15 +252,18 @@ class EditorViewModel(private val tab: TabElement) {
         highlightedText = builder.toAnnotatedString()
     }
 
-    fun saveCode(coroutineScope: CoroutineScope) {
+    fun saveCode(coroutineScope: CoroutineScope, snackbarManager: SnackbarManager) {
         if (!isLoaded) throw IllegalArgumentException("code not initialized.")
         isSaving = true
         coroutineScope.launch(Dispatchers.Default + crtExHandler) {
             try {
                 tab.contentProvider.updateContent(internalContent.text.toByteArray())
                 tab.hasUnsavedChanges.value = false
+            } catch(e: AssemblyException) {
+                snackbarManager.showAssembleError(e.errorLines)
             } catch (e: Exception) {
                 Logger.e("Failed to save code for tab: ${tab.tabId}", e)
+                snackbarManager.showError(e)
             }
             withContext(Dispatchers.Main) {
                 isSaving = false
