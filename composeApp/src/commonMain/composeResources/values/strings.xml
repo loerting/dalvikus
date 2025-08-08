@@ -4,7 +4,7 @@
     <string name="app_description">Bewitch your apps.</string>
     <string name="credits_and_version">Made by Leonhard Kohl-Loerting - version %1$s</string>
 
-    <string name="app_introduction">Welcome, %1$s! To get started, open the file tree on the bottom left. For updates, help and more visit the GitHub page.</string>
+    <string name="app_introduction">Welcome, %1$s! To get started, click "Files" on the bottom left. Please install the Android Sdk to use all features. For updates, help and more visit the GitHub page.</string>
     <string name="app_github_button">Star on GitHub</string>
     <string name="app_dalvik_button">Dalvik reference</string>
     <string name="app_gpl_button">GPLv3 license</string>
@@ -106,7 +106,6 @@
     <string name="select_file">Select file</string>
 
     <string name="fab_load_file">Load file</string>
-    <string name="fab_save_and_assemble">Save and assemble</string>
 
     <string name="error_password_min_length">Password must be at least 6 characters</string>
 

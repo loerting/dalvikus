@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.editor_cannot_open
-import dalvikus.composeapp.generated.resources.fab_save_and_assemble
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.delay
@@ -134,19 +133,14 @@ fun EditorView(tabElement: TabElement) {
                 return@Scaffold
             }
             if (viewModel.hasUnsavedChanges())
-                ExtendedFloatingActionButton(
-                    modifier = Modifier.padding(bottom = 8.dp, end = 8.dp),
-                    onClick = { viewModel.saveCode(coroutine, snackbarManager) },
-                    icon = {
-                        Icon(
-                            Icons.Default.SaveAs,
-                            contentDescription = stringResource(Res.string.fab_save_and_assemble)
-                        )
-                    },
-                    text = {
-                        Text(stringResource(Res.string.fab_save_and_assemble))
-                    }
-                )
+                FloatingActionButton(
+                    modifier = Modifier.padding(bottom = 10.dp, end = 10.dp),
+                    onClick = { viewModel.saveCode(coroutine, snackbarManager) }) {
+                    Icon(
+                        Icons.Default.SaveAs,
+                        contentDescription = null
+                    )
+                }
         },
         modifier = Modifier.fillMaxSize().then(viewModel.popupKeyEvents)
     ) { paddingValues ->
