@@ -1,7 +1,10 @@
 package me.lkl.dalvikus.ui.tabs
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.PointerMatcher
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.onClick
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Close
@@ -10,14 +13,22 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import co.touchlab.kermit.Logger
 import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.tabManager
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tabs.WelcomeTab
+import me.lkl.dalvikus.tabs.contentprovider.ContentProvider
+import me.lkl.dalvikus.tabs.contentprovider.DualContentProvider
+import me.lkl.dalvikus.tree.Node
+import me.lkl.dalvikus.ui.currentSelection
+import me.lkl.dalvikus.ui.scrollAndExpandSelection
 import org.jetbrains.compose.resources.stringResource
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TabView(
 ) {
@@ -62,6 +73,16 @@ fun TabView(
                             },
                         )
                     },
+                    modifier = Modifier
+                        .onClick(matcher = PointerMatcher.mouse(PointerButton.Secondary)) {
+                            val contentProvider = tab.contentProvider
+                            if (contentProvider is DualContentProvider) {
+                                tryOpenContentProviderInTree(contentProvider.contentProvider)
+                                tryOpenContentProviderInTree(contentProvider.contentProvider2)
+                            } else {
+                                tryOpenContentProviderInTree(contentProvider)
+                            }
+                        }
                 )
             }
         }
@@ -108,7 +129,7 @@ fun TabViewContent(tab: TabElement, onClose: (() -> Unit)?) {
         }
 
         Spacer(modifier = Modifier.width(4.dp))
-        if(onClose != null) {
+        if (onClose != null) {
             Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = null,
@@ -118,6 +139,15 @@ fun TabViewContent(tab: TabElement, onClose: (() -> Unit)?) {
                     }
             )
         }
+    }
+}
+
+private fun tryOpenContentProviderInTree(
+    provider1: ContentProvider
+) {
+    if (provider1 is Node) {
+        currentSelection = provider1 as Node
+        scrollAndExpandSelection.value = true
     }
 }
 
