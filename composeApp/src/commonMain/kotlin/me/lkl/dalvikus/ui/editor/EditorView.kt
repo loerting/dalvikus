@@ -125,22 +125,26 @@ fun EditorView(tabElement: TabElement) {
     Scaffold(
         containerColor = Color.Transparent,
         floatingActionButton = {
-            if (viewModel.isSaving) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(48.dp).padding(bottom = 8.dp, end = 8.dp),
-                    color = MaterialTheme.colorScheme.primary
-                )
-                return@Scaffold
-            }
-            if (viewModel.hasUnsavedChanges())
-                FloatingActionButton(
-                    modifier = Modifier.padding(bottom = 8.dp, end = 8.dp),
-                    onClick = { viewModel.saveCode(coroutine, snackbarManager) }) {
-                    Icon(
-                        Icons.Default.SaveAs,
-                        contentDescription = null
+            Box(
+                modifier = Modifier
+                    .padding(16.dp)
+            ) {
+                if (viewModel.isSaving) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(48.dp),
+                        color = MaterialTheme.colorScheme.primary
                     )
+                    return@Scaffold
                 }
+                if (viewModel.hasUnsavedChanges())
+                    FloatingActionButton(
+                        onClick = { viewModel.saveCode(coroutine, snackbarManager) }) {
+                        Icon(
+                            Icons.Default.SaveAs,
+                            contentDescription = null
+                        )
+                    }
+            }
         },
         modifier = Modifier.fillMaxSize().then(viewModel.popupKeyEvents)
     ) { paddingValues ->
