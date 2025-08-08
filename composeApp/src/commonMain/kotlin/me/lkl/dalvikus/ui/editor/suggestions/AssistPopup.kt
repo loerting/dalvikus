@@ -129,9 +129,9 @@ fun AssistPopup(
                 .widthIn(max = 400.dp)
                 .hazeEffect(
                     state = hazeState,
-                    style = defaultHazeStyle(lerp(color, MaterialTheme.colorScheme.surface, 0.9f))
+                    style = defaultHazeStyle(lerp(color, MaterialTheme.colorScheme.surface, 0.95f))
                 )
-                .border(1.dp, color.copy(alpha = 0.8f))
+                .border(1.dp, color.copy(alpha = 0.7f))
         ) {
             LazyColumn(
                 modifier = Modifier
@@ -142,7 +142,7 @@ fun AssistPopup(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
-                                if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                                if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
                                 else Color.Transparent
                             )
                             .clickable {

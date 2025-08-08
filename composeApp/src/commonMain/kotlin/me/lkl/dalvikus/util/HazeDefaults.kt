@@ -13,8 +13,8 @@ fun defaultHazeStyle(
     containerColor: Color = MaterialTheme.colorScheme.surface,
 ): HazeStyle = hazeMaterial(
     containerColor = containerColor,
-    lightAlpha = 0.1f,
-    darkAlpha = 0.3f,
+    lightAlpha = 0.2f,
+    darkAlpha = 0.4f,
 )
 
 private fun hazeMaterial(

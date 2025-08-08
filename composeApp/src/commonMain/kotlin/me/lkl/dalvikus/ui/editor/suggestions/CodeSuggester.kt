@@ -385,7 +385,7 @@ class CodeSuggester(
                 // directive suggestions
                 val directives = if (estimatedMethodRange.isEmpty()) outsideMethodDirectives else insideMethodDirectives
                 directives.forEach { (directive, description) ->
-                    if (startsWithNotEquals(directive)) {
+                    if (typingStartsWith(directive)) {
                         suggestions.add(AssistSuggestion(directive, description, SuggestionType.Directive, spanStyle))
                     }
                 }
@@ -399,7 +399,7 @@ class CodeSuggester(
                     smaliParser.PRIMITIVE_TYPE
                 ).distinctBy { it.text }.forEach { token ->
                     if(token == currentToken) return@forEach
-                    if (startsWithNotEquals(token.text)) {
+                    if (typingStartsWith(token.text)) {
                         val spanStyle = getSmaliTokenStyle(
                             token.type, highlightColors
                         )
@@ -418,7 +418,7 @@ class CodeSuggester(
                 if (registerCount > 0) {
                     for (i in 0 until registerCount) {
                         val registerName = cleanedText.substring(0, 1) + i
-                        if (startsWithNotEquals(registerName)) {
+                        if (typingStartsWith(registerName)) {
                             suggestions.add(
                                 AssistSuggestion(
                                     registerName,
@@ -435,7 +435,7 @@ class CodeSuggester(
                 smaliParser.INSTRUCTION_FORMAT10t, highlightColors
             )
             dalvikOpcodes.forEach { (opcode, description) ->
-                if (startsWithNotEquals(opcode)) {
+                if (typingStartsWith(opcode)) {
                     suggestions.add(AssistSuggestion(opcode, description, SuggestionType.Instruction, opcodeSpanStyle))
                 }
             }
@@ -453,7 +453,7 @@ class CodeSuggester(
             ) {
                 // method access specifier suggestions
                 accessList.forEach { (access, description) ->
-                    if (startsWithNotEquals(access)) {
+                    if (typingStartsWith(access)) {
                         suggestions.add(AssistSuggestion(access, description, SuggestionType.Access, spanStyle))
                     }
                 }
@@ -463,8 +463,8 @@ class CodeSuggester(
         return suggestions
     }
 
-    private fun startsWithNotEquals(directive: String): Boolean {
-        return directive.startsWith(cleanedText) && !directive.equals(cleanedText, ignoreCase = true)
+    private fun typingStartsWith(directive: String): Boolean {
+        return directive.startsWith(cleanedText, ignoreCase = true)
     }
 
     private fun findAllTokensOfType(vararg tokenType: Int): List<CommonToken> {
