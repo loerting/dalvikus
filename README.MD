@@ -14,16 +14,16 @@ Designed for developers and researchers who want to inspect, edit, and rebuild A
 
 <table>
   <tr>
-    <td align="center"><img src="docs/screenshots/smali_editor.png" width="400"/><br/><sub>Smali editor with code completion.</sub></td>
-    <td align="center"><img src="docs/screenshots/dark_theme.png" width="400"/><br/><sub>Comfortable dark theme and readable error messages.</sub></td>
+    <td align="center"><img src="docs/screenshots/smali_editor.png" width="500"/><br/><sub>Smali editor with code completion.</sub></td>
+    <td align="center"><img src="docs/screenshots/dark_theme.png" width="500"/><br/><sub>Comfortable dark theme and understandable errors.</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/screenshots/decompiler.png" width="400"/><br/><sub>Seamless live decompiler integration.</sub></td>
-    <td align="center"><img src="docs/screenshots/sign_and_deploy.png" width="400"/><br/><sub>Sign and deploy edited applications directly.</sub></td>
+    <td align="center"><img src="docs/screenshots/decompiler.png" width="500"/><br/><sub>Seamless multi decompiler integration.</sub></td>
+    <td align="center"><img src="docs/screenshots/sign_and_deploy.png" width="500"/><br/><sub>Sign and deploy edited applications directly.</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/screenshots/resources.png" width="400"/><br/><sub>Browse app resources.</sub></td>
-    <td align="center"><img src="docs/screenshots/search.png" width="400"/><br/><sub>Search literals, strings, references or names.</sub></td>
+    <td align="center"><img src="docs/screenshots/resources.png" width="500"/><br/><sub>Browse app resources.</sub></td>
+    <td align="center"><img src="docs/screenshots/search.png" width="500"/><br/><sub>Search in many different ways.</sub></td>
   </tr>
 </table>
 
