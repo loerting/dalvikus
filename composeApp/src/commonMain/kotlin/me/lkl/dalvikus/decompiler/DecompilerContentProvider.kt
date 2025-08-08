@@ -14,7 +14,7 @@ class DecompilerContentProvider(private val dexEntryClassNode: DexEntryClassNode
     override fun getSizeEstimate(): Long {
         return maxOf(
             contentFlow.value.size.toLong(),
-            64 * 1024 // 64 kB
+            16 * 1024 // 16 kB
         )
     }
 
