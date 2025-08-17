@@ -84,7 +84,7 @@ class DalvikusSettings() {
             category = SettingsCategory.SIGNING,
             nameRes = Res.string.settings_adb_path,
             dialogRes = Res.string.dialog_select_executable,
-            defaultPath = androidToolsLocator.findAdb().absolutePath,
+            defaultPath = (androidToolsLocator.findAdb() ?: File("adb")).absolutePath,
             extensions = listOf("", "exe", "bat", "sh", "cmd"),
         ),
         FileSetting(
@@ -92,7 +92,7 @@ class DalvikusSettings() {
             category = SettingsCategory.SIGNING,
             nameRes = Res.string.settings_zipalign_path,
             dialogRes = Res.string.dialog_select_executable,
-            defaultPath = androidToolsLocator.findZipalign().absolutePath,
+            defaultPath = (androidToolsLocator.findZipalign() ?: File("zipalign")).absolutePath,
             extensions = listOf("", "exe", "bat", "sh", "cmd"),
         ),
         FileSetting(
