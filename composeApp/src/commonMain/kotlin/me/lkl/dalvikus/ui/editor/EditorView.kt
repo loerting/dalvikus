@@ -55,6 +55,8 @@ import me.lkl.dalvikus.ui.editor.suggestions.LookupPopup
 import me.lkl.dalvikus.ui.tabs.IconTextButton
 import me.lkl.dalvikus.util.handleFocusedCtrlShortcuts
 import org.jetbrains.compose.resources.stringResource
+import kotlin.math.max
+import kotlin.math.min
 
 data class LayoutSnapshot(val layout: TextLayoutResult, val textFieldValue: TextFieldValue)
 
@@ -281,7 +283,7 @@ fun EditorView(tabElement: TabElement) {
 
                         // these are annotated in the smali highlighter
                         listOf("error", "class", "hex").forEach { tag ->
-                            viewModel.highlightedText.getStringAnnotations(tag, start, end).firstOrNull()?.let {
+                            viewModel.highlightedText.getStringAnnotations(tag, min(start, end), max(start, end)).firstOrNull()?.let {
                                 when (tag) {
                                     "error" -> ErrorPopup(lastLayoutSnapshot, it, viewModel, textStyle, fullHazeState)
                                     "class" -> {
