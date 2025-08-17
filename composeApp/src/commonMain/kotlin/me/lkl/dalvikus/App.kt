@@ -281,7 +281,7 @@ internal fun Content() {
     SearchView(searchBarState)
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun TopBar() {
     val snackbarManager = LocalSnackbarManager.current
@@ -397,7 +397,6 @@ fun TopBar() {
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Preview
 fun DeployButton(deploy: (ApkNode) -> Unit) {
     val treeRootChildren by uiTreeRoot.childrenFlow.collectAsState()

@@ -33,7 +33,6 @@ import settingPadHor
 import settingPadVer
 import java.security.cert.X509Certificate
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun PackagingView() {
     val snackbarManager = LocalSnackbarManager.current
