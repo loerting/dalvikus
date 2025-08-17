@@ -10,6 +10,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import me.lkl.dalvikus.lexer.java.Java20Lexer
 import me.lkl.dalvikus.theme.CodeHighlightColors
 import me.lkl.dalvikus.util.base10To0xOrNull
 import me.lkl.dalvikus.util.is0xHex
