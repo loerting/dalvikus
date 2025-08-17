@@ -2,6 +2,8 @@ package me.lkl.dalvikus.lexer
 
 import me.lkl.dalvikus.lexer.java.JavaParser
 import me.lkl.dalvikus.lexer.java.JavaParserBaseVisitor
+import org.antlr.v4.runtime.ParserRuleContext
+import org.antlr.v4.runtime.tree.TerminalNode
 
 class JavaHighlightParserVisitor : JavaParserBaseVisitor<Unit>() {
     val methodNames = mutableSetOf<Pair<Int, Int>>()
@@ -9,188 +11,135 @@ class JavaHighlightParserVisitor : JavaParserBaseVisitor<Unit>() {
     val fieldNames = mutableSetOf<Pair<Int, Int>>()
     val variableNames = mutableSetOf<Pair<Int, Int>>()
 
-    override fun visitVariableModifier(ctx: JavaParser.VariableModifierContext) {
-        val start = ctx.start.startIndex
-        val end = ctx.stop.stopIndex + 1
-        classNames.add(Pair(start, end))
-        super.visitVariableModifier(ctx)
-    }
-
-    override fun visitTypeType(ctx: JavaParser.TypeTypeContext) {
-        val start = ctx.start.startIndex
-        val end = ctx.stop.stopIndex + 1
-        classNames.add(Pair(start, end))
-        return super.visitTypeType(ctx)
-    }
-
-    override fun visitMemberReferenceExpression(ctx: JavaParser.MemberReferenceExpressionContext?) {
-        ctx?.identifier()?.let { identifier ->
-            val start = identifier.start.startIndex
-            val end = identifier.stop.stopIndex + 1
-            methodNames.add(Pair(start, end))
-        }
-        super.visitMemberReferenceExpression(ctx)
-    }
-
+    // Method declarations and invocations
     override fun visitMethodDeclaration(ctx: JavaParser.MethodDeclarationContext) {
         ctx.identifier()?.let { identifier ->
-            val start = identifier.start.startIndex
-            val end = identifier.stop.stopIndex + 1
-            methodNames.add(Pair(start, end))
+            addRange(methodNames, identifier)
         }
         super.visitMethodDeclaration(ctx)
     }
 
-    override fun visitConstructorDeclaration(ctx: JavaParser.ConstructorDeclarationContext) {
+    override fun visitMethodCall(ctx: JavaParser.MethodCallContext) {
         ctx.identifier()?.let { identifier ->
-            val start = identifier.start.startIndex
-            val end = identifier.stop.stopIndex + 1
-            methodNames.add(Pair(start, end))
+            addRange(methodNames, identifier)
         }
-        super.visitConstructorDeclaration(ctx)
+        super.visitMethodCall(ctx)
     }
 
+    override fun visitInterfaceCommonBodyDeclaration(ctx: JavaParser.InterfaceCommonBodyDeclarationContext?) {
+        ctx?.identifier()?.let { identifier ->
+            addRange(methodNames, identifier)
+        }
+        return super.visitInterfaceCommonBodyDeclaration(ctx)
+    }
+
+    // Class/interface/record/enum declarations and references
     override fun visitClassDeclaration(ctx: JavaParser.ClassDeclarationContext) {
         ctx.identifier()?.let { identifier ->
-            val start = identifier.start.startIndex
-            val end = identifier.stop.stopIndex + 1
-            classNames.add(Pair(start, end))
+            addRange(classNames, identifier)
         }
         super.visitClassDeclaration(ctx)
     }
 
     override fun visitInterfaceDeclaration(ctx: JavaParser.InterfaceDeclarationContext) {
         ctx.identifier()?.let { identifier ->
-            val start = identifier.start.startIndex
-            val end = identifier.stop.stopIndex + 1
-            classNames.add(Pair(start, end))
+            addRange(classNames, identifier)
         }
         super.visitInterfaceDeclaration(ctx)
     }
 
-    override fun visitEnumDeclaration(ctx: JavaParser.EnumDeclarationContext) {
-        ctx.identifier()?.let { identifier ->
-            val start = identifier.start.startIndex
-            val end = identifier.stop.stopIndex + 1
-            classNames.add(Pair(start, end))
-        }
-        super.visitEnumDeclaration(ctx)
-    }
-
     override fun visitRecordDeclaration(ctx: JavaParser.RecordDeclarationContext) {
         ctx.identifier()?.let { identifier ->
-            val start = identifier.start.startIndex
-            val end = identifier.stop.stopIndex + 1
-            classNames.add(Pair(start, end))
+            addRange(classNames, identifier)
         }
         super.visitRecordDeclaration(ctx)
     }
 
+    override fun visitEnumDeclaration(ctx: JavaParser.EnumDeclarationContext) {
+        ctx.identifier()?.let { identifier ->
+            addRange(classNames, identifier)
+        }
+        super.visitEnumDeclaration(ctx)
+    }
+
+    override fun visitClassOrInterfaceType(ctx: JavaParser.ClassOrInterfaceTypeContext) {
+        ctx.typeIdentifier()?.let { identifier ->
+            addRange(classNames, identifier)
+        }
+        super.visitClassOrInterfaceType(ctx)
+    }
+
+    override fun visitCreator(ctx: JavaParser.CreatorContext) {
+        ctx.createdName()?.identifier()?.forEach { identifier ->
+            addRange(classNames, identifier)
+        }
+        super.visitCreator(ctx)
+    }
+
+    // Field declarations and accesses
     override fun visitFieldDeclaration(ctx: JavaParser.FieldDeclarationContext) {
-        ctx.variableDeclarators()?.variableDeclarator()?.forEach { varDecl ->
-            varDecl.variableDeclaratorId()?.identifier()?.let { identifier ->
-                val start = identifier.start.startIndex
-                val end = identifier.stop.stopIndex + 1
-                fieldNames.add(Pair(start, end))
+        ctx.variableDeclarators().variableDeclarator().forEach { declarator ->
+            declarator.variableDeclaratorId().identifier()?.let { identifier ->
+                addRange(fieldNames, identifier)
             }
         }
         super.visitFieldDeclaration(ctx)
     }
 
-    override fun visitLocalVariableDeclaration(ctx: JavaParser.LocalVariableDeclarationContext) {
-        ctx.variableModifier()
-        ctx.variableDeclarators()?.variableDeclarator()?.forEach { varDecl ->
-            varDecl.variableDeclaratorId()?.identifier()?.let { identifier ->
-                val start = identifier.start.startIndex
-                val end = identifier.stop.stopIndex + 1
-                variableNames.add(Pair(start, end))
+    override fun visitMemberReferenceExpression(ctx: JavaParser.MemberReferenceExpressionContext) {
+        ctx.identifier()?.let { identifier ->
+            // Check if this is a field access (could also be method call)
+            if (ctx.bop.text == "." && ctx.methodCall() == null) {
+                addRange(fieldNames, identifier)
             }
         }
+        super.visitMemberReferenceExpression(ctx)
+    }
 
-
+    // Local variable declarations and accesses
+    override fun visitLocalVariableDeclaration(ctx: JavaParser.LocalVariableDeclarationContext) {
+        if (ctx.typeType() != null) {
+            ctx.variableDeclarators().variableDeclarator().forEach { declarator ->
+                declarator.variableDeclaratorId().identifier()?.let { identifier ->
+                    addRange(variableNames, identifier)
+                }
+            }
+        } else if (ctx.VAR() != null) {
+            ctx.identifier()?.let { identifier ->
+                addRange(variableNames, identifier)
+            }
+        }
         super.visitLocalVariableDeclaration(ctx)
     }
 
-    override fun visitFormalParameter(ctx: JavaParser.FormalParameterContext) {
-        ctx.variableDeclaratorId()?.identifier()?.let { identifier ->
-            val start = identifier.start.startIndex
-            val end = identifier.stop.stopIndex + 1
-            variableNames.add(Pair(start, end))
-        }
-        super.visitFormalParameter(ctx)
-    }
-
-    override fun visitMethodCall(ctx: JavaParser.MethodCallContext) {
+    override fun visitPrimary(ctx: JavaParser.PrimaryContext) {
         ctx.identifier()?.let { identifier ->
-            val start = identifier.start.startIndex
-            val end = identifier.stop.stopIndex + 1
-            methodNames.add(Pair(start, end))
-        }
-        super.visitMethodCall(ctx)
-    }
-
-    // New methods to detect additional cases
-    override fun visitAnnotationTypeDeclaration(ctx: JavaParser.AnnotationTypeDeclarationContext) {
-        ctx.identifier()?.let { identifier ->
-            val start = identifier.start.startIndex
-            val end = identifier.stop.stopIndex + 1
-            classNames.add(Pair(start, end))
-        }
-        super.visitAnnotationTypeDeclaration(ctx)
-    }
-
-    override fun visitLambdaLVTIParameter(ctx: JavaParser.LambdaLVTIParameterContext) {
-        ctx.identifier()?.let { identifier ->
-            val start = identifier.start.startIndex
-            val end = identifier.stop.stopIndex + 1
-            variableNames.add(Pair(start, end))
-        }
-        super.visitLambdaLVTIParameter(ctx)
-    }
-
-    override fun visitResource(ctx: JavaParser.ResourceContext) {
-        ctx.variableDeclaratorId()?.identifier()?.let { identifier ->
-            val start = identifier.start.startIndex
-            val end = identifier.stop.stopIndex + 1
-            variableNames.add(Pair(start, end))
-        }
-        super.visitResource(ctx)
-    }
-
-    override fun visitForControl(ctx: JavaParser.ForControlContext) {
-        ctx.forInit()?.let { forInit ->
-            forInit.localVariableDeclaration()?.let { localVarDecl ->
-                visitLocalVariableDeclaration(localVarDecl)
+            // If this identifier isn't already classified as something else, assume it's a variable
+            if (!isClassified(identifier)) {
+                addRange(variableNames, identifier)
             }
         }
-        super.visitForControl(ctx)
+        super.visitPrimary(ctx)
     }
 
-
-    override fun visitEnhancedForControl(ctx: JavaParser.EnhancedForControlContext) {
-        ctx.variableDeclaratorId()?.identifier()?.let { identifier ->
-            val start = identifier.start.startIndex
-            val end = identifier.stop.stopIndex + 1
-            variableNames.add(Pair(start, end))
-        }
-        super.visitEnhancedForControl(ctx)
+    // Helper functions
+    private fun addRange(collection: MutableSet<Pair<Int, Int>>, node: TerminalNode) {
+        val start = node.symbol.startIndex
+        val end = node.symbol.stopIndex + 1
+        collection.add(Pair(start, end))
     }
 
-    override fun visitCatchClause(ctx: JavaParser.CatchClauseContext) {
-        ctx.identifier()?.let { identifier ->
-            val start = identifier.start.startIndex
-            val end = identifier.stop.stopIndex + 1
-            variableNames.add(Pair(start, end))
-        }
-        super.visitCatchClause(ctx)
+    private fun addRange(collection: MutableSet<Pair<Int, Int>>, ctx: ParserRuleContext) {
+        val start = ctx.start.startIndex
+        val end = ctx.stop.stopIndex + 1
+        collection.add(Pair(start, end))
     }
 
-    override fun visitRecordComponent(ctx: JavaParser.RecordComponentContext) {
-        ctx.identifier()?.let { identifier ->
-            val start = identifier.start.startIndex
-            val end = identifier.stop.stopIndex + 1
-            variableNames.add(Pair(start, end))
-        }
-        super.visitRecordComponent(ctx)
+    private fun isClassified(identifier: JavaParser.IdentifierContext): Boolean {
+        val start = identifier.start.startIndex
+        val end = identifier.stop.stopIndex + 1
+        return methodNames.any { it.first == start && it.second == end } ||
+                classNames.any { it.first == start && it.second == end } ||
+                fieldNames.any { it.first == start && it.second == end }
     }
 }
