@@ -3,7 +3,7 @@ package me.lkl.dalvikus.tools
 import co.touchlab.kermit.Logger
 import java.io.File
 
-class AndroidToolsLocator() {
+class AndroidToolsLocator(private val sdkLocator: AndroidSdkLocator = AndroidSdkLocator()) {
 
     fun findZipalign(): File =
         findAndroidTool(
@@ -32,15 +32,16 @@ class AndroidToolsLocator() {
     private fun findAndroidTool(envSubPath: String, fallbackPaths: Map<String, String>, toolName: String): File {
         val os = System.getProperty("os.name").lowercase()
         val isWindows = os.contains("win")
-        val sdkPath = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
+
+        val sdkPath = sdkLocator.findSdkPath()
 
         sdkPath?.let {
             val envToolPath = File(it, envSubPath + if (isWindows) ".exe" else "")
             if (envToolPath.exists() && envToolPath.canExecute()) {
                 return envToolPath
             }
-            Logger.w("Found ANDROID_HOME or ANDROID_SDK_ROOT environment variable, but $toolName not found at $envToolPath. Falling back to common locations.")
-        } ?: Logger.w("ANDROID_HOME or ANDROID_SDK_ROOT environment variable not set. Falling back to common locations.")
+            Logger.w("Found SDK, but $toolName not found at $envToolPath. Falling back to common locations.")
+        }
 
         val fallbackPath = when {
             isWindows -> fallbackPaths["win"]
