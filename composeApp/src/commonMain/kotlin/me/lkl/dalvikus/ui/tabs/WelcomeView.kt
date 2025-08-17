@@ -6,16 +6,19 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Adb
 import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.AutoFixHigh
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Gavel
+import androidx.compose.material.icons.outlined.InstallDesktop
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -100,15 +103,15 @@ fun WelcomeView() {
                         LinkButton(
                             text = stringResource(Res.string.app_dalvik_button),
                             uri = URI("https://source.android.com/docs/core/runtime/dalvik-bytecode"),
-                            icon = Icons.Outlined.Android,
+                            icon = Icons.Outlined.Adb,
                             shape = buttonShape,
                             colors = buttonColors
                         )
 
                         LinkButton(
-                            text = stringResource(Res.string.app_gpl_button),
-                            uri = URI("https://www.gnu.org/licenses/gpl-3.0.html"),
-                            icon = Icons.Outlined.Gavel,
+                            text = stringResource(Res.string.app_android_sdk_button),
+                            uri = URI("https://developer.android.com/tools/sdkmanager"),
+                            icon = Icons.Outlined.InstallDesktop,
                             shape = buttonShape,
                             colors = buttonColors
                         )
@@ -124,15 +127,15 @@ private fun getUserName(): String {
 }
 
 @Composable
-fun LinkButton(
+fun IconTextButton(
     text: String,
-    uri: URI,
     icon: ImageVector,
-    shape: RoundedCornerShape,
-    colors: ButtonColors
+    shape: Shape = ButtonDefaults.textShape,
+    colors: ButtonColors = ButtonDefaults.textButtonColors(),
+    onClick: () -> Unit
 ) {
     TextButton(
-        onClick = { Desktop.getDesktop().browse(uri) },
+        onClick = onClick,
         shape = shape,
         colors = colors
     ) {
@@ -144,4 +147,21 @@ fun LinkButton(
         Spacer(Modifier.width(8.dp))
         Text(text, softWrap = false)
     }
+}
+
+@Composable
+fun LinkButton(
+    text: String,
+    uri: URI,
+    icon: ImageVector,
+    shape: RoundedCornerShape,
+    colors: ButtonColors
+) {
+    IconTextButton(
+        text = text,
+        icon = icon,
+        shape = shape,
+        colors = colors,
+        onClick = { Desktop.getDesktop().browse(uri) }
+    )
 }

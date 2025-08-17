@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SaveAs
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.SentimentDissatisfied
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -33,11 +34,13 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.editor_cannot_open
+import dalvikus.composeapp.generated.resources.go_to_settings
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.delay
 import me.lkl.dalvikus.LocalHazeState
 import me.lkl.dalvikus.LocalSnackbarManager
+import me.lkl.dalvikus.selectedNavItem
 import me.lkl.dalvikus.settings.shortcutFind
 import me.lkl.dalvikus.settings.shortcutSave
 import me.lkl.dalvikus.tabs.SmaliTab
@@ -49,6 +52,7 @@ import me.lkl.dalvikus.ui.editor.suggestions.AssistPopup
 import me.lkl.dalvikus.ui.editor.suggestions.ErrorPopup
 import me.lkl.dalvikus.ui.editor.suggestions.HexPopup
 import me.lkl.dalvikus.ui.editor.suggestions.LookupPopup
+import me.lkl.dalvikus.ui.tabs.IconTextButton
 import me.lkl.dalvikus.util.handleFocusedCtrlShortcuts
 import org.jetbrains.compose.resources.stringResource
 
@@ -354,10 +358,18 @@ fun EditorCannotOpen() {
             Spacer(Modifier.height(16.dp))
             Text(
                 stringResource(Res.string.editor_cannot_open),
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error,
                 textAlign = TextAlign.Companion.Center
             )
+            Spacer(Modifier.height(16.dp))
+            IconTextButton(
+                text = stringResource(Res.string.go_to_settings),
+                icon = Icons.Default.Settings,
+            ) {
+
+                selectedNavItem = "Settings"
+            }
         }
     }
 }

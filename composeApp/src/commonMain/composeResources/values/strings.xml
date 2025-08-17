@@ -7,7 +7,7 @@
     <string name="app_introduction">Welcome, %1$s! To get started, click "Files" on the bottom left. Please install the Android Sdk to use all features. For updates, help and more visit the GitHub page.</string>
     <string name="app_github_button">Star on GitHub</string>
     <string name="app_dalvik_button">Dalvik reference</string>
-    <string name="app_gpl_button">GPLv3 license</string>
+    <string name="app_android_sdk_button">Get Android Sdk</string>
 
     <string name="tree_search_placeholder">Search a file or class</string>
     <string name="tree_drop_placeholder">Drop any of %1$s.</string>
@@ -132,4 +132,5 @@
     <string name="resources_search_placeholder">Filter by id or name</string>
     <string name="resources_not_all_types">(Not all types)</string>
 
+    <string name="go_to_settings">Go to settings</string>
 </resources>
