@@ -77,9 +77,6 @@ private fun getSemanticStyle(tokenRange: Pair<Int, Int>, semanticInfo: JavaHighl
         tokenRange in semanticInfo.fieldNames -> SpanStyle(
             color = colors.tertiary,
         )
-        tokenRange in semanticInfo.variableNames -> SpanStyle(
-            color = colors.quaternary,
-        )
         else -> null
     }
 }

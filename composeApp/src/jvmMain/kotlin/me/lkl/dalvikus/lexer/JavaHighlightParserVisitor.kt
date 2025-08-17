@@ -9,26 +9,50 @@ class JavaHighlightParserVisitor : JavaParserBaseVisitor<Unit>() {
     val methodNames = mutableSetOf<Pair<Int, Int>>()
     val classNames = mutableSetOf<Pair<Int, Int>>()
     val fieldNames = mutableSetOf<Pair<Int, Int>>()
-    val variableNames = mutableSetOf<Pair<Int, Int>>()
 
     // Method declarations and invocations
     override fun visitMethodDeclaration(ctx: JavaParser.MethodDeclarationContext) {
         ctx.identifier()?.let { identifier ->
             addRange(methodNames, identifier)
         }
+
+        // Handle throws clauses
+        ctx.qualifiedNameList()?.qualifiedName()?.forEach { name ->
+            addRange(classNames, name)
+        }
+
         super.visitMethodDeclaration(ctx)
     }
 
-    override fun visitMethodCall(ctx: JavaParser.MethodCallContext) {
+    override fun visitConstructorDeclaration(ctx: JavaParser.ConstructorDeclarationContext) {
         ctx.identifier()?.let { identifier ->
             addRange(methodNames, identifier)
+        }
+
+        ctx.qualifiedNameList()?.qualifiedName()?.forEach { name ->
+            addRange(classNames, name)
+        }
+
+        super.visitConstructorDeclaration(ctx)
+    }
+
+    override fun visitMethodCall(ctx: JavaParser.MethodCallContext) {
+        when {
+            ctx.identifier() != null -> {
+                addRange(methodNames, ctx.identifier()!!)
+            }
+            ctx.THIS() != null -> addRange(methodNames, ctx.THIS()!!)
+            ctx.SUPER() != null -> addRange(methodNames, ctx.SUPER()!!)
         }
         super.visitMethodCall(ctx)
     }
 
-    override fun visitInterfaceCommonBodyDeclaration(ctx: JavaParser.InterfaceCommonBodyDeclarationContext?) {
-        ctx?.identifier()?.let { identifier ->
+    override fun visitInterfaceCommonBodyDeclaration(ctx: JavaParser.InterfaceCommonBodyDeclarationContext) {
+        ctx.identifier()?.let { identifier ->
             addRange(methodNames, identifier)
+        }
+        ctx.qualifiedNameList()?.qualifiedName()?.forEach { name ->
+            addRange(classNames, name)
         }
         return super.visitInterfaceCommonBodyDeclaration(ctx)
     }
@@ -87,39 +111,15 @@ class JavaHighlightParserVisitor : JavaParserBaseVisitor<Unit>() {
     }
 
     override fun visitMemberReferenceExpression(ctx: JavaParser.MemberReferenceExpressionContext) {
-        ctx.identifier()?.let { identifier ->
-            // Check if this is a field access (could also be method call)
-            if (ctx.bop.text == "." && ctx.methodCall() == null) {
-                addRange(fieldNames, identifier)
+        when {
+            ctx.methodCall() != null -> {
+                // This is a method call, handled elsewhere
+            }
+            ctx.identifier() != null -> {
+                addRange(fieldNames, ctx.identifier()!!)
             }
         }
         super.visitMemberReferenceExpression(ctx)
-    }
-
-    // Local variable declarations and accesses
-    override fun visitLocalVariableDeclaration(ctx: JavaParser.LocalVariableDeclarationContext) {
-        if (ctx.typeType() != null) {
-            ctx.variableDeclarators().variableDeclarator().forEach { declarator ->
-                declarator.variableDeclaratorId().identifier()?.let { identifier ->
-                    addRange(variableNames, identifier)
-                }
-            }
-        } else if (ctx.VAR() != null) {
-            ctx.identifier()?.let { identifier ->
-                addRange(variableNames, identifier)
-            }
-        }
-        super.visitLocalVariableDeclaration(ctx)
-    }
-
-    override fun visitPrimary(ctx: JavaParser.PrimaryContext) {
-        ctx.identifier()?.let { identifier ->
-            // If this identifier isn't already classified as something else, assume it's a variable
-            if (!isClassified(identifier)) {
-                addRange(variableNames, identifier)
-            }
-        }
-        super.visitPrimary(ctx)
     }
 
     // Helper functions
