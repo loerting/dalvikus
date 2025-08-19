@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
-import dalvikus.composeapp.generated.resources.editor_cannot_open
-import dalvikus.composeapp.generated.resources.go_to_settings
+import dalvikus.composeapp.generated.resources.editor_cannot_open_msg
+import dalvikus.composeapp.generated.resources.go_to_settings_button
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.delay
@@ -354,19 +354,19 @@ fun EditorCannotOpen() {
             Icon(
                 imageVector = Icons.Outlined.SentimentDissatisfied,
                 tint = MaterialTheme.colorScheme.error,
-                contentDescription = stringResource(Res.string.editor_cannot_open),
+                contentDescription = stringResource(Res.string.editor_cannot_open_msg),
                 modifier = Modifier.size(48.dp)
             )
             Spacer(Modifier.height(16.dp))
             Text(
-                stringResource(Res.string.editor_cannot_open),
+                stringResource(Res.string.editor_cannot_open_msg),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error,
                 textAlign = TextAlign.Companion.Center
             )
             Spacer(Modifier.height(16.dp))
             IconTextButton(
-                text = stringResource(Res.string.go_to_settings),
+                text = stringResource(Res.string.go_to_settings_button),
                 icon = Icons.Default.Settings,
             ) {
 

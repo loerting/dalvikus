@@ -129,8 +129,8 @@ fun ProvideSnackbar(content: @Composable () -> Unit) {
 
     val resources = SnackbarResources(
         copy = stringResource(Res.string.copy),
-        snackFailed = stringResource(Res.string.snack_failed),
-        snackSuccess = stringResource(Res.string.snack_success),
+        snackFailed = stringResource(Res.string.snack_failed_msg),
+        snackSuccess = stringResource(Res.string.snack_success_msg),
         snackAssembleError = stringResource(Res.string.snack_assemble_error),
     )
 
@@ -178,7 +178,7 @@ internal fun Content() {
 
     val snackbarManager = LocalSnackbarManager.current
 
-    val unsupportedFileText = stringResource(Res.string.tree_unsupported_file_type)
+    val unsupportedFileText = stringResource(Res.string.tree_unsupported_file_type_msg)
     val dragAndDropTarget = remember(snackbarManager) { TreeDragAndDropTarget(snackbarManager, unsupportedFileText) }
 
     val searchBarState = rememberSearchBarState()

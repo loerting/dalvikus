@@ -82,7 +82,7 @@ fun PackagingView() {
                                     password = keystorePasswordField.concatToString(),
                                     onPasswordChange = { keystorePasswordField = it.toCharArray() },
                                     isError = keystorePasswordField.size < 6,
-                                    errorMessage = stringResource(Res.string.error_password_min_length)
+                                    errorMessage = stringResource(Res.string.password_min_length_error)
                                 )
                                 Spacer(modifier = Modifier.height(settingPadVer))
                             }
@@ -225,7 +225,7 @@ fun SignatureStatus(
         val texts = listOf("V1", "V2", "V3", "V3.1", "V4", "SourceStamp")
 
         Column {
-            Text(stringResource(Res.string.signature_validity), style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(Res.string.signature_validity_title), style = MaterialTheme.typography.titleSmall)
 
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -260,7 +260,7 @@ fun SignatureStatus(
                 }
             } else {
                 Text(
-                    text = stringResource(Res.string.signature_no_errors),
+                    text = stringResource(Res.string.signature_no_errors_msg),
                     style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurface)
                 )
             }

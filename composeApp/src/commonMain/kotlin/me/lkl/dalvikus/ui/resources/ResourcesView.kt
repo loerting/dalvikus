@@ -31,7 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.all_elements
-import dalvikus.composeapp.generated.resources.resources_not_all_types
+import dalvikus.composeapp.generated.resources.resources_incomplete_hint
 import dalvikus.composeapp.generated.resources.resources_search_placeholder
 import io.github.composegears.valkyrie.MatchCase
 import io.github.composegears.valkyrie.RegularExpression
@@ -185,7 +185,7 @@ private fun ApkResourceCards(searchFieldState: TextFieldState, searchOptions: Se
                 )
             }
             Text(
-                text = stringResource(Res.string.resources_not_all_types),
+                text = stringResource(Res.string.resources_incomplete_hint),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Center,

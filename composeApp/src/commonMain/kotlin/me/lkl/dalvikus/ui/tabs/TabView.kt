@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import co.touchlab.kermit.Logger
 import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.tabManager
 import me.lkl.dalvikus.tabs.TabElement
@@ -114,7 +113,7 @@ fun TabViewContent(tab: TabElement, onClose: (() -> Unit)?) {
                 ) {
                     Text(
                         tab.contentProvider.getSourcePath()
-                            ?: stringResource(Res.string.unknown_source),
+                            ?: stringResource(Res.string.unknown_source_msg),
                     )
                 }
             },

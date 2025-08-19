@@ -43,11 +43,11 @@ import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.Res
 import dalvikus.composeapp.generated.resources.tree_search_no_results
 import dalvikus.composeapp.generated.resources.tree_search_placeholder
-import dalvikus.composeapp.generated.resources.tree_search_result_type_class_by_parent
-import dalvikus.composeapp.generated.resources.tree_search_result_type_literal
-import dalvikus.composeapp.generated.resources.tree_search_result_type_node
-import dalvikus.composeapp.generated.resources.tree_search_result_type_reference
-import dalvikus.composeapp.generated.resources.tree_search_result_type_string
+import dalvikus.composeapp.generated.resources.tree_search_chip_class_by_parent
+import dalvikus.composeapp.generated.resources.tree_search_chip_literal
+import dalvikus.composeapp.generated.resources.tree_search_chip_node
+import dalvikus.composeapp.generated.resources.tree_search_chip_reference
+import dalvikus.composeapp.generated.resources.tree_search_chip_string
 import io.github.composegears.valkyrie.MatchCase
 import io.github.composegears.valkyrie.RegularExpression
 import kotlinx.coroutines.flow.filter
@@ -93,11 +93,11 @@ fun SearchResults(
     @Composable
     fun getResultTypeName(type: TreeSearchResultType): String = stringResource(
         when (type) {
-            TreeSearchResultType.TREE_NODE -> Res.string.tree_search_result_type_node
-            TreeSearchResultType.STRING_VALUE -> Res.string.tree_search_result_type_string
-            TreeSearchResultType.REFERENCE -> Res.string.tree_search_result_type_reference
-            TreeSearchResultType.LITERAL -> Res.string.tree_search_result_type_literal
-            TreeSearchResultType.CLASS_BY_PARENT -> Res.string.tree_search_result_type_class_by_parent
+            TreeSearchResultType.TREE_NODE -> Res.string.tree_search_chip_node
+            TreeSearchResultType.STRING_VALUE -> Res.string.tree_search_chip_string
+            TreeSearchResultType.REFERENCE -> Res.string.tree_search_chip_reference
+            TreeSearchResultType.LITERAL -> Res.string.tree_search_chip_literal
+            TreeSearchResultType.CLASS_BY_PARENT -> Res.string.tree_search_chip_class_by_parent
         }
     )
 

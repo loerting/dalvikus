@@ -10,11 +10,10 @@
     <string name="app_android_sdk_button">Get Android Sdk</string>
 
     <string name="tree_search_placeholder">Search a file or class</string>
-    <string name="tree_drop_placeholder">Drop any of %1$s.</string>
-    <string name="tree_unsupported_file_type">This file type is not supported.</string>
+    <string name="tree_drop_of_type_placeholder">Drop any of %1$s.</string>
+    <string name="tree_unsupported_file_type_msg">This file type is not supported.</string>
 
     <string name="welcome_tab_name">Welcome!</string>
-    <string name="welcome_tab_description">TODO</string>
 
     <string name="dialog_exit_title">Exit</string>
     <string name="dialog_exit_message">Are you sure you want to exit? Unsaved editor changes will be lost.</string>
@@ -39,7 +38,7 @@
     <string name="nav_resources">Resources</string>
     <string name="nav_search">Search</string>
 
-    <string name="wrong_mode">This feature is unavailable in the current mode.</string>
+    <string name="unavailable_feature_msg">This feature is unavailable in the current mode.</string>
 
     <string name="settings_category_general">General settings</string>
     <string name="settings_category_smali">Smali (dis-)assembler settings</string>
@@ -64,24 +63,23 @@
     <string name="tooltip_deploy_message">Sign and deploy the last selected Android archive using adb. (%1$s)</string>
     <string name="tooltip_tab_title">Editor tab</string>
 
-    <string name="no_app_selected">No app selected</string>
-    <string name="unknown_source">Unknown source</string>
+    <string name="unknown_source_msg">Unknown source.</string>
 
     <string name="signature_settings_title">Keystore configuration</string>
     <string name="signature_keystore_password">Password for keystore (and key)</string>
     <string name="signature_key_password">Password for key alias "%1$s"</string>
     <string name="btn_create_keystore">Create PKCS12 keystore</string>
 
-    <string name="signature_validity">Signature validity</string>
-    <string name="signature_no_errors">No errors found in signature</string>
+    <string name="signature_validity_title">Signature validity</string>
+    <string name="signature_no_errors_msg">No errors found in signature.</string>
     <string name="signer_title">%1$s Signer(s)</string>
     <string name="signer_index">Signer %1$d</string>
     <string name="signer_subject">Subject: %1$s</string>
     <string name="signer_issuer">Issuer: %1$s</string>
     <string name="signer_sha256">SHA-256: %1$s</string>
 
-    <string name="snack_failed">Error performing operation: %1$s</string>
-    <string name="snack_success">Successfully completed operation.</string>
+    <string name="snack_failed_msg">Error performing operation: %1$s</string>
+    <string name="snack_success_msg">Successfully completed operation.</string>
     <string name="snack_assemble_error">Unable to assemble due to error(s) in line(s) %1$s</string>
 
     <string name="deploy">Deploy</string>
@@ -102,25 +100,22 @@
     <string name="browse_web">Browse web</string>
     <string name="all_elements">All elements</string>
 
-
     <string name="sign_and_deploy">Sign and deploy</string>
-    <string name="select_file">Select file</string>
-
     <string name="fab_load_file">Load file</string>
 
-    <string name="error_password_min_length">Password must be at least 6 characters</string>
+    <string name="password_min_length_error">Password must be at least 6 characters</string>
 
-    <string name="editor_cannot_open">The file is either too large, not a valid ASCII file or has too many lines. Please use a different editor to open it or change the maximum allowed file size.</string>
+    <string name="editor_cannot_open_msg">The file is either too large, not a valid ASCII file or has too many lines. Please use a different editor to open it or change the maximum allowed file size.</string>
     <string name="editor_search_placeholder">Search text...</string>
     <string name="editor_search_no_results">No results</string>
     <string name="editor_search_results_found">%1$d results</string>
 
     <string name="tree_search_no_results">No results found</string>
-    <string name="tree_search_result_type_node">By file name</string>
-    <string name="tree_search_result_type_string">Uses string constant</string>
-    <string name="tree_search_result_type_literal">Uses literal or resource</string>
-    <string name="tree_search_result_type_reference">Calls method or field</string>
-    <string name="tree_search_result_type_class_by_parent">Has parent class</string>
+    <string name="tree_search_chip_node">By file name</string>
+    <string name="tree_search_chip_string">Uses string constant</string>
+    <string name="tree_search_chip_literal">Uses literal or resource</string>
+    <string name="tree_search_chip_reference">Calls method or field</string>
+    <string name="tree_search_chip_class_by_parent">Has parent class</string>
     <string name="tree_method_count">%1$s methods</string>
     <string name="tree_field_count">%1$s fields</string>
 
@@ -129,8 +124,8 @@
     <string name="lookup_popup_current_class">This is the current class.</string>
     <string name="lookup_popup_runtime">Likely an Android or Java runtime class.</string>
 
-    <string name="resources_search_placeholder">Filter by id or name</string>
-    <string name="resources_not_all_types">(Not all types)</string>
+    <string name="resources_search_placeholder">Filter by id or name...</string>
+    <string name="resources_incomplete_hint">(Not all types)</string>
 
-    <string name="go_to_settings">Go to settings</string>
+    <string name="go_to_settings_button">Go to settings</string>
 </resources>
