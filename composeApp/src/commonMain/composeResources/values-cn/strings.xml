@@ -1,0 +1,139 @@
+<resources>
+    <string name="app_name">dalvikus</string>
+    <string name="app_name_version">dalvikus %1$s</string>
+    <string name="app_description">为您的应用施展魔法。</string>
+    <string name="credits_and_version">由 Leonhard Kohl-Loerting 制作 - 版本 %1$s</string>
+
+    <string name="app_introduction">欢迎，%1$s！要开始使用，请点击左下角的"文件"。请安装 Android SDK 以使用全部功能。如需更新、帮助和更多信息，请访问 GitHub 页面。</string>
+    <string name="app_github_button">在 GitHub 上点赞</string>
+    <string name="app_dalvik_button">Dalvik 参考</string>
+    <string name="app_android_sdk_button">获取 Android SDK</string>
+
+    <string name="tree_search_placeholder">搜索文件或类</string>
+    <string name="tree_drop_of_type_placeholder">拖放任意 %1$s 到此处。</string>
+    <string name="tree_unsupported_file_type_msg">不支持此文件类型。</string>
+
+    <string name="welcome_tab_name">欢迎！</string>
+
+    <string name="dialog_exit_title">退出</string>
+    <string name="dialog_exit_message">确定要退出吗？未保存的编辑器更改将会丢失。</string>
+
+    <string name="dialog_select_android_archive_title">选择 Android 归档文件</string>
+    <string name="dialog_select_android_archive_message">请选择一个可编辑的文件来打开。</string>
+
+    <string name="dialog_select_file">选择文件</string>
+
+    <string name="dialog_select_executable">请选择一个安装可执行文件。</string>
+    <string name="dialog_select_keystore_message">请选择一个密钥库文件（PKCS12 类型）来签名应用程序。</string>
+
+    <string name="unsaved_changes_title">未保存的更改</string>
+    <string name="unsaved_changes_message">"%1$s" 有未保存的更改，关闭时将会丢失。仍要丢弃吗？</string>
+
+    <string name="nav_editor">编辑器</string>
+    <string name="nav_decompiler">反编译器</string>
+    <string name="nav_settings">设置</string>
+    <string name="nav_signing">打包</string>
+    <string name="nav_file_tree">文件</string>
+    <string name="nav_resources">资源</string>
+    <string name="nav_search">搜索</string>
+
+    <string name="unavailable_feature_msg">此功能在当前模式下不可用。</string>
+
+    <string name="settings_category_general">常规设置</string>
+    <string name="settings_category_smali">Smali（反）汇编器设置</string>
+    <string name="settings_category_decompiler">反编译器设置</string>
+    <string name="settings_category_editor">编辑器设置</string>
+    <string name="settings_category_signing">打包设置</string>
+
+    <string name="settings_font_size">字体大小</string>
+    <string name="settings_max_file_size">最大允许文件大小</string>
+    <string name="settings_api_level">Dalvik 操作码 API 级别</string>
+    <string name="settings_decompiler_verbose">详细的反编译器输出</string>
+    <string name="settings_decompiler_implementation">反编译器实现</string>
+    <string name="settings_save_automatically">自动保存编辑器更改</string>
+    <string name="settings_keystore_path">签名用密钥库文件路径</string>
+    <string name="settings_keystore_alias">签名用密钥别名</string>
+    <string name="settings_adb_path">Android 调试桥（adb）安装路径</string>
+    <string name="settings_zipalign_path">zipalign（Android 构建工具）安装路径</string>
+    <string name="settings_check_for_updates">启动时检查更新</string>
+    <string name="settings_theme_palette_style">主题调色板样式</string>
+
+    <string name="tooltip_deploy_title">部署应用程序</string>
+    <string name="tooltip_deploy_message">使用 adb 签名并部署最后选择的 Android 归档文件。（%1$s）</string>
+    <string name="tooltip_tab_title">编辑器标签页</string>
+
+    <string name="unknown_source_msg">未知来源。</string>
+
+    <string name="signature_settings_title">密钥库配置</string>
+    <string name="signature_keystore_password">密钥库（和密钥）密码</string>
+    <string name="signature_key_password">密钥别名 "%1$s" 的密码</string>
+    <string name="btn_create_keystore">创建 PKCS12 密钥库</string>
+
+    <string name="signature_validity_title">签名有效性</string>
+    <string name="signature_no_errors_msg">签名中未发现错误。</string>
+    <string name="signer_title">%1$s 个签名者</string>
+    <string name="signer_index">签名者 %1$d</string>
+    <string name="signer_subject">主题：%1$s</string>
+    <string name="signer_issuer">颁发者：%1$s</string>
+    <string name="signer_sha256">SHA-256：%1$s</string>
+
+    <string name="snack_failed_msg">执行操作时出错：%1$s</string>
+    <string name="snack_success_msg">操作成功完成。</string>
+    <string name="snack_assemble_error">由于第 %1$s 行出现错误，无法汇编</string>
+
+    <string name="deploy">部署</string>
+    <string name="sign_deploy_app">签名并部署 %1$s</string>
+    <string name="open">打开</string>
+    <string name="close">关闭</string>
+    <string name="select">选择</string>
+    <string name="cancel">取消</string>
+    <string name="discard">丢弃</string>
+    <string name="save">保存</string>
+    <string name="exit">退出</string>
+    <string name="sign">签名</string>
+    <string name="dismiss">关闭</string>
+    <string name="copy">复制</string>
+    <string name="update">更新</string>
+    <string name="update_to">更新到 %1$s</string>
+
+    <string name="browse_web">浏览网页</string>
+    <string name="all_elements">所有元素</string>
+
+    <string name="sign_and_deploy">签名并部署</string>
+    <string name="fab_load_file">加载文件</string>
+
+    <string name="password_min_length_error">密码必须至少 6 个字符</string>
+
+    <string name="editor_cannot_open_msg">文件过大、不是有效的 ASCII 文件或行数过多。请使用其他编辑器打开，或更改最大允许文件大小。</string>
+    <string name="editor_search_placeholder">搜索文本...</string>
+    <string name="editor_search_no_results">无结果</string>
+
+    <plurals name="editor_search_results_found">
+        <item quantity="other">%1$d 个结果</item>
+    </plurals>
+
+    <string name="tree_search_no_results">未找到结果</string>
+    <string name="tree_search_chip_node">按文件名</string>
+    <string name="tree_search_chip_string">使用字符串常量</string>
+    <string name="tree_search_chip_literal">使用字面量或资源</string>
+    <string name="tree_search_chip_reference">调用方法或字段</string>
+    <string name="tree_search_chip_class_by_parent">有父类</string>
+
+    <plurals name="tree_method_count">
+        <item quantity="other">%1$d 个方法</item>
+    </plurals>
+
+    <plurals name="tree_field_count">
+        <item quantity="other">%1$d 个字段</item>
+    </plurals>
+
+    <string name="lookup_popup_open_definition">打开类 "%1$s" 的定义？</string>
+    <string name="lookup_popup_not_found">在当前应用中未找到类。</string>
+    <string name="lookup_popup_current_class">这是当前类。</string>
+    <string name="lookup_popup_runtime">可能是 Android 或 Java 运行时类。</string>
+
+    <string name="resources_search_placeholder">按 ID 或名称过滤...</string>
+    <string name="resources_incomplete_hint">（不是所有类型）</string>
+
+    <string name="go_to_settings_button">前往设置</string>
+</resources>

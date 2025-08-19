@@ -1,0 +1,142 @@
+<resources>
+    <string name="app_name">dalvikus</string>
+    <string name="app_name_version">dalvikus %1$s</string>
+    <string name="app_description">Verhexe deine Apps.</string>
+    <string name="credits_and_version">Erstellt von Leonhard Kohl-Loerting - Version %1$s</string>
+
+    <string name="app_introduction">Willkommen, %1$s! Um zu beginnen, klicke unten links auf "Dateien". Bitte installiere das Android SDK, um alle Funktionen zu nutzen. Für Updates, Hilfe und mehr besuche die GitHub-Seite.</string>
+    <string name="app_github_button">Auf GitHub bewerten</string>
+    <string name="app_dalvik_button">Dalvik-Referenz</string>
+    <string name="app_android_sdk_button">Android SDK herunterladen</string>
+
+    <string name="tree_search_placeholder">Datei oder Klasse suchen</string>
+    <string name="tree_drop_of_type_placeholder">Beliebige %1$s hierher ziehen.</string>
+    <string name="tree_unsupported_file_type_msg">Dieser Dateityp wird nicht unterstützt.</string>
+
+    <string name="welcome_tab_name">Willkommen!</string>
+
+    <string name="dialog_exit_title">Beenden</string>
+    <string name="dialog_exit_message">Möchten Sie wirklich beenden? Nicht gespeicherte Änderungen im Editor gehen verloren.</string>
+
+    <string name="dialog_select_android_archive_title">Android-Archiv auswählen</string>
+    <string name="dialog_select_android_archive_message">Bitte wählen Sie eine bearbeitbare Datei zum Öffnen aus.</string>
+
+    <string name="dialog_select_file">Datei auswählen</string>
+
+    <string name="dialog_select_executable">Bitte wählen Sie eine Installationsdatei aus.</string>
+    <string name="dialog_select_keystore_message">Bitte wählen Sie eine Keystore-Datei (Typ PKCS12) zum Signieren der Anwendung aus.</string>
+
+    <string name="unsaved_changes_title">Nicht gespeicherte Änderungen</string>
+    <string name="unsaved_changes_message">"%1$s" hat nicht gespeicherte Änderungen, die beim Schließen verloren gehen. Trotzdem verwerfen?</string>
+
+    <string name="nav_editor">Editor</string>
+    <string name="nav_decompiler">Decompiler</string>
+    <string name="nav_settings">Einstellungen</string>
+    <string name="nav_signing">Paketierung</string>
+    <string name="nav_file_tree">Dateien</string>
+    <string name="nav_resources">Ressourcen</string>
+    <string name="nav_search">Suche</string>
+
+    <string name="unavailable_feature_msg">Diese Funktion ist im aktuellen Modus nicht verfügbar.</string>
+
+    <string name="settings_category_general">Allgemeine Einstellungen</string>
+    <string name="settings_category_smali">Smali (Dis-)Assembler-Einstellungen</string>
+    <string name="settings_category_decompiler">Decompiler-Einstellungen</string>
+    <string name="settings_category_editor">Editor-Einstellungen</string>
+    <string name="settings_category_signing">Paketierungs-Einstellungen</string>
+
+    <string name="settings_font_size">Schriftgröße</string>
+    <string name="settings_max_file_size">Maximal zulässige Dateigröße</string>
+    <string name="settings_api_level">Dalvik Opcodes API-Level</string>
+    <string name="settings_decompiler_verbose">Ausführliche Decompiler-Ausgabe</string>
+    <string name="settings_decompiler_implementation">Decompiler-Implementation</string>
+    <string name="settings_save_automatically">Editor-Änderungen automatisch speichern</string>
+    <string name="settings_keystore_path">Keystore-Dateipfad zum Signieren</string>
+    <string name="settings_keystore_alias">Schlüssel-Alias zum Signieren</string>
+    <string name="settings_adb_path">Installationspfad der Android Debug Bridge (adb)</string>
+    <string name="settings_zipalign_path">Installationspfad von zipalign (Android build-tools)</string>
+    <string name="settings_check_for_updates">Beim Start nach Updates suchen</string>
+    <string name="settings_theme_palette_style">Design-Palettenstil</string>
+
+    <string name="tooltip_deploy_title">Anwendung bereitstellen</string>
+    <string name="tooltip_deploy_message">Das zuletzt ausgewählte Android-Archiv mit adb signieren und bereitstellen. (%1$s)</string>
+    <string name="tooltip_tab_title">Editor-Tab</string>
+
+    <string name="unknown_source_msg">Unbekannte Quelle.</string>
+
+    <string name="signature_settings_title">Keystore-Konfiguration</string>
+    <string name="signature_keystore_password">Passwort für Keystore (und Schlüssel)</string>
+    <string name="signature_key_password">Passwort für Schlüssel-Alias "%1$s"</string>
+    <string name="btn_create_keystore">PKCS12-Keystore erstellen</string>
+
+    <string name="signature_validity_title">Signaturgültigkeit</string>
+    <string name="signature_no_errors_msg">Keine Fehler in der Signatur gefunden.</string>
+    <string name="signer_title">%1$s Signierer</string>
+    <string name="signer_index">Signierer %1$d</string>
+    <string name="signer_subject">Betreff: %1$s</string>
+    <string name="signer_issuer">Aussteller: %1$s</string>
+    <string name="signer_sha256">SHA-256: %1$s</string>
+
+    <string name="snack_failed_msg">Fehler beim Ausführen der Operation: %1$s</string>
+    <string name="snack_success_msg">Operation erfolgreich abgeschlossen.</string>
+    <string name="snack_assemble_error">Zusammensetzen aufgrund von Fehler(n) in Zeile(n) %1$s nicht möglich</string>
+
+    <string name="deploy">Bereitstellen</string>
+    <string name="sign_deploy_app">%1$s signieren und bereitstellen</string>
+    <string name="open">Öffnen</string>
+    <string name="close">Schließen</string>
+    <string name="select">Auswählen</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="discard">Verwerfen</string>
+    <string name="save">Speichern</string>
+    <string name="exit">Beenden</string>
+    <string name="sign">Signieren</string>
+    <string name="dismiss">Schließen</string>
+    <string name="copy">Kopieren</string>
+    <string name="update">Aktualisieren</string>
+    <string name="update_to">Auf %1$s aktualisieren</string>
+
+    <string name="browse_web">Web durchsuchen</string>
+    <string name="all_elements">Alle Elemente</string>
+
+    <string name="sign_and_deploy">Signieren und starten</string>
+    <string name="fab_load_file">Datei laden</string>
+
+    <string name="password_min_length_error">Passwort muss mindestens 6 Zeichen lang sein</string>
+
+    <string name="editor_cannot_open_msg">Die Datei ist entweder zu groß, keine gültige ASCII-Datei oder hat zu viele Zeilen. Bitte verwenden Sie einen anderen Editor zum Öffnen oder ändern Sie die maximal zulässige Dateigröße.</string>
+    <string name="editor_search_placeholder">Text suchen...</string>
+    <string name="editor_search_no_results">Keine Ergebnisse</string>
+
+    <plurals name="editor_search_results_found">
+        <item quantity="one">%1$d Ergebnis</item>
+        <item quantity="other">%1$d Ergebnisse</item>
+    </plurals>
+
+    <string name="tree_search_no_results">Keine Ergebnisse gefunden</string>
+    <string name="tree_search_chip_node">Nach Dateiname</string>
+    <string name="tree_search_chip_string">Verwendet String-Konstante</string>
+    <string name="tree_search_chip_literal">Verwendet Literal oder Ressource</string>
+    <string name="tree_search_chip_reference">Ruft Methode oder Feld auf</string>
+    <string name="tree_search_chip_class_by_parent">Hat diese Elternklasse</string>
+
+    <plurals name="tree_method_count">
+        <item quantity="one">%1$d Methode</item>
+        <item quantity="other">%1$d Methoden</item>
+    </plurals>
+
+    <plurals name="tree_field_count">
+        <item quantity="one">%1$d Feld</item>
+        <item quantity="other">%1$d Felder</item>
+    </plurals>
+
+    <string name="lookup_popup_open_definition">Definition der Klasse "%1$s" öffnen?</string>
+    <string name="lookup_popup_not_found">Klasse in der aktuellen App nicht gefunden.</string>
+    <string name="lookup_popup_current_class">Dies ist die aktuelle Klasse.</string>
+    <string name="lookup_popup_runtime">Wahrscheinlich eine Android- oder Java-Runtime-Klasse.</string>
+
+    <string name="resources_search_placeholder">Nach ID oder Name filtern...</string>
+    <string name="resources_incomplete_hint">(Nicht alle gelistet)</string>
+
+    <string name="go_to_settings_button">Zu den Einstellungen</string>
+</resources>

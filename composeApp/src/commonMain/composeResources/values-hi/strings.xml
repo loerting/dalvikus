@@ -1,0 +1,142 @@
+<resources>
+    <string name="app_name">dalvikus</string>
+    <string name="app_name_version">dalvikus %1$s</string>
+    <string name="app_description">अपने ऐप्स को जादू से भर दें।</string>
+    <string name="credits_and_version">Leonhard Kohl-Loerting द्वारा निर्मित - संस्करण %1$s</string>
+
+    <string name="app_introduction">स्वागत है, %1$s! शुरू करने के लिए, नीचे बाईं ओर "फाइलें" पर क्लिक करें। सभी सुविधाओं का उपयोग करने के लिए कृपया Android SDK इंस्टॉल करें। अपडेट, सहायता और अधिक के लिए GitHub पेज पर जाएं।</string>
+    <string name="app_github_button">GitHub पर स्टार करें</string>
+    <string name="app_dalvik_button">Dalvik संदर्भ</string>
+    <string name="app_android_sdk_button">Android SDK प्राप्त करें</string>
+
+    <string name="tree_search_placeholder">फाइल या क्लास खोजें</string>
+    <string name="tree_drop_of_type_placeholder">कोई भी %1$s यहां छोड़ें।</string>
+    <string name="tree_unsupported_file_type_msg">यह फाइल प्रकार समर्थित नहीं है।</string>
+
+    <string name="welcome_tab_name">स्वागत है!</string>
+
+    <string name="dialog_exit_title">बाहर निकलें</string>
+    <string name="dialog_exit_message">क्या आप वास्तव में बाहर निकलना चाहते हैं? एडिटर में अनसेव किए गए बदलाव खो जाएंगे।</string>
+
+    <string name="dialog_select_android_archive_title">Android आर्काइव चुनें</string>
+    <string name="dialog_select_android_archive_message">कृपया खोलने के लिए एक संपादन योग्य फाइल चुनें।</string>
+
+    <string name="dialog_select_file">फाइल चुनें</string>
+
+    <string name="dialog_select_executable">कृपया एक इंस्टॉलेशन executable चुनें।</string>
+    <string name="dialog_select_keystore_message">एप्लिकेशन को साइन करने के लिए कृपया एक keystore फाइल (PKCS12 प्रकार) चुनें।</string>
+
+    <string name="unsaved_changes_title">अनसेव किए गए बदलाव</string>
+    <string name="unsaved_changes_message">"%1$s" में अनसेव किए गए बदलाव हैं जो बंद करने पर खो जाएंगे। फिर भी छोड़ें?</string>
+
+    <string name="nav_editor">एडिटर</string>
+    <string name="nav_decompiler">डिकंपाइलर</string>
+    <string name="nav_settings">सेटिंग्स</string>
+    <string name="nav_signing">पैकेजिंग</string>
+    <string name="nav_file_tree">फाइलें</string>
+    <string name="nav_resources">संसाधन</string>
+    <string name="nav_search">खोज</string>
+
+    <string name="unavailable_feature_msg">यह सुविधा वर्तमान मोड में उपलब्ध नहीं है।</string>
+
+    <string name="settings_category_general">सामान्य सेटिंग्स</string>
+    <string name="settings_category_smali">Smali (डिस-)असेम्बलर सेटिंग्स</string>
+    <string name="settings_category_decompiler">डिकंपाइलर सेटिंग्स</string>
+    <string name="settings_category_editor">एडिटर सेटिंग्स</string>
+    <string name="settings_category_signing">पैकेजिंग सेटिंग्स</string>
+
+    <string name="settings_font_size">फॉन्ट साइज</string>
+    <string name="settings_max_file_size">अधिकतम अनुमतित फाइल साइज</string>
+    <string name="settings_api_level">Dalvik Opcodes API लेवल</string>
+    <string name="settings_decompiler_verbose">विस्तृत डिकंपाइलर आउटपुट</string>
+    <string name="settings_decompiler_implementation">डिकंपाइलर इम्प्लीमेंटेशन</string>
+    <string name="settings_save_automatically">एडिटर बदलाव स्वचालित रूप से सेव करें</string>
+    <string name="settings_keystore_path">साइनिंग के लिए Keystore फाइल पथ</string>
+    <string name="settings_keystore_alias">साइनिंग के लिए Key alias</string>
+    <string name="settings_adb_path">Android Debug Bridge (adb) का इंस्टॉलेशन पथ</string>
+    <string name="settings_zipalign_path">zipalign (Android build-tools) का इंस्टॉलेशन पथ</string>
+    <string name="settings_check_for_updates">स्टार्टअप पर अपडेट के लिए जांचें</string>
+    <string name="settings_theme_palette_style">थीम पैलेट स्टाइल</string>
+
+    <string name="tooltip_deploy_title">एप्लिकेशन डिप्लॉय करें</string>
+    <string name="tooltip_deploy_message">adb का उपयोग करके अंतिम चयनित Android आर्काइव को साइन और डिप्लॉय करें। (%1$s)</string>
+    <string name="tooltip_tab_title">एडिटर टैब</string>
+
+    <string name="unknown_source_msg">अज्ञात स्रोत।</string>
+
+    <string name="signature_settings_title">Keystore कॉन्फ़िगरेशन</string>
+    <string name="signature_keystore_password">Keystore (और key) के लिए पासवर्ड</string>
+    <string name="signature_key_password">Key alias "%1$s" के लिए पासवर्ड</string>
+    <string name="btn_create_keystore">PKCS12 keystore बनाएं</string>
+
+    <string name="signature_validity_title">हस्ताक्षर वैधता</string>
+    <string name="signature_no_errors_msg">हस्ताक्षर में कोई त्रुटि नहीं मिली।</string>
+    <string name="signer_title">%1$s हस्ताक्षरकर्ता</string>
+    <string name="signer_index">हस्ताक्षरकर्ता %1$d</string>
+    <string name="signer_subject">विषय: %1$s</string>
+    <string name="signer_issuer">जारीकर्ता: %1$s</string>
+    <string name="signer_sha256">SHA-256: %1$s</string>
+
+    <string name="snack_failed_msg">ऑपरेशन करने में त्रुटि: %1$s</string>
+    <string name="snack_success_msg">ऑपरेशन सफलतापूर्वक पूरा हुआ।</string>
+    <string name="snack_assemble_error">लाइन %1$s में त्रुटि(यों) के कारण असेम्बल नहीं कर सकते</string>
+
+    <string name="deploy">डिप्लॉय करें</string>
+    <string name="sign_deploy_app">%1$s को साइन और डिप्लॉय करें</string>
+    <string name="open">खोलें</string>
+    <string name="close">बंद करें</string>
+    <string name="select">चुनें</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="discard">छोड़ें</string>
+    <string name="save">सेव करें</string>
+    <string name="exit">बाहर निकलें</string>
+    <string name="sign">साइन करें</string>
+    <string name="dismiss">बंद करें</string>
+    <string name="copy">कॉपी करें</string>
+    <string name="update">अपडेट करें</string>
+    <string name="update_to">%1$s पर अपडेट करें</string>
+
+    <string name="browse_web">वेब ब्राउज़ करें</string>
+    <string name="all_elements">सभी एलिमेंट्स</string>
+
+    <string name="sign_and_deploy">साइन और डिप्लॉय करें</string>
+    <string name="fab_load_file">फाइल लोड करें</string>
+
+    <string name="password_min_length_error">पासवर्ड कम से कम 6 कैरेक्टर का होना चाहिए</string>
+
+    <string name="editor_cannot_open_msg">फाइल या तो बहुत बड़ी है, वैध ASCII फाइल नहीं है या इसमें बहुत अधिक लाइनें हैं। कृपया इसे खोलने के लिए कोई अन्य एडिटर उपयोग करें या अधिकतम अनुमतित फाइल साइज बदलें।</string>
+    <string name="editor_search_placeholder">टेक्स्ट खोजें...</string>
+    <string name="editor_search_no_results">कोई परिणाम नहीं</string>
+
+    <plurals name="editor_search_results_found">
+        <item quantity="one">%1$d परिणाम</item>
+        <item quantity="other">%1$d परिणाम</item>
+    </plurals>
+
+    <string name="tree_search_no_results">कोई परिणाम नहीं मिले</string>
+    <string name="tree_search_chip_node">फाइल नाम से</string>
+    <string name="tree_search_chip_string">String constant का उपयोग करता है</string>
+    <string name="tree_search_chip_literal">Literal या resource का उपयोग करता है</string>
+    <string name="tree_search_chip_reference">Method या field को कॉल करता है</string>
+    <string name="tree_search_chip_class_by_parent">Parent class है</string>
+
+    <plurals name="tree_method_count">
+        <item quantity="one">%1$d मेथड</item>
+        <item quantity="other">%1$d मेथड्स</item>
+    </plurals>
+
+    <plurals name="tree_field_count">
+        <item quantity="one">%1$d फील्ड</item>
+        <item quantity="other">%1$d फील्ड्स</item>
+    </plurals>
+
+    <string name="lookup_popup_open_definition">क्लास "%1$s" की परिभाषा खोलें?</string>
+    <string name="lookup_popup_not_found">वर्तमान ऐप में क्लास नहीं मिली।</string>
+    <string name="lookup_popup_current_class">यह वर्तमान क्लास है।</string>
+    <string name="lookup_popup_runtime">संभावित रूप से एक Android या Java runtime क्लास।</string>
+
+    <string name="resources_search_placeholder">ID या नाम से फिल्टर करें...</string>
+    <string name="resources_incomplete_hint">(सभी प्रकार नहीं)</string>
+
+    <string name="go_to_settings_button">सेटिंग्स पर जाएं</string>
+</resources>
