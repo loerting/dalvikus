@@ -26,6 +26,7 @@ import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import io.github.composegears.valkyrie.MatchCase
 import io.github.composegears.valkyrie.RegularExpression
 import me.lkl.dalvikus.util.defaultHazeStyle
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 enum class SearchDirection {
@@ -147,8 +148,9 @@ fun EditorSearchOverlay(
             Spacer(modifier = Modifier.width(8.dp))
             if (resultsFound > 0) {
                 Text(
-                    stringResource(
-                        Res.string.editor_search_results_found,
+                    pluralStringResource(
+                        Res.plurals.editor_search_results_found,
+                        resultsFound,
                         resultsFound
                     ),
                     style = MaterialTheme.typography.bodySmall,

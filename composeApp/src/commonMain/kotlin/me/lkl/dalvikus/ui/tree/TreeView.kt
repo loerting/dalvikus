@@ -34,6 +34,7 @@ import me.lkl.dalvikus.tree.root.HiddenRoot
 import me.lkl.dalvikus.util.formatFileDate
 import me.lkl.dalvikus.util.formatFileSize
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -268,8 +269,8 @@ private fun TreeRow(
                 when (label) {
                     Metadata.FILE_SIZE -> formatFileSize(value as Long)
                     Metadata.LAST_EDITED -> formatFileDate(value as Long)
-                    Metadata.METHOD_COUNT -> stringResource(Res.string.tree_method_count, value.toString())
-                    Metadata.FIELD_COUNT -> stringResource(Res.string.tree_field_count, value.toString())
+                    Metadata.METHOD_COUNT -> pluralStringResource(Res.plurals.tree_method_count, value as Int, value.toString())
+                    Metadata.FIELD_COUNT -> pluralStringResource(Res.plurals.tree_field_count, value as Int, value.toString())
                 }
             }
 

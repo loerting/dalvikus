@@ -108,7 +108,11 @@
     <string name="editor_cannot_open_msg">The file is either too large, not a valid ASCII file or has too many lines. Please use a different editor to open it or change the maximum allowed file size.</string>
     <string name="editor_search_placeholder">Search text...</string>
     <string name="editor_search_no_results">No results</string>
-    <string name="editor_search_results_found">%1$d results</string>
+
+    <plurals name="editor_search_results_found">
+        <item quantity="one">%1$d result</item>
+        <item quantity="other">%1$d results</item>
+    </plurals>
 
     <string name="tree_search_no_results">No results found</string>
     <string name="tree_search_chip_node">By file name</string>
@@ -116,8 +120,15 @@
     <string name="tree_search_chip_literal">Uses literal or resource</string>
     <string name="tree_search_chip_reference">Calls method or field</string>
     <string name="tree_search_chip_class_by_parent">Has parent class</string>
-    <string name="tree_method_count">%1$s methods</string>
-    <string name="tree_field_count">%1$s fields</string>
+    <plurals name="tree_method_count">
+        <item quantity="one">%1$d method</item>
+        <item quantity="other">%1$d methods</item>
+    </plurals>
+
+    <plurals name="tree_field_count">
+        <item quantity="one">%1$d field</item>
+        <item quantity="other">%1$d fields</item>
+    </plurals>
 
     <string name="lookup_popup_open_definition">Open definition of class "%1$s"?</string>
     <string name="lookup_popup_not_found">Class not found in the current app.</string>
