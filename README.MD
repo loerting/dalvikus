@@ -8,7 +8,7 @@
 Designed for developers and researchers who want to inspect, edit, and rebuild Android apps seamlessly.
 
 > [!NOTE]
-> With great power comes great responsibility. Dalvikus is intended **ONLY** for ethical purposes.
+> With great power comes great responsibility. Dalvikus is solely intended for ethical purposes.
 
 ## Screenshots
 
@@ -40,6 +40,7 @@ Designed for developers and researchers who want to inspect, edit, and rebuild A
 - Built-in **ADB runner** to deploy and start apps on connected devices directly
 - Powerful search tools: **tree view, string constants, method and field references**
 - Browse resource IDs, XML files, and more using integrated **apktool**
+- Multiple languages: English, German, Chinese and Hindi
 
 ## Getting Started
 

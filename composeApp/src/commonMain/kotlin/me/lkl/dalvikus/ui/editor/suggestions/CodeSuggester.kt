@@ -405,7 +405,7 @@ class CodeSuggester(
                         val spanStyle = getSmaliTokenStyle(
                             token.type, highlightColors
                         )
-                        suggestions.add(AssistSuggestion(token.text, Res.string.suggestion_reuse, SuggestionType.LabelOrType, spanStyle))
+                        suggestions.add(AssistSuggestion(token.text, Res.string.suggestion_in_text, SuggestionType.LabelOrType, spanStyle))
                     }
                 }
             }

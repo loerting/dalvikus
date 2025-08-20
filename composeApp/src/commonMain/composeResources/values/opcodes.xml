@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="suggestion_reuse">Re-use suggestion.</string>
+    <string name="suggestion_in_text">Previously used in text.</string>
     <string name="suggestion_load_register">Loads a register.</string>
 
 
