@@ -59,7 +59,7 @@ sealed class Setting<T>(
     abstract fun load(settings: Settings)
 
     @Composable
-    abstract fun Editor()
+    abstract fun Editor(onValueChanged: ((T) -> Unit)? = null)
 }
 
 class IntSetting(
@@ -82,7 +82,7 @@ class IntSetting(
     }
 
     @Composable
-    override fun Editor() {
+    override fun Editor(onValueChanged: ((Int) -> Unit)?) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.width(400.dp).defaultMinSize(minWidth = 200.dp),
@@ -91,7 +91,9 @@ class IntSetting(
                 value = value.toString(),
                 onValueChange = {
                     it.toIntOrNull()?.let { input ->
-                        value = input.coerceIn(min, max)
+                        val newValue = input.coerceIn(min, max)
+                        value = newValue
+                        onValueChanged?.invoke(newValue)
                     }
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -112,7 +114,9 @@ class IntSetting(
                 Row {
                     IconButton(
                         onClick = {
-                            value = (value - step).coerceAtLeast(min)
+                            val newValue = (value - step).coerceAtLeast(min)
+                            value = newValue
+                            onValueChanged?.invoke(newValue)
                         },
                         enabled = value > min
                     ) {
@@ -120,7 +124,9 @@ class IntSetting(
                     }
                     IconButton(
                         onClick = {
-                            value = (value + step).coerceAtMost(max)
+                            val newValue = (value + step).coerceAtMost(max)
+                            value = newValue
+                            onValueChanged?.invoke(newValue)
                         },
                         enabled = value < max
                     ) {
@@ -149,11 +155,14 @@ class BooleanSetting(
     }
 
     @Composable
-    override fun Editor() {
+    override fun Editor(onValueChanged: ((Boolean) -> Unit)?) {
         Column {
             Switch(
                 checked = value,
-                onCheckedChange = { checked -> value = checked }
+                onCheckedChange = { checked ->
+                    value = checked
+                    onValueChanged?.invoke(checked)
+                }
             )
         }
     }
@@ -177,7 +186,7 @@ open class StringOptionSetting(
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    override fun Editor() {
+    override fun Editor(onValueChanged: ((String) -> Unit)?) {
         var expanded by remember { mutableStateOf(false) }
 
         // Text state for the dropdown — initialized from current value
@@ -215,6 +224,7 @@ open class StringOptionSetting(
                             value = optionKey
                             textFieldState.setTextAndPlaceCursorAtEnd(optionLabel)
                             expanded = false
+                            onValueChanged?.invoke(optionKey)
                         },
                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                     )
@@ -249,7 +259,7 @@ class FileSetting(
     }
 
     @Composable
-    override fun Editor() {
+    override fun Editor(onValueChanged: ((String) -> Unit)?) {
         var showFilePicker by remember { mutableStateOf(false) }
 
         if (showFilePicker) {
@@ -261,14 +271,19 @@ class FileSetting(
                     showFilePicker = false
                 }) { node ->
                 if (node !is FileSystemFileNode) return@FileSelectorDialog
-                value = node.file.absolutePath
+                val newValue = node.file.absolutePath
+                value = newValue
+                onValueChanged?.invoke(newValue)
                 showFilePicker = false
             }
         }
         OutlinedTextField(
             value = value,
             modifier = Modifier.fillMaxWidth(),
-            onValueChange = { value = it },
+            onValueChange = { newValue ->
+                value = newValue
+                onValueChanged?.invoke(newValue)
+            },
             keyboardOptions = KeyboardOptions.Default,
             singleLine = true,
             colors = TextFieldDefaults.colors(
@@ -317,14 +332,15 @@ class StringSetting(
     }
 
     @Composable
-    override fun Editor() {
+    override fun Editor(onValueChanged: ((String) -> Unit)?) {
         Column {
             OutlinedTextField(
                 value = value,
-                onValueChange = {
-                    if (pattern.matches(it)) {
-                        value = it
+                onValueChange = { newValue ->
+                    if (pattern.matches(newValue)) {
+                        value = newValue
                         errorMessage = null
+                        onValueChanged?.invoke(newValue)
                     } else {
                         errorMessage = "Invalid input format"
                     }

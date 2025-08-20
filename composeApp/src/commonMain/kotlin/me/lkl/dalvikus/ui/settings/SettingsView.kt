@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.currentCompositionContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -86,7 +87,9 @@ fun SettingRow(setting: Setting<*>) {
             style = MaterialTheme.typography.bodyLarge,
 
         )
-        setting.Editor()
+        setting.Editor {
+            dalvikusSettings.saveAll()
+        }
         Spacer(modifier = Modifier.height(settingPadVer))
     }
 }

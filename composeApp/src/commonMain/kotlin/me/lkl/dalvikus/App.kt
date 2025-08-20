@@ -195,7 +195,6 @@ internal fun Content() {
                     NavigationRailItem(
                         selected = selectedNavItem == item.key,
                         onClick = {
-                            dalvikusSettings.saveAll()
                             selectedNavItem = item.key
                         },
                         icon = { Icon(item.icon, contentDescription = stringResource(item.labelRes)) },
