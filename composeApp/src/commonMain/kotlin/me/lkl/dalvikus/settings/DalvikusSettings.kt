@@ -39,6 +39,11 @@ class DalvikusSettings() {
             step = 1024,
             unit = "kB"
         ),
+        LocaleSetting(
+            key = "app_language",
+            category = SettingsCategory.GENERAL,
+            nameRes = Res.string.settings_app_language
+        ),
         StringOptionSetting(
             key = "theme_palette_style",
             category = SettingsCategory.GENERAL,
@@ -133,6 +138,7 @@ class DalvikusSettings() {
             is IntSetting -> setting.value
             is BooleanSetting -> setting.value
             is StringSetting -> setting.value
+            is LocaleSetting -> setting.getCurrentLocale()
             is StringOptionSetting -> setting.value
             is FileSetting -> File(setting.value)
         }

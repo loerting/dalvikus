@@ -34,6 +34,7 @@ import me.lkl.dalvikus.ui.tree.FileSelectorDialog
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
+import java.util.Locale
 
 
 enum class SettingsCategory(val nameRes: StringResource, val icon: ImageVector) {
@@ -158,7 +159,7 @@ class BooleanSetting(
     }
 }
 
-class StringOptionSetting(
+open class StringOptionSetting(
     key: String,
     category: SettingsCategory,
     nameRes: StringResource,
@@ -340,5 +341,55 @@ class StringSetting(
                 )
             }
         }
+    }
+}
+class LocaleSetting(
+    key: String,
+    category: SettingsCategory,
+    nameRes: StringResource
+) : StringOptionSetting(
+    key = key,
+    category = category,
+    nameRes = nameRes,
+    defaultKey = getDefaultLanguageTag(),
+    options = listOf(
+        Pair("en", "English"),
+        Pair("de", "Deutsch"),
+        Pair("zh", "简体中文"),
+        Pair("hi", "हिन्दी")
+    )
+) {
+
+    companion object {
+        private fun getDefaultLanguageTag(): String {
+            val systemLocale = Locale.getDefault()
+            val supportedLanguages = listOf("en", "de", "zh", "hi")
+
+            val fullTag = systemLocale.toLanguageTag()
+            if (supportedLanguages.contains(fullTag)) {
+                return fullTag
+            }
+
+            val languageOnly = systemLocale.language
+            if (supportedLanguages.contains(languageOnly)) {
+                return languageOnly
+            }
+
+            return "en"
+        }
+    }
+
+    override fun save(settings: Settings) {
+        settings.putString(key, value)
+        Locale.setDefault(Locale.forLanguageTag(value))
+    }
+
+    override fun load(settings: Settings) {
+        value = settings.getString(key, defaultValue)
+        Locale.setDefault(Locale.forLanguageTag(value))
+    }
+
+    fun getCurrentLocale(): Locale {
+        return Locale.forLanguageTag(value)
     }
 }
