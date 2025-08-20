@@ -38,6 +38,7 @@ import me.lkl.dalvikus.ui.editor.LayoutSnapshot
 import me.lkl.dalvikus.theme.CodeHighlightColors
 import me.lkl.dalvikus.util.defaultHazeStyle
 import me.lkl.dalvikus.util.getTextWidth
+import org.jetbrains.compose.resources.stringResource
 
 data class AssistPopupState(
     val selectedIndex: Int = 0,
@@ -126,7 +127,7 @@ fun AssistPopup(
             color = Color.Transparent,
             modifier = Modifier
                 .heightIn(min = 0.dp, max = 200.dp)
-                .widthIn(max = 400.dp)
+                .widthIn(min = 200.dp, max = 600.dp)
                 .hazeEffect(
                     state = hazeState,
                     style = defaultHazeStyle(lerp(color, MaterialTheme.colorScheme.surface, 0.95f))
@@ -140,7 +141,6 @@ fun AssistPopup(
                     val isSelected = index == selectedIndex
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth()
                             .background(
                                 if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
                                 else Color.Transparent
@@ -183,7 +183,7 @@ fun AssistPopup(
                             )
                             if (suggestion.description != null) {
                                 Text(
-                                    text = suggestion.description,
+                                    text = stringResource(suggestion.description),
                                     style = textStyle.copy(
                                         color = textStyle.color.copy(alpha = 0.6f),
                                         fontSize = textStyle.fontSize * 0.75f

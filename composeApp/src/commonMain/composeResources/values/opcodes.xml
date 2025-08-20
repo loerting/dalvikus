@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="suggestion_reuse">Re-use suggestion.</string>
+    <string name="suggestion_load_register">Loads a register.</string>
+
+
+    <!-- Outside Method Directives -->
+    <string name="suggestion_class">Defines the class name and access flags.</string>
+    <string name="suggestion_super">Specifies the superclass of the class.</string>
+    <string name="suggestion_implements">Specifies an interface implemented by the class.</string>
+    <string name="suggestion_source">Specifies the source file for debugging.</string>
+    <string name="suggestion_field">Declares a field in the class.</string>
+    <string name="suggestion_end_field">Ends a field declaration block.</string>
+    <string name="suggestion_annotation">Starts an annotation block.</string>
+    <string name="suggestion_end_annotation">Ends an annotation block.</string>
+    <string name="suggestion_subannotation">Starts a sub-annotation block.</string>
+    <string name="suggestion_end_subannotation">Ends a sub-annotation block.</string>
+    <string name="suggestion_enum">Declares an enum value (within a field).</string>
+    <string name="suggestion_method">Starts a method declaration block.</string>
+    <string name="suggestion_end_method">Ends a method declaration block.</string>
+
+    <!-- Inside Method Directives -->
+    <string name="suggestion_registers">Specifies the total number of registers used in the method.</string>
+    <string name="suggestion_locals">Specifies the number of local registers in the method (debug info).</string>
+    <string name="suggestion_param">Declares a method parameter name (debug info).</string>
+    <string name="suggestion_end_param">Ends a method parameter declaration.</string>
+    <string name="suggestion_local">Declares a local variable name (debug info).</string>
+    <string name="suggestion_end_local">Ends a local variable declaration.</string>
+    <string name="suggestion_restart_local">Restarts the scope of a local variable.</string>
+    <string name="suggestion_line">Specifies the source code line number for debugging.</string>
+    <string name="suggestion_prologue">Marks the start of method prologue code.</string>
+    <string name="suggestion_epilogue">Marks the start of method epilogue code.</string>
+    <string name="suggestion_catch">Declares an exception handler.</string>
+    <string name="suggestion_catchall">Declares a catch-all exception handler.</string>
+    <string name="suggestion_array_data">Starts an array data block.</string>
+    <string name="suggestion_end_array_data">Ends an array data block.</string>
+    <string name="suggestion_packed_switch">Starts a packed-switch block.</string>
+    <string name="suggestion_end_packed_switch">Ends a packed-switch block.</string>
+    <string name="suggestion_sparse_switch">Starts a sparse-switch block.</string>
+    <string name="suggestion_end_sparse_switch">Ends a sparse-switch block.</string>
+
+    <!-- Access Modifiers -->
+    <string name="suggestion_public">Accessible from anywhere.</string>
+    <string name="suggestion_private">Accessible only within the defining class.</string>
+    <string name="suggestion_protected">Accessible within the same package or subclasses.</string>
+    <string name="suggestion_static">Belongs to the class, not instance.</string>
+    <string name="suggestion_final">Cannot be overridden or changed.</string>
+    <string name="suggestion_synchronized">Method is synchronized for thread safety.</string>
+    <string name="suggestion_bridge">Compiler-generated method for generics (bridge method).</string>
+    <string name="suggestion_varargs">Accepts a variable number of arguments.</string>
+    <string name="suggestion_native">Implemented in native code (JNI).</string>
+    <string name="suggestion_abstract">Method or class has no implementation.</string>
+    <string name="suggestion_strictfp">Strict floating-point calculations.</string>
+    <string name="suggestion_synthetic">Compiler-generated element (not in source).</string>
+    <string name="suggestion_constructor">Marks a method as a constructor.</string>
+    <string name="suggestion_declared_synchronized">Synchronized (explicitly declared).</string>
+    <string name="suggestion_interface">Declares an interface.</string>
+    <string name="suggestion_enum_access">Declares an enum type.</string>
+    <string name="suggestion_annotation_access">Declares an annotation type.</string>
+    <string name="suggestion_volatile">Field is volatile (thread-visible).</string>
+    <string name="suggestion_transient">Field should not be serialized.</string>
+
+    <!-- Control Flow Opcodes -->
+    <string name="suggestion_goto">Unconditionally jumps to a new instruction offset.</string>
+    <string name="suggestion_goto_16">Unconditionally jumps to a new 16-bit instruction offset.</string>
+    <string name="suggestion_goto_32">Unconditionally jumps to a new 32-bit instruction offset.</string>
+    <string name="suggestion_return_void">Returns from a void method.</string>
+    <string name="suggestion_return_void_barrier">Returns from a void method with a memory barrier.</string>
+    <string name="suggestion_return_void_no_barrier">Returns from a void method without a memory barrier.</string>
+    <string name="suggestion_return">Returns from a method with an integer result.</string>
+    <string name="suggestion_return_wide">Returns from a method with a long or double result.</string>
+    <string name="suggestion_return_object">Returns from a method with an object result.</string>
+    <string name="suggestion_nop">Performs no operation.</string>
+
+    <!-- Move Operations -->
+    <string name="suggestion_move">Moves a register\'s content to another register.</string>
+    <string name="suggestion_move_wide">Moves a wide register\'s content to another pair of registers.</string>
+    <string name="suggestion_move_object">Moves an object register\'s content to another object register.</string>
+    <string name="suggestion_move_result">Moves the result of the previous invoke or filled-new-array instruction to a register.</string>
+    <string name="suggestion_move_result_wide">Moves the wide result of the previous invoke or filled-new-array instruction to a pair of registers.</string>
+    <string name="suggestion_move_result_object">Moves the object result of the previous invoke or filled-new-array instruction to a register.</string>
+    <string name="suggestion_move_exception">Moves the exception object to a register.</string>
+    <string name="suggestion_move_from16">Moves a register\'s content from a 16-bit source to a destination.</string>
+    <string name="suggestion_move_wide_from16">Moves a wide register\'s content from a 16-bit source to a destination.</string>
+    <string name="suggestion_move_object_from16">Moves an object register\'s content from a 16-bit source to a destination.</string>
+    <string name="suggestion_move_16">Moves a register\'s content with a 16-bit register operand.</string>
+    <string name="suggestion_move_wide_16">Moves a wide register\'s content with a 16-bit register operand.</string>
+    <string name="suggestion_move_object_16">Moves an object register\'s content with a 16-bit register operand.</string>
+
+    <!-- Constants -->
+    <string name="suggestion_const_4">Moves a 4-bit literal value to a register.</string>
+    <string name="suggestion_const_16">Moves a 16-bit literal value to a register.</string>
+    <string name="suggestion_const">Moves a 32-bit literal value to a register.</string>
+    <string name="suggestion_const_high16">Moves a 32-bit literal (high 16 bits) to a register.</string>
+    <string name="suggestion_const_wide_16">Moves a 16-bit wide literal value to a pair of registers.</string>
+    <string name="suggestion_const_wide_32">Moves a 32-bit wide literal value to a pair of registers.</string>
+    <string name="suggestion_const_wide">Moves a 64-bit literal value to a pair of registers.</string>
+    <string name="suggestion_const_wide_high16">Moves a 64-bit literal (high 16 bits) to a pair of registers.</string>
+    <string name="suggestion_const_string">Loads a string constant into a register.</string>
+    <string name="suggestion_const_string_jumbo">Loads a jumbo string constant into a register.</string>
+    <string name="suggestion_const_class">Loads a class constant into a register.</string>
+    <string name="suggestion_const_method_handle">Loads a method handle constant into a register.</string>
+    <string name="suggestion_const_method_type">Loads a method type constant into a register.</string>
+
+    <!-- Type Operations -->
+    <string name="suggestion_check_cast">Checks if an object can be cast to a specified type.</string>
+    <string name="suggestion_instance_of">Checks if an object is an instance of a specified type.</string>
+    <string name="suggestion_new_instance">Creates a new instance of an object.</string>
+    <string name="suggestion_new_array">Creates a new array of a specified type.</string>
+
+    <!-- Array Operations -->
+    <string name="suggestion_array_length">Gets the length of an array.</string>
+    <string name="suggestion_aget">Gets an integer element from an array.</string>
+    <string name="suggestion_aget_wide">Gets a wide element (long or double) from an array.</string>
+    <string name="suggestion_aget_object">Gets an object element from an array.</string>
+    <string name="suggestion_aget_boolean">Gets a boolean element from an array.</string>
+    <string name="suggestion_aget_byte">Gets a byte element from an array.</string>
+    <string name="suggestion_aget_char">Gets a char element from an array.</string>
+    <string name="suggestion_aget_short">Gets a short element from an array.</string>
+    <string name="suggestion_aput">Puts an integer element into an array.</string>
+    <string name="suggestion_aput_wide">Puts a wide element (long or double) into an array.</string>
+    <string name="suggestion_aput_object">Puts an object element into an array.</string>
+    <string name="suggestion_aput_boolean">Puts a boolean element into an array.</string>
+    <string name="suggestion_aput_byte">Puts a byte element into an array.</string>
+    <string name="suggestion_aput_char">Puts a char element into an array.</string>
+    <string name="suggestion_aput_short">Puts a short element into an array.</string>
+    <string name="suggestion_fill_array_data">Fills an array with data from a data table.</string>
+    <string name="suggestion_filled_new_array">Creates a new array and fills it with elements.</string>
+    <string name="suggestion_filled_new_array_range">Creates and fills a new array with elements from a range of registers.</string>
+
+    <!-- Field Operations - Static -->
+    <string name="suggestion_sget">Gets a static field\'s integer value.</string>
+    <string name="suggestion_sget_wide">Gets a static field\'s wide value (long or double).</string>
+    <string name="suggestion_sget_object">Gets a static field\'s object value.</string>
+    <string name="suggestion_sget_boolean">Gets a static field\'s boolean value.</string>
+    <string name="suggestion_sget_byte">Gets a static field\'s byte value.</string>
+    <string name="suggestion_sget_char">Gets a static field\'s char value.</string>
+    <string name="suggestion_sget_short">Gets a static field\'s short value.</string>
+    <string name="suggestion_sput">Puts an integer value into a static field.</string>
+    <string name="suggestion_sput_wide">Puts a wide value (long or double) into a static field.</string>
+    <string name="suggestion_sput_object">Puts an object value into a static field.</string>
+    <string name="suggestion_sput_boolean">Puts a boolean value into a static field.</string>
+    <string name="suggestion_sput_byte">Puts a byte value into a static field.</string>
+    <string name="suggestion_sput_char">Puts a char value into a static field.</string>
+    <string name="suggestion_sput_short">Puts a short value into a static field.</string>
+    <string name="suggestion_sget_volatile">Gets a static volatile field\'s integer value.</string>
+    <string name="suggestion_sget_wide_volatile">Gets a static volatile field\'s wide value.</string>
+    <string name="suggestion_sget_object_volatile">Gets a static volatile field\'s object value.</string>
+    <string name="suggestion_sput_volatile">Puts an integer value into a static volatile field.</string>
+    <string name="suggestion_sput_wide_volatile">Puts a wide value into a static volatile field.</string>
+    <string name="suggestion_sput_object_volatile">Puts an object value into a static volatile field.</string>
+
+    <!-- Field Operations - Instance -->
+    <string name="suggestion_iget">Gets an instance field\'s integer value.</string>
+    <string name="suggestion_iget_wide">Gets an instance field\'s wide value (long or double).</string>
+    <string name="suggestion_iget_object">Gets an instance field\'s object value.</string>
+    <string name="suggestion_iget_boolean">Gets an instance field\'s boolean value.</string>
+    <string name="suggestion_iget_byte">Gets an instance field\'s byte value.</string>
+    <string name="suggestion_iget_char">Gets an instance field\'s char value.</string>
+    <string name="suggestion_iget_short">Gets an instance field\'s short value.</string>
+    <string name="suggestion_iput">Puts an integer value into an instance field.</string>
+    <string name="suggestion_iput_wide">Puts a wide value (long or double) into an instance field.</string>
+    <string name="suggestion_iput_object">Puts an object value into an instance field.</string>
+    <string name="suggestion_iput_boolean">Puts a boolean value into an instance field.</string>
+    <string name="suggestion_iput_byte">Puts a byte value into an instance field.</string>
+    <string name="suggestion_iput_char">Puts a char value into an instance field.</string>
+    <string name="suggestion_iput_short">Puts a short value into an instance field.</string>
+    <string name="suggestion_iget_volatile">Gets an instance volatile field\'s integer value.</string>
+    <string name="suggestion_iget_wide_volatile">Gets an instance volatile field\'s wide value.</string>
+    <string name="suggestion_iget_object_volatile">Gets an instance volatile field\'s object value.</string>
+    <string name="suggestion_iput_volatile">Puts an integer value into an instance volatile field.</string>
+    <string name="suggestion_iput_wide_volatile">Puts a wide value into an instance volatile field.</string>
+    <string name="suggestion_iput_object_volatile">Puts an object value into an instance volatile field.</string>
+
+    <!-- Field Operations - Quick -->
+    <string name="suggestion_iget_quick">Gets an instance field\'s integer value quickly.</string>
+    <string name="suggestion_iget_wide_quick">Gets an instance field\'s wide value quickly.</string>
+    <string name="suggestion_iget_object_quick">Gets an instance field\'s object value quickly.</string>
+    <string name="suggestion_iput_quick">Puts an integer value into an instance field quickly.</string>
+    <string name="suggestion_iput_wide_quick">Puts a wide value into an instance field quickly.</string>
+    <string name="suggestion_iput_object_quick">Puts an object value into an instance field quickly.</string>
+    <string name="suggestion_iput_boolean_quick">Puts a boolean value into an instance field quickly.</string>
+    <string name="suggestion_iput_byte_quick">Puts a byte value into an instance field quickly.</string>
+    <string name="suggestion_iput_char_quick">Puts a char value into an instance field quickly.</string>
+    <string name="suggestion_iput_short_quick">Puts a short value into an instance field quickly.</string>
+
+    <!-- Arithmetic Operations - Integer -->
+    <string name="suggestion_add_int">Adds two integers.</string>
+    <string name="suggestion_sub_int">Subtracts two integers.</string>
+    <string name="suggestion_mul_int">Multiplies two integers.</string>
+    <string name="suggestion_div_int">Divides two integers.</string>
+    <string name="suggestion_rem_int">Calculates the remainder of integer division.</string>
+    <string name="suggestion_and_int">Performs a bitwise AND on two integers.</string>
+    <string name="suggestion_or_int">Performs a bitwise OR on two integers.</string>
+    <string name="suggestion_xor_int">Performs a bitwise XOR on two integers.</string>
+    <string name="suggestion_shl_int">Performs a left bit shift on an integer.</string>
+    <string name="suggestion_shr_int">Performs a right bit shift on an integer.</string>
+    <string name="suggestion_ushr_int">Performs an unsigned right bit shift on an integer.</string>
+    <string name="suggestion_neg_int">Negates an integer.</string>
+    <string name="suggestion_not_int">Performs a bitwise NOT on an integer.</string>
+
+    <!-- Arithmetic Operations - Integer 2addr -->
+    <string name="suggestion_add_int_2addr">Adds two integers, storing the result in the first operand.</string>
+    <string name="suggestion_sub_int_2addr">Subtracts two integers, storing the result in the first operand.</string>
+    <string name="suggestion_mul_int_2addr">Multiplies two integers, storing the result in the first operand.</string>
+    <string name="suggestion_div_int_2addr">Divides two integers, storing the result in the first operand.</string>
+    <string name="suggestion_rem_int_2addr">Calculates the remainder of integer division, storing the result in the first operand.</string>
+    <string name="suggestion_and_int_2addr">Performs a bitwise AND on two integers, storing the result in the first operand.</string>
+    <string name="suggestion_or_int_2addr">Performs a bitwise OR on two integers, storing the result in the first operand.</string>
+    <string name="suggestion_xor_int_2addr">Performs a bitwise XOR on two integers, storing the result in the first operand.</string>
+    <string name="suggestion_shl_int_2addr">Performs a left bit shift on an integer, storing the result in the first operand.</string>
+    <string name="suggestion_shr_int_2addr">Performs a right bit shift on an integer, storing the result in the first operand.</string>
+    <string name="suggestion_ushr_int_2addr">Performs an unsigned right bit shift on an integer, storing the result in the first operand.</string>
+
+    <!-- Arithmetic Operations - Integer Literal -->
+    <string name="suggestion_add_int_lit8">Adds an 8-bit literal to an integer register.</string>
+    <string name="suggestion_rsub_int_lit8">Subtracts an integer register from an 8-bit literal.</string>
+    <string name="suggestion_mul_int_lit8">Multiplies an integer register by an 8-bit literal.</string>
+    <string name="suggestion_div_int_lit8">Divides an integer register by an 8-bit literal.</string>
+    <string name="suggestion_rem_int_lit8">Calculates the remainder of integer division with an 8-bit literal.</string>
+    <string name="suggestion_and_int_lit8">Performs a bitwise AND on an integer register with an 8-bit literal.</string>
+    <string name="suggestion_or_int_lit8">Performs a bitwise OR on an integer register with an 8-bit literal.</string>
+    <string name="suggestion_xor_int_lit8">Performs a bitwise XOR on an integer register with an 8-bit literal.</string>
+    <string name="suggestion_shl_int_lit8">Performs a left bit shift on an integer register by an 8-bit literal.</string>
+    <string name="suggestion_shr_int_lit8">Performs a right bit shift on an integer register by an 8-bit literal.</string>
+    <string name="suggestion_ushr_int_lit8">Performs an unsigned right bit shift on an integer register by an 8-bit literal.</string>
+    <string name="suggestion_rsub_int">Subtracts an integer register from a literal value.</string>
+    <string name="suggestion_add_int_lit16">Adds a 16-bit literal to an integer register.</string>
+    <string name="suggestion_mul_int_lit16">Multiplies an integer register by a 16-bit literal.</string>
+    <string name="suggestion_div_int_lit16">Divides an integer register by a 16-bit literal.</string>
+    <string name="suggestion_rem_int_lit16">Calculates the remainder of integer division with a 16-bit literal.</string>
+    <string name="suggestion_and_int_lit16">Performs a bitwise AND on an integer register with a 16-bit literal.</string>
+    <string name="suggestion_or_int_lit16">Performs a bitwise OR on an integer register with a 16-bit literal.</string>
+    <string name="suggestion_xor_int_lit16">Performs a bitwise XOR on an integer register with a 16-bit literal.</string>
+
+    <!-- Arithmetic Operations - Long -->
+    <string name="suggestion_add_long">Adds two longs.</string>
+    <string name="suggestion_sub_long">Subtracts two longs.</string>
+    <string name="suggestion_mul_long">Multiplies two longs.</string>
+    <string name="suggestion_div_long">Divides two longs.</string>
+    <string name="suggestion_rem_long">Calculates the remainder of long division.</string>
+    <string name="suggestion_and_long">Performs a bitwise AND on two longs.</string>
+    <string name="suggestion_or_long">Performs a bitwise OR on two longs.</string>
+    <string name="suggestion_xor_long">Performs a bitwise XOR on two longs.</string>
+    <string name="suggestion_shl_long">Performs a left bit shift on a long.</string>
+    <string name="suggestion_shr_long">Performs a right bit shift on a long.</string>
+    <string name="suggestion_ushr_long">Performs an unsigned right bit shift on a long.</string>
+    <string name="suggestion_neg_long">Negates a long.</string>
+    <string name="suggestion_not_long">Performs a bitwise NOT on a long.</string>
+
+    <!-- Arithmetic Operations - Long 2addr -->
+    <string name="suggestion_add_long_2addr">Adds two longs, storing the result in the first operand.</string>
+    <string name="suggestion_sub_long_2addr">Subtracts two longs, storing the result in the first operand.</string>
+    <string name="suggestion_mul_long_2addr">Multiplies two longs, storing the result in the first operand.</string>
+    <string name="suggestion_div_long_2addr">Divides two longs, storing the result in the first operand.</string>
+    <string name="suggestion_rem_long_2addr">Calculates the remainder of long division, storing the result in the first operand.</string>
+    <string name="suggestion_and_long_2addr">Performs a bitwise AND on two longs, storing the result in the first operand.</string>
+    <string name="suggestion_or_long_2addr">Performs a bitwise OR on two longs, storing the result in the first operand.</string>
+    <string name="suggestion_xor_long_2addr">Performs a bitwise XOR on two longs, storing the result in the first operand.</string>
+    <string name="suggestion_shl_long_2addr">Performs a left bit shift on a long, storing the result in the first operand.</string>
+    <string name="suggestion_shr_long_2addr">Performs a right bit shift on a long, storing the result in the first operand.</string>
+    <string name="suggestion_ushr_long_2addr">Performs an unsigned right bit shift on a long, storing the result in the first operand.</string>
+
+    <!-- Arithmetic Operations - Float -->
+    <string name="suggestion_add_float">Adds two floats.</string>
+    <string name="suggestion_sub_float">Subtracts two floats.</string>
+    <string name="suggestion_mul_float">Multiplies two floats.</string>
+    <string name="suggestion_div_float">Divides two floats.</string>
+    <string name="suggestion_rem_float">Calculates the remainder of float division.</string>
+    <string name="suggestion_neg_float">Negates a float.</string>
+
+    <!-- Arithmetic Operations - Float 2addr -->
+    <string name="suggestion_add_float_2addr">Adds two floats, storing the result in the first operand.</string>
+    <string name="suggestion_sub_float_2addr">Subtracts two floats, storing the result in the first operand.</string>
+    <string name="suggestion_mul_float_2addr">Multiplies two floats, storing the result in the first operand.</string>
+    <string name="suggestion_div_float_2addr">Divides two floats, storing the result in the first operand.</string>
+    <string name="suggestion_rem_float_2addr">Calculates the remainder of float division, storing the result in the first operand.</string>
+
+    <!-- Arithmetic Operations - Double -->
+    <string name="suggestion_add_double">Adds two doubles.</string>
+    <string name="suggestion_sub_double">Subtracts two doubles.</string>
+    <string name="suggestion_mul_double">Multiplies two doubles.</string>
+    <string name="suggestion_div_double">Divides two doubles.</string>
+    <string name="suggestion_rem_double">Calculates the remainder of double division.</string>
+    <string name="suggestion_neg_double">Negates a double.</string>
+
+    <!-- Arithmetic Operations - Double 2addr -->
+    <string name="suggestion_add_double_2addr">Adds two doubles, storing the result in the first operand.</string>
+    <string name="suggestion_sub_double_2addr">Subtracts two doubles, storing the result in the first operand.</string>
+    <string name="suggestion_mul_double_2addr">Multiplies two doubles, storing the result in the first operand.</string>
+    <string name="suggestion_div_double_2addr">Divides two doubles, storing the result in the first operand.</string>
+    <string name="suggestion_rem_double_2addr">Calculates the remainder of double division, storing the result in the first operand.</string>
+
+    <!-- Type Conversion Operations -->
+    <string name="suggestion_int_to_long">Converts an integer to a long.</string>
+    <string name="suggestion_int_to_float">Converts an integer to a float.</string>
+    <string name="suggestion_int_to_double">Converts an integer to a double.</string>
+    <string name="suggestion_long_to_int">Converts a long to an integer.</string>
+    <string name="suggestion_long_to_float">Converts a long to a float.</string>
+    <string name="suggestion_long_to_double">Converts a long to a double.</string>
+    <string name="suggestion_float_to_int">Converts a float to an integer.</string>
+    <string name="suggestion_float_to_long">Converts a float to a long.</string>
+    <string name="suggestion_float_to_double">Converts a float to a double.</string>
+    <string name="suggestion_double_to_int">Converts a double to an integer.</string>
+    <string name="suggestion_double_to_long">Converts a double to a long.</string>
+    <string name="suggestion_double_to_float">Converts a double to a float.</string>
+    <string name="suggestion_int_to_byte">Converts an integer to a byte.</string>
+    <string name="suggestion_int_to_char">Converts an integer to a char.</string>
+    <string name="suggestion_int_to_short">Converts an integer to a short.</string>
+
+    <!-- Comparison Operations -->
+    <string name="suggestion_cmpl_float">Compares two floats, less than (-1), equal (0), or greater than (1), handling NaNs.</string>
+    <string name="suggestion_cmpg_float">Compares two floats, less than (-1), equal (0), or greater than (1), handling NaNs.</string>
+    <string name="suggestion_cmpl_double">Compares two doubles, less than (-1), equal (0), or greater than (1), handling NaNs.</string>
+    <string name="suggestion_cmpg_double">Compares two doubles, less than (-1), equal (0), or greater than (1), handling NaNs.</string>
+    <string name="suggestion_cmp_long">Compares two longs, returning -1, 0, or 1.</string>
+
+    <!-- Conditional Branch Operations -->
+    <string name="suggestion_if_eq">Branches if two registers\' values are equal.</string>
+    <string name="suggestion_if_ne">Branches if two registers\' values are not equal.</string>
+    <string name="suggestion_if_lt">Branches if the first register\'s value is less than the second.</string>
+    <string name="suggestion_if_ge">Branches if the first register\'s value is greater than or equal to the second.</string>
+    <string name="suggestion_if_gt">Branches if the first register\'s value is greater than the second.</string>
+    <string name="suggestion_if_le">Branches if the first register\'s value is less than or equal to the second.</string>
+    <string name="suggestion_if_eqz">Branches if a register\'s value is equal to zero.</string>
+    <string name="suggestion_if_nez">Branches if a register\'s value is not equal to zero.</string>
+    <string name="suggestion_if_ltz">Branches if a register\'s value is less than zero.</string>
+    <string name="suggestion_if_gez">Branches if a register\'s value is greater than or equal to zero.</string>
+    <string name="suggestion_if_gtz">Branches if a register\'s value is greater than zero.</string>
+    <string name="suggestion_if_lez">Branches if a register\'s value is less than or equal to zero.</string>
+
+    <!-- Switch Operations -->
+    <string name="suggestion_packed_switch_op">Performs a jump based on a packed switch statement.</string>
+    <string name="suggestion_sparse_switch_op">Performs a jump based on a sparse switch statement.</string>
+
+    <!-- Method Invocation -->
+    <string name="suggestion_invoke_virtual">Invokes a virtual method.</string>
+    <string name="suggestion_invoke_super">Invokes a superclass method.</string>
+    <string name="suggestion_invoke_direct">Invokes a direct method.</string>
+    <string name="suggestion_invoke_static">Invokes a static method.</string>
+    <string name="suggestion_invoke_interface">Invokes an interface method.</string>
+    <string name="suggestion_invoke_custom">Invokes a dynamically linked call site.</string>
+    <string name="suggestion_invoke_polymorphic">Invokes a polymorphic method.</string>
+    <string name="suggestion_invoke_direct_empty">Invokes a direct method (empty args optimization).</string>
+
+    <!-- Method Invocation - Range -->
+    <string name="suggestion_invoke_virtual_range">Invokes a virtual method with a range of registers.</string>
+    <string name="suggestion_invoke_super_range">Invokes a superclass method with a range of registers.</string>
+    <string name="suggestion_invoke_direct_range">Invokes a direct method with a range of registers.</string>
+    <string name="suggestion_invoke_static_range">Invokes a static method with a range of registers.</string>
+    <string name="suggestion_invoke_interface_range">Invokes an interface method with a range of registers.</string>
+    <string name="suggestion_invoke_custom_range">Invokes a dynamically linked call site with a range of registers.</string>
+    <string name="suggestion_invoke_polymorphic_range">Invokes a polymorphic method with a range of registers.</string>
+    <string name="suggestion_invoke_object_init_range">Invokes an object initializer method with a range of registers.</string>
+
+    <!-- Method Invocation - Quick -->
+    <string name="suggestion_invoke_virtual_quick">Invokes a virtual method quickly.</string>
+    <string name="suggestion_invoke_super_quick">Invokes a superclass method quickly.</string>
+    <string name="suggestion_invoke_virtual_quick_range">Invokes a virtual method quickly with a range of registers.</string>
+    <string name="suggestion_invoke_super_quick_range">Invokes a superclass method quickly with a range of registers.</string>
+
+    <!-- Execution Operations -->
+    <string name="suggestion_execute_inline">Executes an inline method.</string>
+    <string name="suggestion_execute_inline_range">Executes an inline method with a range of registers.</string>
+
+    <!-- Exception Handling -->
+    <string name="suggestion_throw">Throws an exception object.</string>
+    <string name="suggestion_throw_verification_error">Throws a verification error.</string>
+    <string name="suggestion_monitor_enter">Enters a monitor for an object.</string>
+    <string name="suggestion_monitor_exit">Exits a monitor for an object.</string>
+
+</resources>
