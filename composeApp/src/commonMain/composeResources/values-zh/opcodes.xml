@@ -1,4 +1,372 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- TODO: Add missing editor suggestions translations here -->
+
+    <string name="suggestion_in_text">之前在文本中使用过。</string>
+    <string name="suggestion_load_register">加载寄存器。</string>
+
+
+    <!-- 方法外指令 -->
+    <string name="suggestion_class">定义类名和访问标志。</string>
+    <string name="suggestion_super">指定类的超类。</string>
+    <string name="suggestion_implements">指定类实现的接口。</string>
+    <string name="suggestion_source">指定调试用的源文件。</string>
+    <string name="suggestion_field">在类中声明字段。</string>
+    <string name="suggestion_end_field">结束字段声明块。</string>
+    <string name="suggestion_annotation">开始注解块。</string>
+    <string name="suggestion_end_annotation">结束注解块。</string>
+    <string name="suggestion_subannotation">开始子注解块。</string>
+    <string name="suggestion_end_subannotation">结束子注解块。</string>
+    <string name="suggestion_enum">声明枚举值（在字段内）。</string>
+    <string name="suggestion_method">开始方法声明块。</string>
+    <string name="suggestion_end_method">结束方法声明块。</string>
+
+    <!-- 方法内指令 -->
+    <string name="suggestion_registers">指定方法中使用的寄存器总数。</string>
+    <string name="suggestion_locals">指定方法中局部寄存器的数量（调试信息）。</string>
+    <string name="suggestion_param">声明方法参数名（调试信息）。</string>
+    <string name="suggestion_end_param">结束方法参数声明。</string>
+    <string name="suggestion_local">声明局部变量名（调试信息）。</string>
+    <string name="suggestion_end_local">结束局部变量声明。</string>
+    <string name="suggestion_restart_local">重启局部变量的作用域。</string>
+    <string name="suggestion_line">指定调试用的源代码行号。</string>
+    <string name="suggestion_prologue">标记方法序言代码的开始。</string>
+    <string name="suggestion_epilogue">标记方法尾声代码的开始。</string>
+    <string name="suggestion_catch">声明异常处理器。</string>
+    <string name="suggestion_catchall">声明通用异常处理器。</string>
+    <string name="suggestion_array_data">开始数组数据块。</string>
+    <string name="suggestion_end_array_data">结束数组数据块。</string>
+    <string name="suggestion_packed_switch">开始密集分支块。</string>
+    <string name="suggestion_end_packed_switch">结束密集分支块。</string>
+    <string name="suggestion_sparse_switch">开始稀疏分支块。</string>
+    <string name="suggestion_end_sparse_switch">结束稀疏分支块。</string>
+
+    <!-- 访问修饰符 -->
+    <string name="suggestion_public">可从任何地方访问。</string>
+    <string name="suggestion_private">仅在定义类内可访问。</string>
+    <string name="suggestion_protected">在同一包或子类中可访问。</string>
+    <string name="suggestion_static">属于类，而非实例。</string>
+    <string name="suggestion_final">不能被重写或修改。</string>
+    <string name="suggestion_synchronized">方法被同步以保证线程安全。</string>
+    <string name="suggestion_bridge">编译器生成的泛型桥接方法。</string>
+    <string name="suggestion_varargs">接受可变数量的参数。</string>
+    <string name="suggestion_native">在本机代码中实现（JNI）。</string>
+    <string name="suggestion_abstract">方法或类没有实现。</string>
+    <string name="suggestion_strictfp">严格浮点计算。</string>
+    <string name="suggestion_synthetic">编译器生成的元素（不在源码中）。</string>
+    <string name="suggestion_constructor">标记方法为构造函数。</string>
+    <string name="suggestion_declared_synchronized">已同步（显式声明）。</string>
+    <string name="suggestion_interface">声明接口。</string>
+    <string name="suggestion_enum_access">声明枚举类型。</string>
+    <string name="suggestion_annotation_access">声明注解类型。</string>
+    <string name="suggestion_volatile">字段是易失的（线程可见）。</string>
+    <string name="suggestion_transient">字段不应被序列化。</string>
+
+    <!-- 控制流操作码 -->
+    <string name="suggestion_goto">无条件跳转到新的指令偏移量。</string>
+    <string name="suggestion_goto_16">无条件跳转到新的16位指令偏移量。</string>
+    <string name="suggestion_goto_32">无条件跳转到新的32位指令偏移量。</string>
+    <string name="suggestion_return_void">从void方法返回。</string>
+    <string name="suggestion_return_void_barrier">从void方法返回并设置内存屏障。</string>
+    <string name="suggestion_return_void_no_barrier">从void方法返回且不设内存屏障。</string>
+    <string name="suggestion_return">从方法返回整数结果。</string>
+    <string name="suggestion_return_wide">从方法返回长整型或双精度结果。</string>
+    <string name="suggestion_return_object">从方法返回对象结果。</string>
+    <string name="suggestion_nop">不执行任何操作。</string>
+
+    <!-- 移动操作 -->
+    <string name="suggestion_move">将寄存器内容移动到另一个寄存器。</string>
+    <string name="suggestion_move_wide">将宽寄存器内容移动到另一对寄存器。</string>
+    <string name="suggestion_move_object">将对象寄存器内容移动到另一个对象寄存器。</string>
+    <string name="suggestion_move_result">将前一个调用或填充新数组指令的结果移动到寄存器。</string>
+    <string name="suggestion_move_result_wide">将前一个调用或填充新数组指令的宽结果移动到一对寄存器。</string>
+    <string name="suggestion_move_result_object">将前一个调用或填充新数组指令的对象结果移动到寄存器。</string>
+    <string name="suggestion_move_exception">将异常对象移动到寄存器。</string>
+    <string name="suggestion_move_from16">从16位源移动寄存器内容到目标。</string>
+    <string name="suggestion_move_wide_from16">从16位源移动宽寄存器内容到目标。</string>
+    <string name="suggestion_move_object_from16">从16位源移动对象寄存器内容到目标。</string>
+    <string name="suggestion_move_16">用16位寄存器操作数移动寄存器内容。</string>
+    <string name="suggestion_move_wide_16">用16位寄存器操作数移动宽寄存器内容。</string>
+    <string name="suggestion_move_object_16">用16位寄存器操作数移动对象寄存器内容。</string>
+
+    <!-- 常量 -->
+    <string name="suggestion_const_4">将4位字面值移动到寄存器。</string>
+    <string name="suggestion_const_16">将16位字面值移动到寄存器。</string>
+    <string name="suggestion_const">将32位字面值移动到寄存器。</string>
+    <string name="suggestion_const_high16">将32位字面值（高16位）移动到寄存器。</string>
+    <string name="suggestion_const_wide_16">将16位宽字面值移动到一对寄存器。</string>
+    <string name="suggestion_const_wide_32">将32位宽字面值移动到一对寄存器。</string>
+    <string name="suggestion_const_wide">将64位字面值移动到一对寄存器。</string>
+    <string name="suggestion_const_wide_high16">将64位字面值（高16位）移动到一对寄存器。</string>
+    <string name="suggestion_const_string">将字符串常量加载到寄存器。</string>
+    <string name="suggestion_const_string_jumbo">将巨型字符串常量加载到寄存器。</string>
+    <string name="suggestion_const_class">将类常量加载到寄存器。</string>
+    <string name="suggestion_const_method_handle">将方法句柄常量加载到寄存器。</string>
+    <string name="suggestion_const_method_type">将方法类型常量加载到寄存器。</string>
+
+    <!-- 类型操作 -->
+    <string name="suggestion_check_cast">检查对象是否可以强制转换为指定类型。</string>
+    <string name="suggestion_instance_of">检查对象是否为指定类型的实例。</string>
+    <string name="suggestion_new_instance">创建对象的新实例。</string>
+    <string name="suggestion_new_array">创建指定类型的新数组。</string>
+
+    <!-- 数组操作 -->
+    <string name="suggestion_array_length">获取数组的长度。</string>
+    <string name="suggestion_aget">从数组获取整数元素。</string>
+    <string name="suggestion_aget_wide">从数组获取宽元素（长整型或双精度）。</string>
+    <string name="suggestion_aget_object">从数组获取对象元素。</string>
+    <string name="suggestion_aget_boolean">从数组获取布尔元素。</string>
+    <string name="suggestion_aget_byte">从数组获取字节元素。</string>
+    <string name="suggestion_aget_char">从数组获取字符元素。</string>
+    <string name="suggestion_aget_short">从数组获取短整型元素。</string>
+    <string name="suggestion_aput">将整数元素放入数组。</string>
+    <string name="suggestion_aput_wide">将宽元素（长整型或双精度）放入数组。</string>
+    <string name="suggestion_aput_object">将对象元素放入数组。</string>
+    <string name="suggestion_aput_boolean">将布尔元素放入数组。</string>
+    <string name="suggestion_aput_byte">将字节元素放入数组。</string>
+    <string name="suggestion_aput_char">将字符元素放入数组。</string>
+    <string name="suggestion_aput_short">将短整型元素放入数组。</string>
+    <string name="suggestion_fill_array_data">用数据表的数据填充数组。</string>
+    <string name="suggestion_filled_new_array">创建新数组并用元素填充。</string>
+    <string name="suggestion_filled_new_array_range">创建并用寄存器范围内的元素填充新数组。</string>
+
+    <!-- 字段操作 - 静态 -->
+    <string name="suggestion_sget">获取静态字段的整数值。</string>
+    <string name="suggestion_sget_wide">获取静态字段的宽值（长整型或双精度）。</string>
+    <string name="suggestion_sget_object">获取静态字段的对象值。</string>
+    <string name="suggestion_sget_boolean">获取静态字段的布尔值。</string>
+    <string name="suggestion_sget_byte">获取静态字段的字节值。</string>
+    <string name="suggestion_sget_char">获取静态字段的字符值。</string>
+    <string name="suggestion_sget_short">获取静态字段的短整型值。</string>
+    <string name="suggestion_sput">将整数值放入静态字段。</string>
+    <string name="suggestion_sput_wide">将宽值（长整型或双精度）放入静态字段。</string>
+    <string name="suggestion_sput_object">将对象值放入静态字段。</string>
+    <string name="suggestion_sput_boolean">将布尔值放入静态字段。</string>
+    <string name="suggestion_sput_byte">将字节值放入静态字段。</string>
+    <string name="suggestion_sput_char">将字符值放入静态字段。</string>
+    <string name="suggestion_sput_short">将短整型值放入静态字段。</string>
+    <string name="suggestion_sget_volatile">获取静态易失字段的整数值。</string>
+    <string name="suggestion_sget_wide_volatile">获取静态易失字段的宽值。</string>
+    <string name="suggestion_sget_object_volatile">获取静态易失字段的对象值。</string>
+    <string name="suggestion_sput_volatile">将整数值放入静态易失字段。</string>
+    <string name="suggestion_sput_wide_volatile">将宽值放入静态易失字段。</string>
+    <string name="suggestion_sput_object_volatile">将对象值放入静态易失字段。</string>
+
+    <!-- 字段操作 - 实例 -->
+    <string name="suggestion_iget">获取实例字段的整数值。</string>
+    <string name="suggestion_iget_wide">获取实例字段的宽值（长整型或双精度）。</string>
+    <string name="suggestion_iget_object">获取实例字段的对象值。</string>
+    <string name="suggestion_iget_boolean">获取实例字段的布尔值。</string>
+    <string name="suggestion_iget_byte">获取实例字段的字节值。</string>
+    <string name="suggestion_iget_char">获取实例字段的字符值。</string>
+    <string name="suggestion_iget_short">获取实例字段的短整型值。</string>
+    <string name="suggestion_iput">将整数值放入实例字段。</string>
+    <string name="suggestion_iput_wide">将宽值（长整型或双精度）放入实例字段。</string>
+    <string name="suggestion_iput_object">将对象值放入实例字段。</string>
+    <string name="suggestion_iput_boolean">将布尔值放入实例字段。</string>
+    <string name="suggestion_iput_byte">将字节值放入实例字段。</string>
+    <string name="suggestion_iput_char">将字符值放入实例字段。</string>
+    <string name="suggestion_iput_short">将短整型值放入实例字段。</string>
+    <string name="suggestion_iget_volatile">获取实例易失字段的整数值。</string>
+    <string name="suggestion_iget_wide_volatile">获取实例易失字段的宽值。</string>
+    <string name="suggestion_iget_object_volatile">获取实例易失字段的对象值。</string>
+    <string name="suggestion_iput_volatile">将整数值放入实例易失字段。</string>
+    <string name="suggestion_iput_wide_volatile">将宽值放入实例易失字段。</string>
+    <string name="suggestion_iput_object_volatile">将对象值放入实例易失字段。</string>
+
+    <!-- 字段操作 - 快速 -->
+    <string name="suggestion_iget_quick">快速获取实例字段的整数值。</string>
+    <string name="suggestion_iget_wide_quick">快速获取实例字段的宽值。</string>
+    <string name="suggestion_iget_object_quick">快速获取实例字段的对象值。</string>
+    <string name="suggestion_iput_quick">快速将整数值放入实例字段。</string>
+    <string name="suggestion_iput_wide_quick">快速将宽值放入实例字段。</string>
+    <string name="suggestion_iput_object_quick">快速将对象值放入实例字段。</string>
+    <string name="suggestion_iput_boolean_quick">快速将布尔值放入实例字段。</string>
+    <string name="suggestion_iput_byte_quick">快速将字节值放入实例字段。</string>
+    <string name="suggestion_iput_char_quick">快速将字符值放入实例字段。</string>
+    <string name="suggestion_iput_short_quick">快速将短整型值放入实例字段。</string>
+
+    <!-- 算术运算 - 整数 -->
+    <string name="suggestion_add_int">两个整数相加。</string>
+    <string name="suggestion_sub_int">两个整数相减。</string>
+    <string name="suggestion_mul_int">两个整数相乘。</string>
+    <string name="suggestion_div_int">两个整数相除。</string>
+    <string name="suggestion_rem_int">计算整数除法的余数。</string>
+    <string name="suggestion_and_int">对两个整数执行按位与操作。</string>
+    <string name="suggestion_or_int">对两个整数执行按位或操作。</string>
+    <string name="suggestion_xor_int">对两个整数执行按位异或操作。</string>
+    <string name="suggestion_shl_int">对整数执行左位移操作。</string>
+    <string name="suggestion_shr_int">对整数执行右位移操作。</string>
+    <string name="suggestion_ushr_int">对整数执行无符号右位移操作。</string>
+    <string name="suggestion_neg_int">对整数取负。</string>
+    <string name="suggestion_not_int">对整数执行按位取反操作。</string>
+
+    <!-- 算术运算 - 整数 2addr -->
+    <string name="suggestion_add_int_2addr">两个整数相加，结果存储在第一个操作数中。</string>
+    <string name="suggestion_sub_int_2addr">两个整数相减，结果存储在第一个操作数中。</string>
+    <string name="suggestion_mul_int_2addr">两个整数相乘，结果存储在第一个操作数中。</string>
+    <string name="suggestion_div_int_2addr">两个整数相除，结果存储在第一个操作数中。</string>
+    <string name="suggestion_rem_int_2addr">计算整数除法的余数，结果存储在第一个操作数中。</string>
+    <string name="suggestion_and_int_2addr">对两个整数执行按位与操作，结果存储在第一个操作数中。</string>
+    <string name="suggestion_or_int_2addr">对两个整数执行按位或操作，结果存储在第一个操作数中。</string>
+    <string name="suggestion_xor_int_2addr">对两个整数执行按位异或操作，结果存储在第一个操作数中。</string>
+    <string name="suggestion_shl_int_2addr">对整数执行左位移操作，结果存储在第一个操作数中。</string>
+    <string name="suggestion_shr_int_2addr">对整数执行右位移操作，结果存储在第一个操作数中。</string>
+    <string name="suggestion_ushr_int_2addr">对整数执行无符号右位移操作，结果存储在第一个操作数中。</string>
+
+    <!-- 算术运算 - 整数字面值 -->
+    <string name="suggestion_add_int_lit8">将8位字面值添加到整数寄存器。</string>
+    <string name="suggestion_rsub_int_lit8">从8位字面值中减去整数寄存器。</string>
+    <string name="suggestion_mul_int_lit8">整数寄存器乘以8位字面值。</string>
+    <string name="suggestion_div_int_lit8">整数寄存器除以8位字面值。</string>
+    <string name="suggestion_rem_int_lit8">计算整数除法与8位字面值的余数。</string>
+    <string name="suggestion_and_int_lit8">对整数寄存器与8位字面值执行按位与操作。</string>
+    <string name="suggestion_or_int_lit8">对整数寄存器与8位字面值执行按位或操作。</string>
+    <string name="suggestion_xor_int_lit8">对整数寄存器与8位字面值执行按位异或操作。</string>
+    <string name="suggestion_shl_int_lit8">对整数寄存器执行8位字面值的左位移操作。</string>
+    <string name="suggestion_shr_int_lit8">对整数寄存器执行8位字面值的右位移操作。</string>
+    <string name="suggestion_ushr_int_lit8">对整数寄存器执行8位字面值的无符号右位移操作。</string>
+    <string name="suggestion_rsub_int">从字面值中减去整数寄存器。</string>
+    <string name="suggestion_add_int_lit16">将16位字面值添加到整数寄存器。</string>
+    <string name="suggestion_mul_int_lit16">整数寄存器乘以16位字面值。</string>
+    <string name="suggestion_div_int_lit16">整数寄存器除以16位字面值。</string>
+    <string name="suggestion_rem_int_lit16">计算整数除法与16位字面值的余数。</string>
+    <string name="suggestion_and_int_lit16">对整数寄存器与16位字面值执行按位与操作。</string>
+    <string name="suggestion_or_int_lit16">对整数寄存器与16位字面值执行按位或操作。</string>
+    <string name="suggestion_xor_int_lit16">对整数寄存器与16位字面值执行按位异或操作。</string>
+
+    <!-- 算术运算 - 长整型 -->
+    <string name="suggestion_add_long">两个长整型相加。</string>
+    <string name="suggestion_sub_long">两个长整型相减。</string>
+    <string name="suggestion_mul_long">两个长整型相乘。</string>
+    <string name="suggestion_div_long">两个长整型相除。</string>
+    <string name="suggestion_rem_long">计算长整型除法的余数。</string>
+    <string name="suggestion_and_long">对两个长整型执行按位与操作。</string>
+    <string name="suggestion_or_long">对两个长整型执行按位或操作。</string>
+    <string name="suggestion_xor_long">对两个长整型执行按位异或操作。</string>
+    <string name="suggestion_shl_long">对长整型执行左位移操作。</string>
+    <string name="suggestion_shr_long">对长整型执行右位移操作。</string>
+    <string name="suggestion_ushr_long">对长整型执行无符号右位移操作。</string>
+    <string name="suggestion_neg_long">对长整型取负。</string>
+    <string name="suggestion_not_long">对长整型执行按位取反操作。</string>
+
+    <!-- 算术运算 - 长整型 2addr -->
+    <string name="suggestion_add_long_2addr">两个长整型相加，结果存储在第一个操作数中。</string>
+    <string name="suggestion_sub_long_2addr">两个长整型相减，结果存储在第一个操作数中。</string>
+    <string name="suggestion_mul_long_2addr">两个长整型相乘，结果存储在第一个操作数中。</string>
+    <string name="suggestion_div_long_2addr">两个长整型相除，结果存储在第一个操作数中。</string>
+    <string name="suggestion_rem_long_2addr">计算长整型除法的余数，结果存储在第一个操作数中。</string>
+    <string name="suggestion_and_long_2addr">对两个长整型执行按位与操作，结果存储在第一个操作数中。</string>
+    <string name="suggestion_or_long_2addr">对两个长整型执行按位或操作，结果存储在第一个操作数中。</string>
+    <string name="suggestion_xor_long_2addr">对两个长整型执行按位异或操作，结果存储在第一个操作数中。</string>
+    <string name="suggestion_shl_long_2addr">对长整型执行左位移操作，结果存储在第一个操作数中。</string>
+    <string name="suggestion_shr_long_2addr">对长整型执行右位移操作，结果存储在第一个操作数中。</string>
+    <string name="suggestion_ushr_long_2addr">对长整型执行无符号右位移操作，结果存储在第一个操作数中。</string>
+
+    <!-- 算术运算 - 浮点型 -->
+    <string name="suggestion_add_float">两个浮点数相加。</string>
+    <string name="suggestion_sub_float">两个浮点数相减。</string>
+    <string name="suggestion_mul_float">两个浮点数相乘。</string>
+    <string name="suggestion_div_float">两个浮点数相除。</string>
+    <string name="suggestion_rem_float">计算浮点数除法的余数。</string>
+    <string name="suggestion_neg_float">对浮点数取负。</string>
+
+    <!-- 算术运算 - 浮点型 2addr -->
+    <string name="suggestion_add_float_2addr">两个浮点数相加，结果存储在第一个操作数中。</string>
+    <string name="suggestion_sub_float_2addr">两个浮点数相减，结果存储在第一个操作数中。</string>
+    <string name="suggestion_mul_float_2addr">两个浮点数相乘，结果存储在第一个操作数中。</string>
+    <string name="suggestion_div_float_2addr">两个浮点数相除，结果存储在第一个操作数中。</string>
+    <string name="suggestion_rem_float_2addr">计算浮点数除法的余数，结果存储在第一个操作数中。</string>
+
+    <!-- 算术运算 - 双精度 -->
+    <string name="suggestion_add_double">两个双精度数相加。</string>
+    <string name="suggestion_sub_double">两个双精度数相减。</string>
+    <string name="suggestion_mul_double">两个双精度数相乘。</string>
+    <string name="suggestion_div_double">两个双精度数相除。</string>
+    <string name="suggestion_rem_double">计算双精度数除法的余数。</string>
+    <string name="suggestion_neg_double">对双精度数取负。</string>
+
+    <!-- 算术运算 - 双精度 2addr -->
+    <string name="suggestion_add_double_2addr">两个双精度数相加，结果存储在第一个操作数中。</string>
+    <string name="suggestion_sub_double_2addr">两个双精度数相减，结果存储在第一个操作数中。</string>
+    <string name="suggestion_mul_double_2addr">两个双精度数相乘，结果存储在第一个操作数中。</string>
+    <string name="suggestion_div_double_2addr">两个双精度数相除，结果存储在第一个操作数中。</string>
+    <string name="suggestion_rem_double_2addr">计算双精度数除法的余数，结果存储在第一个操作数中。</string>
+
+    <!-- 类型转换操作 -->
+    <string name="suggestion_int_to_long">将整数转换为长整型。</string>
+    <string name="suggestion_int_to_float">将整数转换为浮点数。</string>
+    <string name="suggestion_int_to_double">将整数转换为双精度数。</string>
+    <string name="suggestion_long_to_int">将长整型转换为整数。</string>
+    <string name="suggestion_long_to_float">将长整型转换为浮点数。</string>
+    <string name="suggestion_long_to_double">将长整型转换为双精度数。</string>
+    <string name="suggestion_float_to_int">将浮点数转换为整数。</string>
+    <string name="suggestion_float_to_long">将浮点数转换为长整型。</string>
+    <string name="suggestion_float_to_double">将浮点数转换为双精度数。</string>
+    <string name="suggestion_double_to_int">将双精度数转换为整数。</string>
+    <string name="suggestion_double_to_long">将双精度数转换为长整型。</string>
+    <string name="suggestion_double_to_float">将双精度数转换为浮点数。</string>
+    <string name="suggestion_int_to_byte">将整数转换为字节。</string>
+    <string name="suggestion_int_to_char">将整数转换为字符。</string>
+    <string name="suggestion_int_to_short">将整数转换为短整型。</string>
+
+    <!-- 比较操作 -->
+    <string name="suggestion_cmpl_float">比较两个浮点数，小于(-1)、等于(0)或大于(1)，处理NaN。</string>
+    <string name="suggestion_cmpg_float">比较两个浮点数，小于(-1)、等于(0)或大于(1)，处理NaN。</string>
+    <string name="suggestion_cmpl_double">比较两个双精度数，小于(-1)、等于(0)或大于(1)，处理NaN。</string>
+    <string name="suggestion_cmpg_double">比较两个双精度数，小于(-1)、等于(0)或大于(1)，处理NaN。</string>
+    <string name="suggestion_cmp_long">比较两个长整型，返回-1、0或1。</string>
+
+    <!-- 条件分支操作 -->
+    <string name="suggestion_if_eq">如果两个寄存器的值相等则分支。</string>
+    <string name="suggestion_if_ne">如果两个寄存器的值不相等则分支。</string>
+    <string name="suggestion_if_lt">如果第一个寄存器的值小于第二个则分支。</string>
+    <string name="suggestion_if_ge">如果第一个寄存器的值大于或等于第二个则分支。</string>
+    <string name="suggestion_if_gt">如果第一个寄存器的值大于第二个则分支。</string>
+    <string name="suggestion_if_le">如果第一个寄存器的值小于或等于第二个则分支。</string>
+    <string name="suggestion_if_eqz">如果寄存器的值等于零则分支。</string>
+    <string name="suggestion_if_nez">如果寄存器的值不等于零则分支。</string>
+    <string name="suggestion_if_ltz">如果寄存器的值小于零则分支。</string>
+    <string name="suggestion_if_gez">如果寄存器的值大于或等于零则分支。</string>
+    <string name="suggestion_if_gtz">如果寄存器的值大于零则分支。</string>
+    <string name="suggestion_if_lez">如果寄存器的值小于或等于零则分支。</string>
+
+    <!-- 分支操作 -->
+    <string name="suggestion_packed_switch_op">基于密集分支语句执行跳转。</string>
+    <string name="suggestion_sparse_switch_op">基于稀疏分支语句执行跳转。</string>
+
+    <!-- 方法调用 -->
+    <string name="suggestion_invoke_virtual">调用虚方法。</string>
+    <string name="suggestion_invoke_super">调用超类方法。</string>
+    <string name="suggestion_invoke_direct">调用直接方法。</string>
+    <string name="suggestion_invoke_static">调用静态方法。</string>
+    <string name="suggestion_invoke_interface">调用接口方法。</string>
+    <string name="suggestion_invoke_custom">调用动态链接的调用站点。</string>
+    <string name="suggestion_invoke_polymorphic">调用多态方法。</string>
+    <string name="suggestion_invoke_direct_empty">调用直接方法（空参数优化）。</string>
+
+    <!-- 方法调用 - 范围 -->
+    <string name="suggestion_invoke_virtual_range">用寄存器范围调用虚方法。</string>
+    <string name="suggestion_invoke_super_range">用寄存器范围调用超类方法。</string>
+    <string name="suggestion_invoke_direct_range">用寄存器范围调用直接方法。</string>
+    <string name="suggestion_invoke_static_range">用寄存器范围调用静态方法。</string>
+    <string name="suggestion_invoke_interface_range">用寄存器范围调用接口方法。</string>
+    <string name="suggestion_invoke_custom_range">用寄存器范围调用动态链接的调用站点。</string>
+    <string name="suggestion_invoke_polymorphic_range">用寄存器范围调用多态方法。</string>
+    <string name="suggestion_invoke_object_init_range">用寄存器范围调用对象初始化方法。</string>
+
+    <!-- 方法调用 - 快速 -->
+    <string name="suggestion_invoke_virtual_quick">快速调用虚方法。</string>
+    <string name="suggestion_invoke_super_quick">快速调用超类方法。</string>
+    <string name="suggestion_invoke_virtual_quick_range">用寄存器范围快速调用虚方法。</string>
+    <string name="suggestion_invoke_super_quick_range">用寄存器范围快速调用超类方法。</string>
+
+    <!-- 执行操作 -->
+    <string name="suggestion_execute_inline">执行内联方法。</string>
+    <string name="suggestion_execute_inline_range">用寄存器范围执行内联方法。</string>
+
+    <!-- 异常处理 -->
+    <string name="suggestion_throw">抛出异常对象。</string>
+    <string name="suggestion_throw_verification_error">抛出验证错误。</string>
+    <string name="suggestion_monitor_enter">进入对象的监视器。</string>
+    <string name="suggestion_monitor_exit">退出对象的监视器。</string>
 </resources>
