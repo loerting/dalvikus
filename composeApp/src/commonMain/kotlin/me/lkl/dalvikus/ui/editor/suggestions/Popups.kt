@@ -144,12 +144,12 @@ fun HexPopup(
                     "${viewModel.tryResolveResIdText(unsignedValue)} (resource)"
                 } else {
                     val floatValue = Float.fromBits(signedValue.toInt())
-                    "$signedValue (dec) / $floatValue (float)"
+                    "$signedValue (dec) ≙ $floatValue (float)"
                 }
             }
             16 -> {
                 val doubleValue = Double.fromBits(signedValue.toLong())
-                "$signedValue (dec) / $doubleValue (double)"
+                "$signedValue (dec) ≙ $doubleValue (double)"
             }
             else -> "$signedValue (dec)"
         }
