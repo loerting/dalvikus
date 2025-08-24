@@ -15,13 +15,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.tabManager
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tabs.WelcomeTab
 import me.lkl.dalvikus.tabs.contentprovider.ContentProvider
-import me.lkl.dalvikus.tabs.contentprovider.DualContentProvider
 import me.lkl.dalvikus.tree.Node
 import me.lkl.dalvikus.ui.currentSelection
 import me.lkl.dalvikus.ui.scrollAndExpandSelection
@@ -29,13 +29,26 @@ import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TabView(
-) {
+fun TabView() {
     val pendingCloseTab = remember { mutableStateOf<TabElement?>(null) }
     val showCloseDialog = remember { mutableStateOf(false) }
-    if (showCloseDialog.value && pendingCloseTab.value != null) {
-        UnsavedChangesDialog(tabManager, showCloseDialog, pendingCloseTab)
+    val pendingCloseTabs = remember { mutableStateOf<List<TabElement>>(emptyList()) }
+
+    // Context menu state
+    val showContextMenu = remember { mutableStateOf(false) }
+    val contextMenuTab = remember { mutableStateOf<TabElement?>(null) }
+    val contextMenuIndex = remember { mutableStateOf(-1) }
+    val contextMenuOffset = remember { mutableStateOf(DpOffset.Zero) }
+
+    if (showCloseDialog.value && (pendingCloseTab.value != null || pendingCloseTabs.value.isNotEmpty())) {
+        UnsavedChangesDialog(
+            tabManager,
+            showCloseDialog,
+            pendingCloseTab,
+            pendingCloseTabs
+        )
     }
+
     Column {
         SecondaryScrollableTabRow(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -56,37 +69,87 @@ fun TabView(
                 )
             }
             tabManager.tabs.forEachIndexed { index, tab ->
-                Tab(
-                    selected = tabManager.selectedTabIndex == index,
-                    onClick = { tabManager.selectTab(index) },
-                    text = {
-                        TabViewContent(
-                            tab = tab,
-                            onClose = {
-                                if (tab.hasUnsavedChanges.value) {
-                                    pendingCloseTab.value = tab
-                                    showCloseDialog.value = true
-                                } else {
-                                    tabManager.closeTab(tab)
-                                }
-                            },
-                        )
-                    },
-                    modifier = Modifier
-                        .onClick(matcher = PointerMatcher.mouse(PointerButton.Secondary)) {
-                            val contentProvider = tab.contentProvider
-                            if (contentProvider is DualContentProvider) {
-                                tryOpenContentProviderInTree(contentProvider.contentProvider)
-                                tryOpenContentProviderInTree(contentProvider.contentProvider2)
-                            } else {
-                                tryOpenContentProviderInTree(contentProvider)
+                Box {
+                    Tab(
+                        selected = tabManager.selectedTabIndex == index,
+                        onClick = { tabManager.selectTab(index) },
+                        text = {
+                            TabViewContent(
+                                tab = tab,
+                                onClose = {
+                                    handleTabClose(
+                                        tab = tab,
+                                        pendingCloseTab = pendingCloseTab,
+                                        showCloseDialog = showCloseDialog
+                                    )
+                                },
+                            )
+                        },
+                        modifier = Modifier
+                            .onClick(matcher = PointerMatcher.mouse(PointerButton.Secondary)) {
+                                contextMenuTab.value = tab
+                                contextMenuIndex.value = index
+                                contextMenuOffset.value = DpOffset(0.dp, 16.dp)
+                                showContextMenu.value = true
                             }
-                        }
-                )
+                    )
+
+                    if (showContextMenu.value && contextMenuTab.value == tab) {
+                        TabContextMenu(
+                            expanded = showContextMenu.value,
+                            onDismissRequest = { showContextMenu.value = false },
+                            offset = contextMenuOffset.value,
+                            tab = tab,
+                            tabIndex = index,
+                            tabManager = tabManager,
+                            onCloseTab = { tabToClose ->
+                                handleTabClose(
+                                    tab = tabToClose,
+                                    pendingCloseTab = pendingCloseTab,
+                                    showCloseDialog = showCloseDialog
+                                )
+                            },
+                            onCloseTabs = { tabsToClose ->
+                                handleTabsClose(
+                                    tabs = tabsToClose,
+                                    pendingCloseTabs = pendingCloseTabs,
+                                    showCloseDialog = showCloseDialog
+                                )
+                            }
+                        )
+                    }
+                }
             }
         }
 
         TabContentRenderer(tab = tabManager.currentTab)
+    }
+}
+
+private fun handleTabClose(
+    tab: TabElement,
+    pendingCloseTab: MutableState<TabElement?>,
+    showCloseDialog: MutableState<Boolean>
+) {
+    if (tab.hasUnsavedChanges.value) {
+        pendingCloseTab.value = tab
+        showCloseDialog.value = true
+    } else {
+        tabManager.closeTab(tab)
+    }
+}
+
+private fun handleTabsClose(
+    tabs: List<TabElement>,
+    pendingCloseTabs: MutableState<List<TabElement>>,
+    showCloseDialog: MutableState<Boolean>
+) {
+    val tabsWithUnsavedChanges = tabs.filter { it.hasUnsavedChanges.value }
+    if (tabsWithUnsavedChanges.isNotEmpty()) {
+        pendingCloseTabs.value = tabs
+        showCloseDialog.value = true
+    } else {
+        tabManager.closeTabs(tabs)
     }
 }
 
@@ -141,7 +204,7 @@ fun TabViewContent(tab: TabElement, onClose: (() -> Unit)?) {
     }
 }
 
-private fun tryOpenContentProviderInTree(
+fun tryOpenContentProviderInTree(
     provider1: ContentProvider
 ) {
     if (provider1 is Node) {
@@ -150,16 +213,34 @@ private fun tryOpenContentProviderInTree(
     }
 }
 
-
 @Composable
 fun UnsavedChangesDialog(
     tabManager: TabManager,
     showCloseDialog: MutableState<Boolean>,
-    pendingCloseTab: MutableState<TabElement?>
+    pendingCloseTab: MutableState<TabElement?>,
+    pendingCloseTabs: MutableState<List<TabElement>>
 ) {
     val abort = {
         showCloseDialog.value = false
         pendingCloseTab.value = null
+        pendingCloseTabs.value = emptyList()
+    }
+
+    val tabsToClose = pendingCloseTabs.value
+    val singleTab = pendingCloseTab.value
+
+    val message = when {
+        singleTab != null -> stringResource(
+            Res.string.unsaved_changes_message,
+            singleTab.tabName()
+        )
+
+        tabsToClose.size == 1 -> stringResource(
+            Res.string.unsaved_changes_message,
+            tabsToClose.first().tabName()
+        )
+
+        else -> "Multiple tabs have unsaved changes. Are you sure you want to close them?"
     }
 
     AlertDialog(
@@ -168,12 +249,7 @@ fun UnsavedChangesDialog(
             Text(stringResource(Res.string.unsaved_changes_title))
         },
         text = {
-            Text(
-                stringResource(
-                    Res.string.unsaved_changes_message,
-                    pendingCloseTab.value!!.tabName()
-                )
-            )
+            Text(message)
         },
         confirmButton = {
             // TODO maybe add a save button in the future
@@ -182,8 +258,9 @@ fun UnsavedChangesDialog(
             Row {
                 TextButton(
                     onClick = {
-                        pendingCloseTab.value?.let {
-                            tabManager.closeTab(it)
+                        when {
+                            singleTab != null -> tabManager.closeTab(singleTab)
+                            tabsToClose.isNotEmpty() -> tabManager.closeTabs(tabsToClose)
                         }
                         abort()
                     }

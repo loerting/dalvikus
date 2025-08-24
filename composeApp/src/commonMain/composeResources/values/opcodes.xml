@@ -39,7 +39,7 @@
     <string name="suggestion_end_packed_switch">Ends a packed-switch block.</string>
     <string name="suggestion_sparse_switch">Starts a sparse-switch block.</string>
     <string name="suggestion_end_sparse_switch">Ends a sparse-switch block.</string>
-
+°
     <!-- Access Modifiers -->
     <string name="suggestion_public">Accessible from anywhere.</string>
     <string name="suggestion_private">Accessible only within the defining class.</string>

@@ -140,4 +140,10 @@
     <string name="resources_incomplete_hint">(Not all types)</string>
 
     <string name="go_to_settings_button">Go to settings</string>
+
+    <string name="tab_close">Close tab</string>
+    <string name="tab_close_others">Close other tabs</string>
+    <string name="tab_close_left">Close tabs to the left</string>
+    <string name="tab_close_right">Close tabs to the right</string>
+    <string name="tab_show_in_files">Show in files</string>
 </resources>

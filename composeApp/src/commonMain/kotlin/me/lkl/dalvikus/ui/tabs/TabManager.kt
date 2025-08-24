@@ -2,13 +2,10 @@ package me.lkl.dalvikus.ui.tabs
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import me.lkl.dalvikus.tabs.TabElement
 import me.lkl.dalvikus.tabs.WelcomeTab
-import me.lkl.dalvikus.ui.editor.EditorViewModel
 
 class TabManager(initialTabs: List<TabElement>) {
     private val _tabs = mutableStateListOf<TabElement>().apply { addAll(initialTabs) }
@@ -31,6 +28,23 @@ class TabManager(initialTabs: List<TabElement>) {
             if (selectedTabIndex >= _tabs.size) {
                 selectedTabIndex = maxOf(0, _tabs.lastIndex)
             }
+        }
+    }
+
+    fun closeTabs(tabsToClose: List<TabElement>) {
+        val currentTab = _tabs.getOrNull(selectedTabIndex)
+
+        tabsToClose.forEach { tab ->
+            _tabs.remove(tab)
+        }
+
+        // Adjust selected tab index
+        if (_tabs.isEmpty()) {
+            selectedTabIndex = 0
+        } else if (currentTab != null && currentTab in _tabs) {
+            selectedTabIndex = _tabs.indexOf(currentTab)
+        } else {
+            selectedTabIndex = minOf(selectedTabIndex, _tabs.lastIndex)
         }
     }
 
