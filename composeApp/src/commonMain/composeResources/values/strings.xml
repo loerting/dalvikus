@@ -28,7 +28,7 @@
 
     <string name="unsaved_changes_title">Unsaved changes</string>
     <string name="unsaved_changes_message">"%1$s" has unsaved changes that will be lost when closed. Discard anyway?</string>
-
+    <string name="unsaved_changes_multiple_message">"Multiple tabs have unsaved changes. Are you sure you want to close them?"</string>
 
     <string name="nav_editor">Editor</string>
     <string name="nav_decompiler">Decompiler</string>

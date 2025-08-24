@@ -4,17 +4,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DisabledByDefault
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.tabs.TabElement
@@ -25,7 +26,6 @@ import org.jetbrains.compose.resources.stringResource
 fun TabContextMenu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
-    offset: DpOffset,
     tab: TabElement,
     tabIndex: Int,
     tabManager: TabManager,
@@ -34,9 +34,32 @@ fun TabContextMenu(
 ) {
     DropdownMenu(
         expanded = expanded,
-        onDismissRequest = onDismissRequest,
-        offset = offset
+        onDismissRequest = onDismissRequest
     ) {
+        DropdownMenuItem(
+            text = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    SelectionContainer {
+                        Text(
+                            tab.contentProvider.getSourcePath()
+                                ?: stringResource(Res.string.unknown_source_msg),
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+            },
+            onClick = { /* No action - just informational */ },
+            enabled = false
+        )
+
+        HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
+
         // Close tab
         DropdownMenuItem(
             text = {

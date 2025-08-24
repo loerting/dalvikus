@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import dalvikus.composeapp.generated.resources.*
 import me.lkl.dalvikus.tabManager
@@ -38,7 +37,6 @@ fun TabView() {
     val showContextMenu = remember { mutableStateOf(false) }
     val contextMenuTab = remember { mutableStateOf<TabElement?>(null) }
     val contextMenuIndex = remember { mutableStateOf(-1) }
-    val contextMenuOffset = remember { mutableStateOf(DpOffset.Zero) }
 
     if (showCloseDialog.value && (pendingCloseTab.value != null || pendingCloseTabs.value.isNotEmpty())) {
         UnsavedChangesDialog(
@@ -89,7 +87,6 @@ fun TabView() {
                             .onClick(matcher = PointerMatcher.mouse(PointerButton.Secondary)) {
                                 contextMenuTab.value = tab
                                 contextMenuIndex.value = index
-                                contextMenuOffset.value = DpOffset(0.dp, 16.dp)
                                 showContextMenu.value = true
                             }
                     )
@@ -98,7 +95,6 @@ fun TabView() {
                         TabContextMenu(
                             expanded = showContextMenu.value,
                             onDismissRequest = { showContextMenu.value = false },
-                            offset = contextMenuOffset.value,
                             tab = tab,
                             tabIndex = index,
                             tabManager = tabManager,
@@ -153,11 +149,9 @@ private fun handleTabsClose(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabViewContent(tab: TabElement, onClose: (() -> Unit)?) {
     var unsaved by tab.hasUnsavedChanges
-    val tooltipState = rememberTooltipState(isPersistent = false)
 
     Row(
         verticalAlignment = Alignment.CenterVertically
@@ -168,28 +162,12 @@ fun TabViewContent(tab: TabElement, onClose: (() -> Unit)?) {
             modifier = Modifier.size(16.dp)
         )
         Spacer(modifier = Modifier.width(4.dp))
-        TooltipBox(
-            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(8.dp),
-            tooltip = {
-                RichTooltip(
-                    title = { Text(stringResource(Res.string.tooltip_tab_title)) }
-                ) {
-                    Text(
-                        tab.contentProvider.getSourcePath()
-                            ?: stringResource(Res.string.unknown_source_msg),
-                    )
-                }
-            },
-            state = tooltipState
-        ) {
-            Text(
-                if (unsaved) "${tab.tabName()}*" else tab.tabName(),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
-
+        Text(
+            if (unsaved) "${tab.tabName()}*" else tab.tabName(),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.bodyLarge
+        )
         Spacer(modifier = Modifier.width(4.dp))
         if (onClose != null) {
             Icon(
@@ -240,7 +218,7 @@ fun UnsavedChangesDialog(
             tabsToClose.first().tabName()
         )
 
-        else -> "Multiple tabs have unsaved changes. Are you sure you want to close them?"
+        else -> stringResource(Res.string.unsaved_changes_multiple_message)
     }
 
     AlertDialog(
