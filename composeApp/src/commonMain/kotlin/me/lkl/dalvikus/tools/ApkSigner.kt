@@ -6,6 +6,7 @@ import com.android.apksig.ApkVerifier
 import com.android.apksig.KeyConfig
 import kotlinx.coroutines.*
 import me.lkl.dalvikus.dalvikusSettings
+import me.lkl.dalvikus.tree.backing.Backing
 import me.lkl.dalvikus.ui.packaging.KeystoreInfo
 import me.lkl.dalvikus.ui.snackbar.SnackbarManager
 import java.io.File
@@ -23,15 +24,15 @@ class ApkSigner(val snackbarManager: SnackbarManager) {
             verify
         } catch (e: Exception) {
             Logger.e("Error verifying APK signature: ${e.message}", e)
-            snackbarManager?.showError(e)
+            snackbarManager.showError(e)
             null
         }
     }
 
     suspend fun signApk(
         keystoreInfo: KeystoreInfo,
-        outputApk: File,
-        apk: File,
+        outputApkBacking: Backing,
+        apkBacking: Backing,
         onFinish: (success: Boolean) -> Unit
     ) = withContext(Dispatchers.Default) {
         try {
@@ -51,6 +52,7 @@ class ApkSigner(val snackbarManager: SnackbarManager) {
                 ?.toTypedArray()
                 ?: throw IllegalArgumentException("Certificate chain missing")
 
+            val apk = apkBacking.getFileOrCreateTemp(".apk")
             zipAlignIfNeeded(apk)
 
             val tempOutputApk = File.createTempFile("signed_", ".apk")
@@ -77,7 +79,7 @@ class ApkSigner(val snackbarManager: SnackbarManager) {
             val result = verifier.verify()
 
             if (result.isVerified) {
-                tempOutputApk.copyTo(outputApk, overwrite = true)
+                outputApkBacking.write(tempOutputApk.readBytes())
                 onFinish(true)
             } else {
                 Logger.e("APK signature verification failed: ${result.errors}")

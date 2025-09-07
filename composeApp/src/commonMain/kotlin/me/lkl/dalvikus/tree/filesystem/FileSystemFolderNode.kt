@@ -23,7 +23,7 @@ class FileSystemFolderNode(
             if (it.isDirectory) {
                 FileSystemFolderNode(it.name, it, this)
             } else {
-                FileSystemFileNode(it.name, it, this)
+                FileSystemFileNode(it, this)
             }
         } ?: emptyList()
     }

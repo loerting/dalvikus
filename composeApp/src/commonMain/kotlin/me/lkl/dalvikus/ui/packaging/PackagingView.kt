@@ -22,6 +22,7 @@ import me.lkl.dalvikus.LocalSnackbarManager
 import me.lkl.dalvikus.dalvikusSettings
 import me.lkl.dalvikus.errorreport.crtExHandler
 import me.lkl.dalvikus.tools.sha256Fingerprint
+import me.lkl.dalvikus.tree.Node
 import me.lkl.dalvikus.tree.archive.ApkNode
 import me.lkl.dalvikus.tree.archive.ZipNode
 import me.lkl.dalvikus.ui.uiTreeRoot
@@ -44,10 +45,8 @@ fun PackagingView() {
     ) {
         val keystoreInfo = getKeystoreInfo()
         val treeRootChildren by uiTreeRoot.childrenFlow.collectAsState()
-        val apks =
-            treeRootChildren
-                .filter { it is ApkNode }
-                .map { it as ApkNode }
+        // TODO properly support XAPK.
+        val apks = treeRootChildren.getNestedApkNodes()
         val loadingApk = remember<MutableState<ZipNode?>> { mutableStateOf(null) }
         val scope = rememberCoroutineScope()
         val gridState = rememberLazyGridState()
@@ -142,8 +141,8 @@ fun PackagingView() {
                                             scope.launch(crtExHandler) {
                                                 packagingViewModel.apkSigner.signApk(
                                                     keystoreInfo = keystoreInfo,
-                                                    apk = apk.zipFile,
-                                                    outputApk = apk.zipFile,
+                                                    apkBacking = apk.backing,
+                                                    outputApkBacking = apk.backing,
                                                 ) {
                                                     if (it) snackbarManager.showSuccess()
                                                     loadingApk.value = null
@@ -162,7 +161,7 @@ fun PackagingView() {
                                             loadingApk.value = apk
                                             scope.launch(crtExHandler) {
                                                 packagingViewModel.adbDeployer.deployApk(
-                                                    apk = apk.zipFile,
+                                                    apkBacking = apk.backing,
                                                     packageName = apk.getAndroidPackageName()
                                                 ) {
                                                     if (it) snackbarManager.showSuccess()
@@ -209,7 +208,7 @@ fun SignatureStatus(
     LaunchedEffect(apk, loadingApk.value) {
         if (loadingApk.value != null) return@LaunchedEffect
         signatureState = null
-        signatureState = packagingViewModel.apkSigner.checkSignature(apk.zipFile)
+        signatureState = packagingViewModel.apkSigner.checkSignature(apk.backing.getFileOrCreateTemp(".apk"))
     }
 
     if (signatureState != null) {
@@ -322,4 +321,20 @@ fun SignatureSchemeSection(title: String, certs: List<X509Certificate>) {
             }
         }
     }
+}
+
+@Composable
+fun List<Node>.getNestedApkNodes(): List<ApkNode> {
+    val apkNodes = mutableListOf<ApkNode>()
+    for (node in this) {
+        when (node) {
+            is ApkNode -> apkNodes.add(node)
+            is ZipNode -> {
+                val children = node.childrenFlow.collectAsState().value
+                apkNodes.addAll(children.getNestedApkNodes())
+            }
+            else -> {}
+        }
+    }
+    return apkNodes
 }

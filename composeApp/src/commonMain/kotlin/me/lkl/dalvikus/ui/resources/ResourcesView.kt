@@ -36,6 +36,7 @@ import dalvikus.composeapp.generated.resources.resources_search_placeholder
 import io.github.composegears.valkyrie.MatchCase
 import io.github.composegears.valkyrie.RegularExpression
 import me.lkl.dalvikus.tree.archive.ApkNode
+import me.lkl.dalvikus.ui.packaging.getNestedApkNodes
 import me.lkl.dalvikus.ui.uiTreeRoot
 import me.lkl.dalvikus.util.CollapseCard
 import me.lkl.dalvikus.util.CollapseCardMaxWidth
@@ -145,7 +146,8 @@ val resourceTypesIcons = mapOf(
 @Composable
 private fun ApkResourceCards(searchFieldState: TextFieldState, searchOptions: SearchOptions) {
     val treeRootChildren by uiTreeRoot.childrenFlow.collectAsState()
-    val apks = treeRootChildren.filterIsInstance<ApkNode>()
+    // TODO properly support XAPK.
+    val apks = treeRootChildren.getNestedApkNodes()
 
     val gridState = rememberLazyGridState()
     var selectedResType by remember { mutableStateOf("all") }

@@ -9,22 +9,32 @@ import brut.directory.ExtFile
 import co.touchlab.kermit.Logger
 import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.tree.Node
+import me.lkl.dalvikus.tree.backing.Backing
 import me.lkl.dalvikus.util.getApkToolConfig
 import java.io.File
 
 class ApkNode(
     override val name: String,
-    override val zipFile: File,
+    override val backing: Backing,
     override val parent: ContainerNode?
-) : ZipNode(name, zipFile, parent) {
+) : ZipNode(name, backing, parent) {
 
-    val resTable: ResTable = ResTable(ApkInfo(ExtFile(zipFile)), getApkToolConfig())
+    private var _resTable: ResTable? = null
+    private var apkFile: File? = null
+
+    val resTable: ResTable
+        get() = _resTable ?: throw IllegalStateException("Resources not loaded. Call loadChildrenInternal() first.")
 
     init {
         require(name.endsWith(".apk", ignoreCase = true))
     }
 
     override suspend fun loadChildrenInternal(): List<Node> {
+        apkFile = backing.getFileOrCreateTemp(".apk")
+
+        // Initialize ResTable with the APK file
+        _resTable = ResTable(ApkInfo(ExtFile(apkFile!!)), getApkToolConfig())
+
         try {
             if(!resTable.isMainPackageLoaded && resTable.apkInfo.hasResources())
                 resTable.loadMainPackage()
@@ -36,19 +46,19 @@ class ApkNode(
     }
 
     fun getAndroidPackageName(): String? {
-        if (!resTable.isMainPackageLoaded) return null
+        if (_resTable?.isMainPackageLoaded != true) return null
         return resTable.mainPackage.name
     }
 
     fun getResourceSpecs(): List<ResResSpec?>? {
-        if (!resTable.isMainPackageLoaded) return null
+        if (_resTable?.isMainPackageLoaded != true) return null
         return resTable.mainPackage.listResSpecs()
     }
+
     fun getResourceById(unsignedValue: Int): ResResSpec? {
-        if (!resTable.isMainPackageLoaded) return null
+        if (_resTable?.isMainPackageLoaded != true) return null
         val resId = ResID(unsignedValue)
         val resSpec = resTable.mainPackage.getResSpec(resId)
         return resSpec
     }
 }
-

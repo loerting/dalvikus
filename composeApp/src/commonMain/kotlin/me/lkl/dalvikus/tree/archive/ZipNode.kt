@@ -2,6 +2,7 @@ package me.lkl.dalvikus.tree.archive
 
 import me.lkl.dalvikus.tree.ContainerNode
 import me.lkl.dalvikus.tree.Node
+import me.lkl.dalvikus.tree.backing.Backing
 import me.lkl.dalvikus.tree.backing.ZipBacking
 import me.lkl.dalvikus.tree.buildChildNodes
 import me.lkl.dalvikus.tree.dex.DexFileNode
@@ -15,7 +16,7 @@ import java.util.zip.ZipOutputStream
 
 open class ZipNode(
     override val name: String,
-    open val zipFile: File, // TODO change this to Backing.
+    open val backing: Backing,
     override val parent: ContainerNode?
 ) : ContainerNode() {
 
@@ -27,8 +28,8 @@ open class ZipNode(
 
     override suspend fun loadChildrenInternal(): List<Node> {
         entries.clear()
-        // TODO when zipFile is changed to backing, read and copy to temp file (or directly take file from backing if possible)
-        val zip = ZipFile(zipFile)
+
+        val zip = ZipFile(backing.getFileOrCreateTemp(".zip"))
 
         zip.entries().toList().forEach { entry ->
             val name = entry.name
@@ -49,11 +50,17 @@ open class ZipNode(
                     name.endsWith(".dex") -> DexFileNode(name, ZipBacking(path, this), this)
                     name.endsWith(".xml") && this is ApkNode -> ApkEntryXmlNode(name, path, this, this)
                     name.substringAfterLast(".").lowercase() in readableImageFormats -> ZipEntryImageNode(name, path, this, this)
+                    // Support nested zip/apk files
+                    name.endsWith(".zip", ignoreCase = true) ||
+                            name.endsWith(".jar", ignoreCase = true) ||
+                            name.endsWith(".xapk", ignoreCase = true) ||
+                            name.endsWith(".apks", ignoreCase = true) -> ZipNode(name, ZipBacking(path, this), this)
+                    name.endsWith(".apk", ignoreCase = true) -> ApkNode(name, ZipBacking(path, this), this)
+                    name.endsWith(".aab", ignoreCase = true) -> ZipNode(name, ZipBacking(path, this), this)
                     else -> ZipEntryFileNode(name, path, this, this)
                 }
             }
         )
-
     }
 
     open fun readEntry(path: String): ByteArray {
@@ -69,28 +76,36 @@ open class ZipNode(
     }
 
     override suspend fun rebuild() {
+        val newBytes = rebuildZipBytes()
+        backing.write(newBytes)
+    }
+
+    private fun rebuildZipBytes(): ByteArray {
         val tmp = File.createTempFile("rebuild", ".zip")
-        ZipOutputStream(tmp.outputStream()).use { zos ->
-            for ((path, data) in entries) {
-                val entry = ZipEntry(path)
+        try {
+            ZipOutputStream(tmp.outputStream()).use { zos ->
+                for ((path, data) in entries) {
+                    val entry = ZipEntry(path)
 
-                if (this is ApkNode && (path == "resources.arsc" || (path.startsWith("lib/") && path.endsWith(".so")))) {
-                    entry.method = ZipEntry.STORED
+                    if (this is ApkNode && (path == "resources.arsc" || (path.startsWith("lib/") && path.endsWith(".so")))) {
+                        entry.method = ZipEntry.STORED
 
-                    val crc = CRC32()
-                    crc.update(data)
+                        val crc = CRC32()
+                        crc.update(data)
 
-                    entry.size = data.size.toLong()
-                    entry.compressedSize = data.size.toLong()
-                    entry.crc = crc.value
+                        entry.size = data.size.toLong()
+                        entry.compressedSize = data.size.toLong()
+                        entry.crc = crc.value
+                    }
+
+                    zos.putNextEntry(entry)
+                    zos.write(data)
+                    zos.closeEntry()
                 }
-
-                zos.putNextEntry(entry)
-                zos.write(data)
-                zos.closeEntry()
             }
+            return tmp.readBytes()
+        } finally {
+            tmp.delete()
         }
-        tmp.copyTo(zipFile, overwrite = true)
-        tmp.delete()
     }
 }

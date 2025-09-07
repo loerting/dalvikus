@@ -12,6 +12,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import me.lkl.dalvikus.dalvikusSettings
+import me.lkl.dalvikus.tree.backing.Backing
 import me.lkl.dalvikus.ui.snackbar.SnackbarManager
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit
 class AdbDeployer(val snackbarManager: SnackbarManager) {
 
     suspend fun deployApk(
-        apk: File,
+        apkBacking: Backing,
         packageName: String? = null,
         onFinish: (Boolean) -> Unit
     ) = withContext(Dispatchers.Default) {
@@ -36,20 +37,21 @@ class AdbDeployer(val snackbarManager: SnackbarManager) {
 
             notifyDevicesFound(devices)
 
+            val apk = apkBacking.getFileOrCreateTemp(".apk")
             installApkOnDevices(devices, apk)
 
             packageName?.let {
                 launchAppOnDevices(devices, it)
-            } ?: snackbarManager?.showMessage("APK installed, but no package name provided to launch the app.")
+            } ?: snackbarManager.showMessage("APK installed, but no package name provided to launch the app.")
 
             onFinish(true)
         } catch (timeout: TimeoutCancellationException) {
             Logger.e("Deployment timed out: ${timeout.message}", timeout)
-            snackbarManager?.showMessage("Operation timed out. Please check your device connection and try again.")
+            snackbarManager.showMessage("Operation timed out. Please check your device connection and try again.")
             onFinish(false)
         } catch (e: Exception) {
             Logger.e("Error deploying APK: ${e.message}", e)
-            snackbarManager?.showError(e)
+            snackbarManager.showError(e)
             onFinish(false)
         } finally {
             cleanupAdbBridge()
@@ -80,7 +82,7 @@ class AdbDeployer(val snackbarManager: SnackbarManager) {
 
     private fun notifyDevicesFound(devices: Array<IDevice>) {
         val message = "Device(s) found: ${devices.joinToString { it.serialNumber }}"
-        snackbarManager?.showMessage(message)
+        snackbarManager.showMessage(message)
     }
 
     private suspend fun installApkOnDevices(devices: Array<IDevice>, apk: File) {
@@ -92,7 +94,7 @@ class AdbDeployer(val snackbarManager: SnackbarManager) {
             } catch (ie: InstallException) {
                 val cause = ie.cause
                 if (cause is AdbCommandRejectedException && !cause.isDeviceOffline) {
-                    snackbarManager?.showMessage("Check for a confirmation dialog on the device.")
+                    snackbarManager.showMessage("Check for a confirmation dialog on the device.")
                 } else {
                     throw Exception("Failed to install APK on ${device.serialNumber}: ${ie.message}", cause ?: ie)
                 }
@@ -108,7 +110,7 @@ class AdbDeployer(val snackbarManager: SnackbarManager) {
                     device.executeShellCommand(launchCommand, NullOutputReceiver())
                 }
             } catch (e: Exception) {
-                snackbarManager?.showMessage("Failed to launch app on ${device.serialNumber}: ${e.message}")
+                snackbarManager.showMessage("Failed to launch app on ${device.serialNumber}: ${e.message}")
             }
         }
     }

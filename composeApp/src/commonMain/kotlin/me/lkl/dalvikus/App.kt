@@ -43,6 +43,7 @@ import me.lkl.dalvikus.tree.archive.ApkNode
 import me.lkl.dalvikus.ui.*
 import me.lkl.dalvikus.ui.nav.NavItem
 import me.lkl.dalvikus.ui.packaging.getKeystoreInfo
+import me.lkl.dalvikus.ui.packaging.getNestedApkNodes
 import me.lkl.dalvikus.ui.search.SearchView
 import me.lkl.dalvikus.ui.snackbar.SnackbarManager
 import me.lkl.dalvikus.ui.snackbar.SnackbarResources
@@ -366,13 +367,13 @@ fun TopBar() {
                     val adbDeployer = AdbDeployer(snackbarManager)
                     apkSigner.signApk(
                         keystoreInfo = getKeystoreInfo(),
-                        apk = node.zipFile,
-                        outputApk = node.zipFile
+                        apkBacking = node.backing,
+                        outputApkBacking = node.backing
                     ) { success ->
                         if (success) {
                             scope.launch(crtExHandler) {
                                 adbDeployer.deployApk(
-                                    apk = node.zipFile,
+                                    apkBacking = node.backing,
                                     packageName = node.getAndroidPackageName()
                                 ) {
                                     if (it) {
@@ -399,10 +400,7 @@ fun TopBar() {
 @Preview
 fun DeployButton(deploy: (ApkNode) -> Unit) {
     val treeRootChildren by uiTreeRoot.childrenFlow.collectAsState()
-    val apks =
-        treeRootChildren
-            .filter { it is ApkNode }
-            .map { it as ApkNode }
+    val apks = treeRootChildren.getNestedApkNodes()
     var checked by remember { mutableStateOf(false) }
     val keystoreInfo = getKeystoreInfo()
     IconButton(
