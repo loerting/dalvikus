@@ -17,6 +17,7 @@ class DalvikusSettings() {
     private val preferences = Preferences.userRoot().node("me.lkl.dalvikus.settings")
     private val settings: Settings = PreferencesSettings(preferences)
     private val androidToolsLocator = AndroidToolsLocator()
+    val baksmaliOptions by lazy { DalvikusBaksmaliOptions(this) }
 
     val settingsList: List<Setting<*>> = listOf(
         IntSetting(
@@ -115,6 +116,66 @@ class DalvikusSettings() {
             defaultValue = "dalvikus",
             regex = "^[a-zA-Z0-9_\\-]+$",
         ),
+        BooleanSetting(
+            key = "smali_parameter_registers",
+            category = SettingsCategory.SMALI,
+            nameRes = Res.string.settings_parameter_registers,
+            defaultValue = true
+        ),
+        BooleanSetting(
+            key = "smali_locals_directive",
+            category = SettingsCategory.SMALI,
+            nameRes = Res.string.settings_locals_directive,
+            defaultValue = false
+        ),
+        BooleanSetting(
+            key = "smali_sequential_labels",
+            category = SettingsCategory.SMALI,
+            nameRes = Res.string.settings_sequential_labels,
+            defaultValue = false
+        ),
+        BooleanSetting(
+            key = "smali_debug_info",
+            category = SettingsCategory.SMALI,
+            nameRes = Res.string.settings_debug_info,
+            defaultValue = true
+        ),
+        BooleanSetting(
+            key = "smali_code_offsets",
+            category = SettingsCategory.SMALI,
+            nameRes = Res.string.settings_code_offsets,
+            defaultValue = false
+        ),
+        BooleanSetting(
+            key = "smali_accessor_comments",
+            category = SettingsCategory.SMALI,
+            nameRes = Res.string.settings_accessor_comments,
+            defaultValue = true
+        ),
+        BooleanSetting(
+            key = "smali_allow_odex",
+            category = SettingsCategory.SMALI,
+            nameRes = Res.string.settings_allow_odex,
+            defaultValue = false
+        ),
+        BooleanSetting(
+            key = "smali_deodex",
+            category = SettingsCategory.SMALI,
+            nameRes = Res.string.settings_deodex,
+            defaultValue = false
+        ),
+        BooleanSetting(
+            key = "smali_implicit_references",
+            category = SettingsCategory.SMALI,
+            nameRes = Res.string.settings_implicit_references,
+            defaultValue = false
+        ),
+        BooleanSetting(
+            key = "smali_normalize_virtual_methods",
+            category = SettingsCategory.SMALI,
+            nameRes = Res.string.settings_normalize_virtual_methods,
+            defaultValue = false
+        ),
     )
 
 
@@ -124,10 +185,12 @@ class DalvikusSettings() {
 
     fun loadAll() {
         settingsList.forEach { it.load(settings) }
+        baksmaliOptions.reloadSettings()
     }
 
     fun saveAll() {
         settingsList.forEach { it.save(settings) }
+        baksmaliOptions.reloadSettings()
     }
 
     inline operator fun <reified T> get(key: String): T {

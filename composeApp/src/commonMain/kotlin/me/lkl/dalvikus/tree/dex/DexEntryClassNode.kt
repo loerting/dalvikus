@@ -3,7 +3,6 @@ package me.lkl.dalvikus.tree.dex
 import androidx.compose.material.icons.Icons
 import co.touchlab.kermit.Logger
 import com.android.tools.smali.baksmali.Adaptors.ClassDefinition
-import com.android.tools.smali.baksmali.BaksmaliOptions
 import com.android.tools.smali.baksmali.formatter.BaksmaliWriter
 import com.android.tools.smali.dexlib2.Opcodes
 import com.android.tools.smali.dexlib2.iface.ClassDef
@@ -36,7 +35,7 @@ class DexEntryClassNode(
     fun getClassDef(): ClassDef = root.readEntry(fullPath)
 
     override suspend fun getContent(): ByteArray {
-        val classDefinition = ClassDefinition(BaksmaliOptions(), getClassDef())
+        val classDefinition = ClassDefinition(dalvikusSettings.baksmaliOptions, getClassDef())
 
         val stringWriter = StringWriter()
         val bufferedWriter = BufferedWriter(stringWriter)

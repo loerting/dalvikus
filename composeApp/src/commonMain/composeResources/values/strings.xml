@@ -48,7 +48,17 @@
 
     <string name="settings_font_size">Font size</string>
     <string name="settings_max_file_size">Maximum allowed file size</string>
-    <string name="settings_api_level">Dalvik Opcodes API level</string>
+    <string name="settings_api_level">Dalvik opcodes API level</string>
+    <string name="settings_parameter_registers">Use parameter registers</string>
+    <string name="settings_locals_directive">Use locals directive</string>
+    <string name="settings_sequential_labels">Sequential labels</string>
+    <string name="settings_debug_info">Generate debug info</string>
+    <string name="settings_code_offsets">Code offsets</string>
+    <string name="settings_accessor_comments">Accessor comments</string>
+    <string name="settings_allow_odex">Allow ODEX</string>
+    <string name="settings_deodex">Deodex</string>
+    <string name="settings_implicit_references">Implicit references</string>
+    <string name="settings_normalize_virtual_methods">Normalize virtual methods</string>
     <string name="settings_decompiler_verbose">Verbose decompiler output</string>
     <string name="settings_decompiler_implementation">Decompiler implementation</string>
     <string name="settings_save_automatically">Save editor changes automatically</string>
