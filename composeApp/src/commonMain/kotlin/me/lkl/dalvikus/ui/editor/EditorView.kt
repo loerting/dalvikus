@@ -187,7 +187,6 @@ fun EditorView(tabElement: TabElement) {
                         .weight(1f)
                         .fillMaxSize()
                 ) {
-
                     val viewportHeight = constraints.maxHeight.toFloat()
                     Box(
                         modifier = Modifier
@@ -196,6 +195,7 @@ fun EditorView(tabElement: TabElement) {
                             .fillMaxSize()
                             .drawBehind {
                                 if (viewModel.highlightedText.isEmpty()) return@drawBehind
+                                if (size.width <= 0f || size.height <= 0f || !size.width.isFinite() || !size.height.isFinite()) return@drawBehind
                                 val scrollY = vertState.value
                                 val lineHeight = textStyle.lineHeight.toPx()
                                 val startLine = (scrollY / lineHeight).toInt()
