@@ -1,7 +1,7 @@
 [versions]
 
 kotlin = "2.2.0"
-compose = "1.9.0-alpha03"
+compose = "1.9.1"
 hotReload = "1.0.0-alpha09"
 updates = "0.52.0"
 kermit = "2.0.6"

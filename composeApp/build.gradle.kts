@@ -17,7 +17,8 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material3)
+            // TODO replace with compose.material3 again when material expressive is stable.
+            implementation("org.jetbrains.compose.material3:material3:1.9.0-alpha04")
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
@@ -65,7 +66,7 @@ kotlin {
     }
 }
 
-val appVersion = "1.0.12"
+val appVersion = "1.0.13"
 
 compose.desktop {
     application {
